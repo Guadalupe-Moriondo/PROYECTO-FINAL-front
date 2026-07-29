@@ -17,6 +17,12 @@ const STATUS_LABELS = {
   delivered: 'Entregado',
 };
 
+const PAYMENT_LABELS = {
+  cash: 'Efectivo',
+  transfer: 'Transferencia ',
+  card: 'Tarjeta',
+};
+
 async function load() {
   loading.value = true;
   const response = await ordersService.listAll(page.value, 10);
@@ -68,7 +74,7 @@ onMounted(load);
     
     <table v-else class="admin-table">
       <thead>
-        <tr><th>N° orden</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Detalle</th></tr>
+        <tr><th>N° orden</th><th>Cliente</th><th>Total</th><th>Pago</th><th>Estado</th><th>Detalle</th></tr>
       </thead>
       <tbody>
         <template v-for="order in orders" :key="order.id">
@@ -76,6 +82,7 @@ onMounted(load);
             <td class="table-mono">{{ order.orderNumber }}</td>
             <td>{{ order.user?.name }} <span class="table-subtext">{{ order.user?.email }}</span></td>
             <td class="table-mono">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
+            <td>{{ PAYMENT_LABELS[order.paymentMethod] || 'No especificado' }}</td>
             <td>
               <select :value="order.status" @change="changeStatus(order, $event.target.value)">
                 <option v-for="status in STATUSES" :key="status" :value="status">
@@ -90,7 +97,7 @@ onMounted(load);
             </td>
           </tr>
           <tr v-if="expandedOrderId === order.id" class="detail-row">
-            <td colspan="5">
+            <td colspan="6">
               <ul v-if="order.details?.length" class="detail-list">
                 <li v-for="detail in order.details" :key="detail.id">
                   <span class="detail-qty">{{ detail.quantity }} ×</span>
@@ -249,7 +256,7 @@ onMounted(load);
 
   font-size:.85rem;
 
-  font-weight:600;
+ 
 
 
   cursor:pointer;

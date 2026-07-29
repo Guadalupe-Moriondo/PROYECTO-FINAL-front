@@ -116,7 +116,7 @@ onMounted(load);
                 Sin foto
               </span>
               <div class="image-overlay">
-                 Cambiar 
+                 Cambiar foto
               </div>
             </button>
           </td>
@@ -279,7 +279,7 @@ onMounted(load);
   border-radius: 8px;
 
   font-size: .85rem;
-  font-weight: 600;
+
 
   text-decoration: none;
 
@@ -368,7 +368,7 @@ onMounted(load);
   justify-content: center;
 
   font-size: .85rem;
-  font-weight: 600;
+
 
   text-decoration: none;
 
@@ -376,7 +376,7 @@ onMounted(load);
 }
 
 .table-actions a:hover {
-  background: #5a7bd8;
+  background: #89a4f0;
   transform: translateY(-1px);
 }
 

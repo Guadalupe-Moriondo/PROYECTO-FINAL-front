@@ -14,7 +14,7 @@ import NotFoundView from '../views/NotFoundView.vue';
 import CartView from '../views/CartView.vue';
 import CheckoutView from '../views/CheckoutView.vue';
 import MyOrdersView from '../views/MyOrdersView.vue';
-
+import ProfileView from '../views/ProfileView.vue'
 // Admin views (require login + admin role)
 import AdminHomeView from '../views/admin/AdminHomeView.vue';
 import AdminProductsView from '../views/admin/AdminProductsView.vue';
@@ -40,6 +40,13 @@ const router = createRouter({
     { path: '/register', name: 'register', component: RegisterView },
     { path: '/contact', name: 'contact', component: ContactView },
 
+    {
+      path: '/perfil',
+      name: 'profile',
+      component: ProfileView,
+      meta: {requiresAuth: true},
+    },
+    
     // "meta" is where we mark what restrictions each route has.
     // The global guard (below) reads this object before letting anyone through.
     {

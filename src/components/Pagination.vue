@@ -14,11 +14,11 @@ function goTo(page) {
 <template>
   <nav v-if="totalPages > 1" class="pagination" aria-label="Paginación de resultados">
     <button class="pagination-button" :disabled="page === 1" @click="goTo(page - 1)">
-      ← Anterior
+      ← 
     </button>
     <span class="pagination-info">Página {{ page }} de {{ totalPages }}</span>
     <button class="pagination-button" :disabled="page === totalPages" @click="goTo(page + 1)">
-      Siguiente →
+       →
     </button>
   </nav>
 </template>

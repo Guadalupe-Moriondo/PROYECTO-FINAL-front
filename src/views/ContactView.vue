@@ -15,183 +15,450 @@ async function loadBusiness() {
 
 const whatsappLink = computed(() => {
   if (!business.value?.whatsapp) return null;
+
   const number = business.value.whatsapp.replace(/\D/g, '');
 
-  const message = encodeURIComponent(
-    'Hola! Quisiera realizar una consulta sobre un repuesto.'
+  const text = encodeURIComponent(
+    'Hola! Quisiera realizar una consulta.'
   );
 
-  return `https://wa.me/${number}?text=${message}`;
+  return `https://wa.me/${number}?text=${text}`;
 });
+
 const mailLink = computed(() => {
   if (!business.value?.email) return null;
 
   const subject = encodeURIComponent('Consulta desde la web');
 
-  const body = encodeURIComponent(
-`Hola,
+  const body = encodeURIComponent(`Hola,
 
-Quisiera realizar una consulta sobre un producto.
+Quisiera realizar una consulta.
 
-Muchas gracias.`
-  );
+Muchas gracias.`);
 
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${business.value.email}&su=${subject}&body=${body}`;
 });
+
+const mapsUrl = computed(() => {
+  if (!business.value) return '';
+
+  const address = [
+    business.value.address,
+    business.value.city,
+    business.value.province,
+    business.value.country
+  ]
+    .filter(Boolean)
+    .join(', ');
+
+  return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+});
+
 onMounted(loadBusiness);
 </script>
 
 <template>
   <div class="contact-view">
+
     <section class="contact-header">
       <div class="container contact-header-inner">
-        <p class="section-eyebrow">Estamos para ayudarte</p>
-        <h1 class="contact-title">Contacto</h1>
+        <p class="section-eyebrow">
+          Estamos para ayudarte
+        </p>
+
+        <h1 class="contact-title">
+          Contacto
+        </h1>
       </div>
     </section>
 
-    <div class="container contact-body">
-      <div class="contact-layout contact-layout-single" v-if="business">
-        <aside class="contact-info">
-          <h2 class="contact-info-name">{{ business.name }}</h2>
-          <ul class="contact-info-facts">
-            <li v-if="business.address"><span class="contact-info-label">Dirección</span>{{ business.address }}</li>
-            <li v-if="business.phone"><span class="contact-info-label">Teléfono</span>{{ business.phone }}</li>
-            <li v-if="business.mondayOpen ||business.afternoonOpen ||business.saturdayOpen">
-              <span class="contact-info-label">Horarios</span>
-              <div class="business-hours">
-                <p v-if="business.mondayOpen || business.mondayClose">
-                  Lunes a Viernes:
-                  
-                  {{ business.mondayOpen }} - {{ business.mondayClose }}
-                </p>
-                <p v-if="business.afternoonOpen || business.afternoonClose">
-                  Tarde:
-                  
-                  {{ business.afternoonOpen }} - {{ business.afternoonClose }}
-                </p>
-                <p v-if="business.saturdayOpen || business.saturdayClose">
-                  Sábados:
-                  
-                  {{ business.saturdayOpen }} - {{ business.saturdayClose }}
-                </p>
+    <div class="container contact-body" v-if="business">
 
-              </div>
-            </li>
-          </ul>
+      <div class="contact-card">
 
-          <p class="contact-info-cta">Escribinos y te respondemos a la brevedad:</p>
+        <!-- MAPA -->
+        <div class="map-container">
+          <iframe
+            v-if="mapsUrl"
+            :src="mapsUrl"
+            width="100%"
+            height="320"
+            style="border:0"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
 
-          <div class="contact-info-actions">
-            <a v-if="whatsappLink" :href="whatsappLink" target="_blank" rel="noopener" class="button button-primary">
-              <svg viewBox="0 0 24 24" class="button-icon" fill="currentColor">
-                <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
-              </svg>
+        <!-- CONTENIDO -->
+        <div class="contact-content">
+
+          <!-- DATOS -->
+          <div class="contact-info">
+
+            <h2 class="business-name">
+              {{ business.name }}
+            </h2>
+
+            <p class="business-address">
+              {{ business.address }}
+            </p>
+
+            <p v-if="business.city">
+              {{ business.city }},
+              {{ business.province }}
+            </p>
+
+            <p v-if="business.country">
+              {{ business.country }}
+            </p>
+
+            <p v-if="business.phone">
+              <strong>Teléfono:</strong>
+              {{ business.phone }}
+            </p>
+
+            <div
+              class="business-hours"
+              v-if="
+                business.mondayOpen ||
+                business.afternoonOpen ||
+                business.saturdayOpen
+              "
+            >
+
+              <h3>Horarios</h3>
+
+              <p
+                v-if="
+                  business.mondayOpen ||
+                  business.mondayClose
+                "
+              >
+                <strong>Lunes a Viernes</strong><br>
+
+                {{ business.mondayOpen }}
+                -
+                {{ business.mondayClose }}
+              </p>
+
+              <p
+                v-if="
+                  business.afternoonOpen ||
+                  business.afternoonClose
+                "
+              >
+                <strong>Tarde</strong><br>
+
+                {{ business.afternoonOpen }}
+                -
+                {{ business.afternoonClose }}
+              </p>
+
+              <p
+                v-if="
+                  business.saturdayOpen ||
+                  business.saturdayClose
+                "
+              >
+                <strong>Sábados</strong><br>
+
+                {{ business.saturdayOpen }}
+                -
+                {{ business.saturdayClose }}
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="contact-cta">
+            <h3>¿Tenés alguna consulta?</h3>
+             <p> Escribinos por WhatsApp o por correo electrónico.Te responderemos lo antes posible.</p>
+          </div>
+
+          <!-- BOTONES -->
+          <div class="contact-buttons">
+
+            <a
+              v-if="whatsappLink"
+              :href="whatsappLink"
+              target="_blank"
+              rel="noopener"
+              class="button button-primary"
+            >
               WhatsApp
             </a>
-            <a v-if="mailLink" :href="mailLink"  target="_blank" rel="noopener noreferrer" class="button button-secondary">
-              <svg viewBox="0 0 24 24" class="button-icon" fill="currentColor">
-                <path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.4 5.7a.6.6 0 0 0 .8 0L19.8 6H4.2ZM4 7.8V18h16V7.8l-7.4 5.7a2.1 2.1 0 0 1-2.6 0L4 7.8Z"/>
-              </svg>
-              Mail
+
+            <a
+              v-if="mailLink"
+              :href="mailLink"
+              target="_blank"
+              rel="noopener"
+              class="button button-secondary"
+            >
+              E-Mail
             </a>
+
           </div>
-        </aside>
+
+        </div>
+
       </div>
+
     </div>
+
   </div>
 </template>
 
 <style scoped>
+
 .contact-header {
   background: var(--color-steel);
-  background-image: linear-gradient(135deg, var(--color-steel) 0%, var(--color-steel-light) 100%);
-  border-bottom: 3px solid var(--color-rust);
+  background-image: linear-gradient(
+    135deg,
+    var(--color-steel),
+    var(--color-steel-light)
+  );
+  border-bottom: 4px solid var(--color-rust);
 }
+
 .contact-header-inner {
-  padding: var(--space-5) var(--space-4);
+  padding: 3rem 1rem;
 }
+
 .section-eyebrow {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.8rem;
   color: var(--color-safety);
-  margin: 0 0 var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-size: .8rem;
+  margin-bottom: .4rem;
 }
+
 .contact-title {
-  color: #fff;
+  color: white;
   margin: 0;
-  font-size: 2.4rem;
+  font-size: 2.5rem;
+  font-weight: 700;
 }
+
 .contact-body {
-  padding: var(--space-5) var(--space-4);
-}
-.contact-layout {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: var(--space-5);
+  padding: 3rem 1rem;
 }
 
+.contact-card {
 
-@media (max-width: 760px) {
-  .contact-layout { grid-template-columns: 1fr; }
-}
-.contact-form {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-}
-.contact-info {
-  background: var(--color-steel);
-  color: #fff;
-  border-radius: var(--radius-md);
-  border-top: 3px solid var(--color-rust);
-  padding: var(--space-4);
-}
-.contact-info-name {
-  color: #fff;
-  margin: 0 0 var(--space-3);
-  font-size: 1.3rem;
-}
-.contact-info-facts {
-  list-style: none;
-  margin: 0 0 var(--space-4);
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  font-size: 0.9rem;
-  color: #d8dbd9;
-}
-.contact-info-label {
-  display: block;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 0.9rem;
-  color: var(--color-safety);
-  margin-bottom: 2px;
-}
-.contact-info-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.contact-info-actions .button { width: 100%; }
-.contact-info-actions .button-secondary {
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #fff;
-}
-.contact-info-actions .button-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #fff;
-  color: #fff;
-}
-.button-icon { width: 18px; height: 18px; }
+  max-width: 900px;
 
-@media (max-width: 600px) {
-  .contact-title { font-size: 1.8rem; }
+  margin: auto;
+
+  background: white;
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow: 0 10px 35px rgba(0,0,0,.12);
+
+  border:1px solid var(--color-line);
+
 }
+
+.map-container {
+
+  width:100%;
+
+  height:320px;
+
+}
+
+.map-container iframe{
+
+  width:100%;
+
+  height:100%;
+
+  display:block;
+
+}
+
+.contact-content{
+
+  padding:2rem;
+
+}
+
+.business-name{
+
+  font-size:2rem;
+
+  margin-bottom:.4rem;
+
+  color:var(--color-steel);
+
+}
+
+.business-address{
+
+  color:#555;
+
+  margin-bottom:1.2rem;
+
+}
+
+.contact-info p{
+
+  margin:.45rem 0;
+
+  color:#555;
+
+  line-height:1.6;
+
+}
+
+.business-hours{
+
+  margin-top:2rem;
+
+  padding-top:1.5rem;
+
+  border-top:1px solid #e5e7eb;
+
+}
+
+.business-hours h3{
+
+  margin-bottom:1rem;
+
+  color:var(--color-steel);
+
+}
+
+.business-hours p{
+
+  margin-bottom:1rem;
+
+}
+
+.contact-buttons{
+
+  display:flex;
+
+  gap:1rem;
+
+  margin-top:2rem;
+
+}
+
+.contact-buttons .button{
+
+  flex:1;
+
+  justify-content:center;
+
+}
+
+.button{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  text-decoration:none;
+
+  padding:.9rem 1.3rem;
+
+  border-radius:10px;
+
+  font-weight:600;
+
+  transition:.2s;
+
+}
+
+.button-primary{
+  background:#2d9754;
+  color:white;
+  border:2px solid #2d9754;
+}
+
+.button-primary:hover{
+  background:#33ad60;
+  border-color:#33ad60;
+  transform:translateY(-2px);
+}
+
+.button-secondary{
+  background:#c93d30;
+  color:white;
+  border:2px solid #c93d30;
+}
+
+.button-secondary:hover{
+  background:#d93025;
+  border-color:#d93025;
+  transform:translateY(-2px);
+}
+
+.contact-cta{
+  margin-top:2rem;
+  padding-top:1.8rem;
+  border-top:1px solid #e5e7eb;
+  text-align:center;
+}
+
+.contact-cta h3{
+  margin:0 0 .5rem;
+  color:var(--color-steel);
+  font-size:1.2rem;
+}
+
+.contact-cta p{
+  margin:0;
+  color:#6b7280;
+  line-height:1.6;
+  font-size:.95rem;
+}
+
+.contact-buttons{
+  display:flex;
+  gap:1rem;
+  margin-top:1.8rem;
+}
+
+@media(max-width:768px){
+
+.contact-card{
+
+border-radius:14px;
+
+}
+
+.contact-content{
+
+padding:1.5rem;
+
+}
+
+.business-name{
+
+font-size:1.6rem;
+
+}
+
+.contact-buttons{
+
+flex-direction:column;
+
+}
+
+.map-container{
+
+height:250px;
+
+}
+
+}
+
 </style>

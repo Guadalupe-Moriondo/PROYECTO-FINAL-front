@@ -480,7 +480,7 @@ onMounted(load);
 
   font-size:.85rem;
 
-  font-weight:600;
+ 
 
 
   cursor:pointer;

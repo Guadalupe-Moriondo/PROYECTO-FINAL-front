@@ -250,7 +250,7 @@ onMounted(() => {
   padding-top: 1.5rem;
   border-top: 1px solid var(--color-line);
   
-  justify-content: center;
+  
 }
 
 .whatsapp-help p {
@@ -270,7 +270,6 @@ onMounted(() => {
 
   padding: 0.85rem 1.4rem;
   border-radius: 999px;
-  font-weight: 600;
 
   transition: 0.2s ease;
 }

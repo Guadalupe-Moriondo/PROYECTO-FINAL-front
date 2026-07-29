@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import ordersService from '../../services/orders.service';
-import Pagination from '../../components/Pagination.vue';
 
 const loading = ref(true);
 
@@ -10,35 +9,20 @@ const statistics = ref({
   year: { orders: 0, total: 0 },
 });
 
-// Pedidos entregados: viven unicamente aca (ya no aparecen en "Pedidos").
-const orders = ref([]);
-const page = ref(1);
-const totalPages = ref(1);
-
-// Fila expandida: guarda el id del pedido abierto (uno solo a la vez)
-const expandedOrderId = ref(null);
-
-function toggleDetail(order) {
-  expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
-}
-
-function lineSubtotal(detail) {
-  const unitPrice = detail.unitPrice ?? detail.product?.price;
-  if (unitPrice == null) return null;
-  return Number(unitPrice) * Number(detail.quantity);
-}
-
 async function load() {
   loading.value = true;
+
   try {
-    const [statsResponse, historyResponse] = await Promise.all([
-      ordersService.statistics(),
-      ordersService.getHistory(page.value, 10),
-    ]);
+    const statsResponse = await ordersService.statistics();
 
     const now = new Date();
-    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+    const monthKey = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, '0')}`;
+
     const yearKey = `${now.getFullYear()}`;
+
     const empty = { orders: 0, total: 0 };
 
     statistics.value = {
@@ -46,61 +30,101 @@ async function load() {
       year: statsResponse.data.yearly?.[yearKey] ?? empty,
     };
 
-    orders.value = historyResponse.data.data;
-    totalPages.value = historyResponse.data.totalPages;
   } finally {
     loading.value = false;
   }
 }
 
-function changePage(newPage) {
-  page.value = newPage;
-  load();
-}
-
 onMounted(load);
 </script>
 
+
 <template>
   <div class="container admin-history-view">
+
     <div class="page-header">
       <h1>Historial de pedidos</h1>
     </div>
 
-    <p v-if="loading" class="loading-state">Cargando...</p>
+
+    <p v-if="loading" class="loading-state">
+      Cargando...
+    </p>
+
 
     <template v-else>
+
       <div class="statistics-grid">
-        <router-link :to="{ name: 'admin-order-history-month' }" class="stat-card stat-card--clickable">
+
+        <router-link 
+          :to="{ name: 'admin-order-history-month' }" 
+          class="stat-card stat-card--clickable"
+        >
           <span class="stat-label">
             Pedidos del mes
-            <span class="stat-toggle-hint">ver detalle </span>
+
+            <span class="stat-toggle-hint">
+              ver detalle
+            </span>
           </span>
-          <span class="stat-value">{{ statistics.month.orders }}</span>
+
+          <span class="stat-value">
+            {{ statistics.month.orders }}
+          </span>
         </router-link>
 
+
         <div class="stat-card stat-card--accent">
-          <span class="stat-label">Facturación mensual</span>
-          <span class="stat-value">$ {{ Number(statistics.month.total).toLocaleString('es-AR') }}</span>
+
+          <span class="stat-label">
+            Facturación mensual
+          </span>
+
+          <span class="stat-value">
+            $ {{ Number(statistics.month.total).toLocaleString('es-AR') }}
+          </span>
+
         </div>
 
-        <router-link :to="{ name: 'admin-order-history-year' }" class="stat-card stat-card--clickable">
+
+
+        <router-link 
+          :to="{ name: 'admin-order-history-year' }" 
+          class="stat-card stat-card--clickable"
+        >
+
           <span class="stat-label">
             Pedidos del año
-            <span class="stat-toggle-hint">ver detalle </span>
+
+            <span class="stat-toggle-hint">
+              ver detalle
+            </span>
           </span>
-          <span class="stat-value">{{ statistics.year.orders }}</span>
+
+          <span class="stat-value">
+            {{ statistics.year.orders }}
+          </span>
+
         </router-link>
 
+
+
         <div class="stat-card stat-card--accent">
-          <span class="stat-label">Facturación anual</span>
-          <span class="stat-value">$ {{ Number(statistics.year.total).toLocaleString('es-AR') }}</span>
+
+          <span class="stat-label">
+            Facturación anual
+          </span>
+
+          <span class="stat-value">
+            $ {{ Number(statistics.year.total).toLocaleString('es-AR') }}
+          </span>
+
         </div>
+
       </div>
 
-      
-      <Pagination :page="page" :total-pages="totalPages" @change-page="changePage" />
     </template>
+
   </div>
 </template>
 

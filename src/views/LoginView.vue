@@ -11,6 +11,7 @@ const cartStore = useCartStore();
 
 const email = ref('');
 const password = ref('');
+const showPassword = ref(false);
 const error = ref('');
 const submitting = ref(false);
 
@@ -49,7 +50,24 @@ async function submit() {
         </div>
         <div class="field">
           <label for="password">Contraseña</label>
-          <input id="password" v-model="password" type="password" required autocomplete="current-password" />
+          <div class="password-box">
+            <input
+              id="password"
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              required
+              autocomplete="current-password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              @click="showPassword = !showPassword"
+              :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              👁
+            </button>
+          </div>
         </div>
         <p v-if="error" class="error-message">{{ error }}</p>
         <button type="submit" class="button button-primary button-full" :disabled="submitting">
@@ -83,5 +101,28 @@ async function submit() {
   margin-top: var(--space-4);
   font-size: 0.9rem;
   color: var(--color-ink-soft);
+}
+
+
+
+
+
+.password-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-ink-soft);
+  font-size: 16px;
+}
+
+.password-toggle:hover {
+  background: transparent;
+  transform: scale(1.1);
 }
 </style>

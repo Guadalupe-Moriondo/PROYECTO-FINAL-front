@@ -57,11 +57,11 @@ function logout() {
          <!-- Usuario -->
         <RouterLink
           v-if="!authStore.isAdmin"
-          :to="{ name: 'my-orders' }"
+          :to="{ name: 'profile' }"
           class="user-menu-item"
           @click="close"
         >
-          Mis pedidos
+          Mi perfil
         </RouterLink>
 
         <!-- Administrador -->

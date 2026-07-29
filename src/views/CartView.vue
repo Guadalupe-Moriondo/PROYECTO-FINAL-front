@@ -58,8 +58,10 @@ function goToCheckout() {
             <p class="cart-item-subtotal">
               $ {{ (Number(item.product.price) * item.quantity).toLocaleString('es-AR') }}
             </p>
-            <button class="cart-item-remove" @click="cartStore.removeItem(item.id)">
-              Quitar
+            <button class="cart-item-remove" @click="cartStore.removeItem(item.id)" title="Eliminar">
+              <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"  class="trash-icon">
+                <path fill-rule="evenodd"  d="M16.5 4.5V3.75A2.25 2.25 0 0 0 14.25 1.5h-4.5A2.25 2.25 0 0 0 7.5 3.75V4.5H4.875a.75.75 0 0 0 0 1.5h.568l.92 13.2A2.25 2.25 0 0 0 8.607 21h6.786a2.25 2.25 0 0 0 2.244-1.8l.92-13.2h.568a.75.75 0 0 0 0-1.5H16.5Zm-7.5-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V4.5H9V3.75Zm1.5 5.25a.75.75 0 0 1 1.5 0v7.5a.75.75 0 0 1-1.5 0V9Zm4.5-.75a.75.75 0 0 0-.75.75v7.5a.75.75 0 0 0 1.5 0V9a.75.75 0 0 0-.75-.75Z" clip-rule="evenodd"/>
+              </svg>  
             </button>
           </li>
         </ul>
@@ -135,12 +137,28 @@ function goToCheckout() {
   color: var(--color-rust);
 }
 .cart-item-remove {
-  background: none;
-  border: none;
-  color: var(--color-danger);
-  font-size: 0.8rem;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  background: var(--color-bg);
+  color: grey;
   cursor: pointer;
-  text-decoration: underline;
+  transition: all .2s ease;
+}
+
+.cart-item-remove:hover {
+  background: rgb(236, 236, 236);
+  border-color: grey;
+  transform: scale(1.05);
+}
+
+.trash-icon {
+  width: 18px;
+  height: 18px;
 }
 .cart-summary {
   background: var(--color-surface);
