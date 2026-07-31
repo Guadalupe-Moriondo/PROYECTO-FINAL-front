@@ -63,356 +63,921 @@ onMounted(load);
 
 <template>
   <div class="container admin-products-view">
-    <header class="admin-header">
-      <h1>Productos</h1>
-      <RouterLink :to="{ name: 'admin-product-new' }" class="button button-primary">
-        + Nuevo producto
+
+    <!-- ================= HEADER ================= -->
+    <header class="products-page-header">
+
+      <div>
+        <h1>
+          Productos
+        </h1>
+      </div>
+
+
+      <RouterLink
+        :to="{ name: 'admin-product-new' }"
+        class="new-product-button"
+      >
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"
+          />
+        </svg>
+
+        Nuevo producto
+
       </RouterLink>
+
     </header>
 
-    <p v-if="message" class="success-message">{{ message }}</p>
-    <p v-if="loading" class="loading-state">Cargando...</p>
 
-    <table v-else class="admin-table">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Stock</th>
-          <th>Precio</th>
-          <th>Imagen</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>
-            <p class="table-name">{{ product.name }}</p>
-            <p class="table-subtext">{{ product.brand }}</p>
-          </td>
-          <td>
-            <InventoryTag :code="product.code" :stock="product.stock" :min-stock="product.minStock" />
-          </td>
-          <td class="table-price">$ {{ Number(product.price).toLocaleString('es-AR') }}</td>
-          <td class="product-image-cell">
-            <input
-              :id="`image-input-${product.id}`"
-              type="file"
-              accept=".jpg,.jpeg,.png,.webp"
-              class="visually-hidden"
-              @change="onFileSelected($event, product)"
-            />
-            <button 
-              class="image-button"
-              @click="selectImage(product.id)"
-              :title="'Cambiar imagen'"
-            >
-              <img
-                v-if="imageUrl(product)"
-                :src="imageUrl(product)"
-                :alt="product.name"
-                class="product-image"
-              />
-              <span v-else class="no-image">
-                Sin foto
-              </span>
-              <div class="image-overlay">
-                 Cambiar foto
+    <!-- ================= MENSAJE ================= -->
+    <p
+      v-if="message"
+      class="success-message"
+    >
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm4.2 7.2-5.1 5.1-3-3 1.4-1.4 1.6 1.6 3.7-3.7 1.4 1.4Z"
+        />
+      </svg>
+
+      {{ message }}
+
+    </p>
+
+
+    <!-- ================= LOADING ================= -->
+    <p
+      v-if="loading"
+      class="loading-state"
+    >
+      Cargando productos...
+    </p>
+
+
+    <!-- ================= TABLA ================= -->
+    <div
+      v-else
+      class="products-table-wrapper"
+    >
+
+      <table class="admin-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Producto
+            </th>
+
+            <th>
+              Stock
+            </th>
+
+            <th>
+              Precio
+            </th>
+
+            <th>
+              Imagen
+            </th>
+
+            <th class="actions-column">
+              Acciones
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          <tr
+            v-for="product in products"
+            :key="product.id"
+            class="product-row"
+          >
+
+            <!-- ================= PRODUCTO ================= -->
+            <td>
+
+              <div class="product-info">
+
+                <div class="product-thumbnail">
+
+                  <img
+                    v-if="imageUrl(product)"
+                    :src="imageUrl(product)"
+                    :alt="product.name"
+                  />
+
+                  <div
+                    v-else
+                    class="product-thumbnail-empty"
+                  >
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h14V6H5Zm2 2h4v4H7V8Zm6 0h4v2h-4V8Zm0 4h4v2h-4v-2ZM7 14h4v2H7v-2Z"
+                      />
+                    </svg>
+
+                  </div>
+
+                </div>
+
+
+                <div class="product-text">
+
+                  <strong class="product-name">
+                    {{ product.name }}
+                  </strong>
+
+                  <span class="product-brand">
+                    {{ product.brand }}
+                  </span>
+
+                  <span class="product-code">
+                    Código: {{ product.code }}
+                  </span>
+
+                </div>
+
               </div>
-            </button>
-          </td>
-          <td class="table-actions">
-            <RouterLink :to="{ name: 'admin-product-edit', params: { id: product.id } }">
-              Editar
-            </RouterLink>
-            <button class="link-button link-button-danger" @click="remove(product)">Dar de baja</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
-    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage" />
+            </td>
+
+
+            <!-- ================= STOCK ================= -->
+            <td>
+
+              <InventoryTag
+                :code="product.code"
+                :stock="product.stock"
+                :min-stock="product.minStock"
+              />
+
+            </td>
+
+
+            <!-- ================= PRECIO ================= -->
+            <td>
+
+              <span class="table-price">
+                $
+                {{
+                  Number(product.price)
+                    .toLocaleString('es-AR')
+                }}
+              </span>
+
+            </td>
+
+
+            <!-- ================= IMAGEN ================= -->
+            <td>
+
+              <div class="image-upload">
+
+                <input
+                  :id="`image-input-${product.id}`"
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp"
+                  class="visually-hidden"
+                  @change="
+                    onFileSelected(
+                      $event,
+                      product
+                    )
+                  "
+                />
+
+
+                <button
+                  type="button"
+                  class="image-button"
+                  @click="
+                    selectImage(product.id)
+                  "
+                  title="Cambiar imagen"
+                >
+
+                  <img
+                    v-if="imageUrl(product)"
+                    :src="imageUrl(product)"
+                    :alt="product.name"
+                    class="product-image"
+                  />
+
+                  <div
+                    v-else
+                    class="no-image"
+                  >
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h14V6H5Zm2 9 2.5-3 2 2.3 1.8-2.2L17 15H7Zm2-5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
+                      />
+                    </svg>
+
+                  </div>
+
+
+                  <div class="image-overlay">
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 3v10.2l3.5-3.5 1.4 1.4-5.9 5.9-5.9-5.9 1.4-1.4 3.5 3.5V3h2Zm-7 15h14v2H5v-2Z"
+                      />
+                    </svg>
+
+                    Cambiar
+
+                  </div>
+
+                </button>
+
+              </div>
+
+            </td>
+
+
+            <!-- ================= ACCIONES ================= -->
+            <td>
+
+              <div class="table-actions">
+
+                <RouterLink
+                  :to="{
+                    name: 'admin-product-edit',
+                    params: {
+                      id: product.id
+                    }
+                  }"
+                  class="action-button edit-button"
+                  title="Editar producto"
+                >
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M4 17.3V20h2.7L17.8 8.9l-2.7-2.7L4 17.3Zm15.7-9.6a1 1 0 0 0 0-1.4l-1.9-1.9a1 1 0 0 0-1.4 0l-1.3 1.3 2.7 2.7 1.9-1.9Z"
+                    />
+                  </svg>
+
+                  <span>
+                    Editar
+                  </span>
+
+                </RouterLink>
+
+
+                <button
+                  type="button"
+                  class="action-button delete-button"
+                  @click="remove(product)"
+                  title="Dar de baja"
+                >
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M6 7h12v13H6V7Zm2 2v9h2V9H8Zm4 0v9h2V9h-2Zm5-5V2h-2v2H9V2H7v2H4v2h16V4h-3Z"
+                    />
+                  </svg>
+
+                  <span>
+                    Dar de baja
+                  </span>
+
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- ================= PAGINACIÓN ================= -->
+    <div class="pagination-wrapper">
+
+      <Pagination
+        :page="page"
+        :total-pages="totalPages"
+        @change-page="changePage"
+      />
+
+    </div>
+
   </div>
 </template>
 
 <style scoped>
+
+/* =========================================================
+   GENERAL
+========================================================= */
+
 .admin-products-view {
-  padding: var(--space-5) var(--space-4);
+  padding: 55px 0 80px;
 }
 
-/* Header */
-.admin-header {
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.products-page-header {
   display: flex;
-  justify-content: space-between;
+
   align-items: center;
-  margin-bottom: var(--space-5);
+  justify-content: space-between;
+
+  gap: 25px;
+
+  margin-bottom: 30px;
 }
 
-.admin-header h1 {
-  font-size: 2rem;
+.products-eyebrow {
+  margin: 0 0 7px;
+
+  color: var(--color-rust);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.72rem;
   font-weight: 700;
-}
 
-
-/* Botón nuevo producto */
-.button-primary {
-  background: var(--color-steel);
-  color: white;
-  padding: 0.7rem 1.3rem;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all .2s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,.12);
-}
-
-.button-primary:hover {
-  transform: translateY(-2px);
-  opacity: .9;
-}
-
-
-/* Mensajes */
-.success-message {
-  background: #e8f7ec;
-  color: #207a3c;
-  padding: .8rem 1rem;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-}
-
-
-/* Tabla */
-.admin-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: 16px;
-
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
-}
-
-
-.admin-table th {
-  text-align: left;
-  padding: 1rem 1.2rem;
-
-  background: rgba(0,0,0,.03);
-
-  font-family: var(--font-display);
   text-transform: uppercase;
-  font-size: .75rem;
+
+  letter-spacing: 0.14em;
+}
+
+.products-page-header h1 {
+  margin: 0;
+
+  color: var(--color-ink);
+
+  font-size: clamp(2.1rem, 4vw, 2.8rem);
+
+  line-height: 1.05;
+}
+
+.products-description {
+  margin: 10px 0 0;
 
   color: var(--color-ink-soft);
+
+  font-size: 0.95rem;
+
+  line-height: 1.6;
 }
 
 
+/* =========================================================
+   NUEVO PRODUCTO
+========================================================= */
+
+.new-product-button {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 13px 18px;
+
+  border-radius: 10px;
+
+  background: var(--color-rust);
+
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 0.85rem;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  transition:
+    background .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.new-product-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.new-product-button:hover {
+  background: var(--color-rust-dark);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(183, 53, 45, 0.20);
+}
+
+
+/* =========================================================
+   MENSAJE
+========================================================= */
+
+.success-message {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 20px;
+
+  padding: 13px 16px;
+
+  border: 1px solid rgba(45, 151, 84, .16);
+
+  border-radius: 12px;
+
+  background: rgba(45, 151, 84, .07);
+
+  color: #258148;
+
+  font-size: 0.82rem;
+
+  font-weight: 600;
+}
+
+.success-message svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+/* =========================================================
+   TABLA
+========================================================= */
+
+.products-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-line);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.admin-table {
+  width: 100%;
+
+  min-width: 1050px;
+
+  border-collapse: separate;
+
+  border-spacing: 0;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-table th {
+  padding: 16px 20px;
+
+  text-align: left;
+
+  background:
+    rgba(0, 0, 0, 0.025);
+
+  border-bottom: 1px solid var(--color-line);
+
+  color: var(--color-ink-soft);
+
+  font-family: var(--font-display);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: .06em;
+}
+
+
+/* =========================================================
+   FILAS
+========================================================= */
+
 .admin-table td {
-  padding: 1rem 1.2rem;
-  border-top: 1px solid var(--color-line);
+  padding: 17px 20px;
+
+  border-bottom: 1px solid var(--color-line);
 
   vertical-align: middle;
 }
 
-
-/* Hover fila */
-.admin-table tbody tr {
-  transition: background .2s ease;
+.product-row {
+  transition:
+    background .2s ease;
 }
 
-.admin-table tbody tr:hover {
-  background: rgba(0,0,0,.025);
+.product-row:hover {
+  background:
+    rgba(183, 53, 45, 0.025);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 
-/* Texto producto */
-.table-name {
-  margin: 0;
-  font-weight: 700;
-  font-size: 1rem;
+/* =========================================================
+   PRODUCTO
+========================================================= */
+
+.product-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  min-width: 260px;
 }
 
-.table-subtext {
-  margin-top: .25rem;
-  font-size: .85rem;
+.product-thumbnail {
+  width: 58px;
+  height: 58px;
+
+  flex: 0 0 58px;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background:
+    rgba(0, 0, 0, .035);
+
+  border: 1px solid var(--color-line);
+}
+
+.product-thumbnail img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.product-thumbnail-empty {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
   color: var(--color-ink-soft);
 }
 
+.product-thumbnail-empty svg {
+  width: 21px;
+  height: 21px;
+}
 
-/* Precio */
-.table-price {
+.product-text {
+  display: flex;
+
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.product-name {
+  color: var(--color-ink);
+
+  font-size: 0.9rem;
+
+  line-height: 1.3;
+}
+
+.product-brand {
+  margin-top: 3px;
+
+  color: var(--color-rust);
+
+  font-size: 0.77rem;
+
+  font-weight: 700;
+}
+
+.product-code {
+  margin-top: 3px;
+
+  color: var(--color-ink-soft);
+
   font-family: var(--font-mono);
-  font-weight: 600;
+
+  font-size: 0.7rem;
 }
 
 
-/* Acciones */
-.table-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: .6rem;
+/* =========================================================
+   PRECIO
+========================================================= */
+
+.table-price {
+  color: var(--color-ink);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.87rem;
+
+  font-weight: 700;
+
   white-space: nowrap;
 }
 
-.table-actions a,
-.link-button {
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
+
+/* =========================================================
+   IMAGEN
+========================================================= */
+
+.image-upload {
+  display: flex;
+
   justify-content: center;
-  padding: 0 .9rem;
-  box-sizing: border-box;
 }
-
-
-/* Botones generales */
-.link-button {
-  border: none;
-  cursor: pointer;
-
-  padding: .45rem .85rem;
-
-  border-radius: 8px;
-
-  font-size: .85rem;
-
-
-  text-decoration: none;
-
-  transition: all .2s ease;
-}
-
-
-.product-image-cell {
-  text-align:center;
-}
-
 
 .image-button {
-  position:relative;
+  position: relative;
 
-  width:70px;
-  height:70px;
+  width: 72px;
+  height: 72px;
 
-  border:none;
-  padding:0;
+  padding: 0;
 
-  cursor:pointer;
+  overflow: hidden;
 
-  border-radius:12px;
+  border: 1px solid var(--color-line);
 
-  overflow:hidden;
+  border-radius: 13px;
 
-  background:#f1f5f9;
+  background:
+    rgba(0, 0, 0, 0.025);
+
+  cursor: pointer;
 }
-
 
 .product-image {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+  display: block;
 
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
 
 .no-image {
-  font-size:.75rem;
-  color:var(--color-ink-soft);
-}
+  width: 100%;
+  height: 100%;
 
+  display: flex;
 
-/* capa que aparece al pasar el mouse */
-.image-overlay {
-
-  position:absolute;
-
-  inset:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:rgba(0,0,0,.55);
-
-  color:white;
-
-  font-size:.75rem;
-  font-weight:600;
-
-  opacity:0;
-
-  transition:.2s;
-}
-
-
-.image-button:hover .image-overlay {
-  opacity:1;
-}
-
-
-/* Editar */
-.table-actions a {
-  background: #9fb9f3;
-  color: #1b3d86;
-
-  height: 36px;
-  padding: 0 .9rem;
-
-  border-radius: 8px;
-
-  display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  font-size: .85rem;
+  color: var(--color-ink-soft);
+}
 
+.no-image svg {
+  width: 22px;
+  height: 22px;
+}
+
+.image-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  background:
+    rgba(0, 0, 0, .62);
+
+  color: #fff;
+
+  font-size: .7rem;
+
+  font-weight: 700;
+
+  opacity: 0;
+
+  transition:
+    opacity .2s ease;
+}
+
+.image-overlay svg {
+  width: 18px;
+  height: 18px;
+}
+
+.image-button:hover .image-overlay {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.actions-column {
+  text-align: right;
+}
+
+.table-actions {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  white-space: nowrap;
+}
+
+.action-button {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 36px;
+
+  padding: 0 11px;
+
+  border-radius: 9px;
+
+  font-size: .77rem;
+
+  font-weight: 700;
 
   text-decoration: none;
 
-  transition: .2s;
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    background .2s ease;
 }
 
-.table-actions a:hover {
-  background: #89a4f0;
+.action-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.action-button:hover {
   transform: translateY(-1px);
 }
 
 
-/* Dar de baja */
-.link-button-danger {
-  background:#ffe8e8;
-  color:#c0392b;
+/* Editar */
+
+.edit-button {
+  border: 1px solid rgba(37, 99, 235, .16);
+
+  background:
+    rgba(37, 99, 235, .09);
+
+  color: #2563eb;
+}
+
+.edit-button:hover {
+  background:
+    rgba(37, 99, 235, .15);
 }
 
 
-.link-button-danger:hover {
-  background:#ffd2d2;
+/* Eliminar */
+
+.delete-button {
+  border: 1px solid rgba(183, 53, 45, .14);
+
+  background:
+    rgba(183, 53, 45, .07);
+
+  color: var(--color-rust);
+}
+
+.delete-button:hover {
+  background:
+    rgba(183, 53, 45, .13);
 }
 
 
-/* Loading */
+/* =========================================================
+   LOADING
+========================================================= */
+
 .loading-state {
-  text-align:center;
-  padding:2rem;
-  color:var(--color-ink-soft);
+  padding: 60px 0;
+
+  text-align: center;
+
+  color: var(--color-ink-soft);
+
+  font-family: var(--font-mono);
+
+  font-size: .85rem;
 }
 
 
-/* Responsive */
-@media(max-width:900px){
+/* =========================================================
+   PAGINACIÓN
+========================================================= */
 
-  .admin-table {
-    display:block;
-    overflow-x:auto;
+.pagination-wrapper {
+  display: flex;
+
+  justify-content: center;
+
+  margin-top: 35px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .products-page-header {
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 
-  .admin-header {
-    flex-direction:column;
-    align-items:flex-start;
-    gap:1rem;
+  .new-product-button {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .admin-products-view {
+    padding: 40px 14px 60px;
   }
 
 }

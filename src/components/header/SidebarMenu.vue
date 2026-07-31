@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useCartStore } from '../../stores/cart';
@@ -15,7 +15,39 @@ const cartStore = useCartStore();
 const router = useRouter();
 
 const categories = ref([]);
+const categoryGroups = computed(() => [
+  {
+    key: 'sembradoras',
+    label: 'Sembradoras',
+    categories: categories.value.filter(
+      (cat) => cat.machineType === 'sembradoras'
+    ),
+  },
+  {
+    key: 'cosechadoras',
+    label: 'Cosechadoras',
+    categories: categories.value.filter(
+      (cat) => cat.machineType === 'cosechadoras'
+    ),
+  },
+  {
+    key: 'otros',
+    label: 'Otros',
+    categories: categories.value.filter(
+      (cat) => cat.machineType === 'otros'
+    ),
+  },
+]);
 const categoriesExpanded = ref(false);
+const expandedGroups = ref({
+  sembradoras: false,
+  cosechadoras: false,
+  otros: false,
+});
+
+function toggleGroup(group) {
+  expandedGroups.value[group] = !expandedGroups.value[group];
+}
 
 async function loadCategories() {
   try {
@@ -37,6 +69,8 @@ function logout() {
   cartStore.clearLocal();
   router.push({ name: 'home' });
 }
+
+
 
 onMounted(loadCategories);
 
@@ -80,23 +114,60 @@ watch(
               @click="categoriesExpanded = !categoriesExpanded"
             >
               Categorías
-              <span class="sidebar-chevron" :class="{ 'sidebar-chevron-open': categoriesExpanded }">›</span>
-            </button>
-            <div v-if="categoriesExpanded" class="sidebar-subitems">
-              <button
-                v-for="cat in categories"
-                :key="cat.id"
-                type="button"
-                class="sidebar-sublink"
-                @click="goToCategory(cat.id)"
+
+              <span class="sidebar-chevron" 
+                :class="{ 'sidebar-chevron-open': categoriesExpanded }"
               >
-                {{ cat.name }}
-              </button>
-              <p v-if="categories.length === 0" class="sidebar-subempty">
-                No hay categorías cargadas.
-              </p>
+                ›
+              </span>
+            </button>
+            <div v-if="categoriesExpanded" class="sidebar-category-groups">
+              <div
+                  v-for="group in categoryGroups"
+                  :key="group.key"
+                  class="sidebar-category-group"
+                >
+                  <button
+                    type="button"
+                    class="sidebar-category-toggle"
+                    :aria-expanded="expandedGroups[group.key]"
+                    @click="toggleGroup(group.key)"
+                  >
+
+                    <span>{{ group.label }}</span>
+                    <span
+                      class="sidebar-chevron"
+                      :class="{
+                      'sidebar-chevron-open': expandedGroups[group.key]}"
+
+                    >
+                      ›
+                    </span>
+                  </button>
+                  <div
+                    v-if="expandedGroups[group.key]"
+                    class="sidebar-subitems sidebar-group-items"
+                  >
+                    <button
+                      v-for="cat in group.categories"
+                      :key="cat.id"
+                      type="button"
+                      class="sidebar-sublink"
+                      @click="goToCategory(cat.id)"
+                    >
+                      {{ cat.name }}
+                    </button>
+                    <p
+                      v-if="group.categories.length === 0"
+                      class="sidebar-subempty"
+                    >
+                      No hay categorías.
+                     </p>
+                  
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
           <RouterLink
             :to="{ name: 'catalog', query: { available: 'true' } }"
@@ -298,5 +369,71 @@ watch(
 .sidebar-slide-enter-from,
 .sidebar-slide-leave-to {
   transform: translateX(-100%);
+}
+
+.sidebar-category-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 0 10px 8px;
+}
+
+.sidebar-category-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-category-title {
+  padding: 6px 10px 4px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-category-group .sidebar-subempty {
+  padding-left: 10px;
+}
+.sidebar-category-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: transparent;
+  border: none;
+  color: #e3e6e4;
+
+  font-family: var(--font-display);
+ 
+  letter-spacing: 0.03em;
+  font-size: 0.85rem;
+
+  padding: 10px;
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  text-align: left;
+}
+
+.sidebar-category-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-rust);
+}
+
+.sidebar-category-toggle .sidebar-chevron {
+  transition: transform 0.15s ease;
+}
+
+.sidebar-category-toggle .sidebar-chevron-open {
+  transform: rotate(90deg);
+}
+
+.sidebar-group-items {
+  padding-left: 14px;
+  padding-bottom: 6px;
 }
 </style>

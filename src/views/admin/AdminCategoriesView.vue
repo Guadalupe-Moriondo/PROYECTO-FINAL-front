@@ -4,52 +4,92 @@ import categoriesService from '../../services/categories.service';
 
 const categories = ref([]);
 const loading = ref(true);
+
 const newName = ref('');
 const newDescription = ref('');
+const newMachineType = ref('sembradoras');
+
 const editingId = ref(null);
-const editForm = ref({ name: '', description: '' });
+
+const editForm = ref({
+  name: '',
+  description: '',
+  machineType: 'sembradoras',
+});
+
 const error = ref('');
 
 async function load() {
   loading.value = true;
-  const response = await categoriesService.list();
-  categories.value = response.data;
-  loading.value = false;
+
+  try {
+    const response = await categoriesService.list();
+    categories.value = response.data;
+  } catch (e) {
+    error.value = 'No se pudieron cargar las categorías';
+  } finally {
+    loading.value = false;
+  }
 }
 
 async function create() {
   error.value = '';
+
   if (!newName.value.trim()) return;
+
   try {
-    await categoriesService.create({ name: newName.value, description: newDescription.value || undefined });
+    await categoriesService.create({
+      name: newName.value,
+      description: newDescription.value || undefined,
+      machineType: newMachineType.value,
+    });
+
     newName.value = '';
     newDescription.value = '';
-    load();
+    newMachineType.value = 'sembradoras';
+
+    await load();
   } catch (e) {
-    error.value = 'No se pudo crear la categoría';
+    error.value =
+      e.response?.data?.message ||
+      'No se pudo crear la categoría';
   }
 }
 
 function startEditing(category) {
   editingId.value = category.id;
-  editForm.value = { name: category.name, description: category.description || '' };
+
+  editForm.value = {
+    name: category.name,
+    description: category.description || '',
+    machineType: category.machineType || 'otros',
+  };
 }
 
 async function saveEdit(id) {
-  await categoriesService.update(id, editForm.value);
-  editingId.value = null;
-  load();
+  error.value = '';
+
+  try {
+    await categoriesService.update(id, editForm.value);
+
+    editingId.value = null;
+
+    await load();
+  } catch (e) {
+    error.value =
+      e.response?.data?.message ||
+      'No se pudo actualizar la categoría';
+  }
 }
 
 async function remove(category) {
-
   if (!confirm(`¿Dar de baja la categoría "${category.name}"?`)) {
     return;
-}
+  }
 
   try {
     await categoriesService.remove(category.id);
-    load();
+    await load();
   } catch (e) {
     error.value =
       e.response?.data?.message ||
@@ -57,17 +97,46 @@ async function remove(category) {
   }
 }
 
+function machineTypeLabel(type) {
+  const labels = {
+    sembradoras: 'Sembradoras',
+    cosechadoras: 'Cosechadoras',
+    otros: 'Otros',
+  };
+
+  return labels[type] || 'Otros';
+}
+
 onMounted(load);
 </script>
+
 
 <template>
   <div class="container admin-view admin-categories-view">
     <h1>Categorías</h1>
-
     <form class="new-category-form" @submit.prevent="create">
-      <input v-model="newName" type="text" placeholder="Nombre de la categoría" required />
-      <input v-model="newDescription" type="text" placeholder="Descripción (opcional)" />
-      <button type="submit" class="button button-primary">Agregar</button>
+      <input
+        v-model="newName"
+        type="text"
+        placeholder="Nombre de la categoría"
+        required
+      />
+
+      <input
+        v-model="newDescription"
+        type="text"
+        placeholder="Descripción (opcional)"
+      />
+
+      <select v-model="newMachineType">
+        <option value="sembradoras">Sembradoras</option>
+        <option value="cosechadoras">Cosechadoras</option>
+        <option value="otros">Otros</option>
+      </select>
+
+      <button type="submit" class="button button-primary">
+        Agregar
+      </button>
     </form>
     <p v-if="error" class="error-message">{{ error }}</p>
 
@@ -76,12 +145,19 @@ onMounted(load);
     <div v-else class="table-scroll">
       <table class="admin-table">
         <thead>
-          <tr><th>Nombre</th><th>Descripción</th><th>Productos</th><th></th></tr>
+          <tr><th>Nombre</th><th>Tipo</th><th>Descripción</th><th>Productos</th><th></th></tr>
         </thead>
         <tbody>
           <tr v-for="cat in categories" :key="cat.id">
             <template v-if="editingId === cat.id">
               <td><input v-model="editForm.name" type="text" /></td>
+              <td>
+                <select v-model="editForm.machineType">
+                  <option value="sembradoras">Sembradoras</option>
+                  <option value="cosechadoras">Cosechadoras</option>
+                  <option value="otros">Otros</option>
+                </select>
+              </td>
               <td><input v-model="editForm.description" type="text" /></td>
               <td>{{ cat.productCount ?? '—' }}</td>
               <td class="table-actions">
@@ -91,6 +167,7 @@ onMounted(load);
             </template>
             <template v-else>
               <td>{{ cat.name }}</td>
+              <td>{{ machineTypeLabel(cat.machineType) }}</td>
               <td>{{ cat.description }}</td>
               <td>{{ cat.productCount ?? '—' }}</td>
               <td class="table-actions">
@@ -408,6 +485,23 @@ onMounted(load);
 
   -webkit-overflow-scrolling:touch;
 
+}
+
+.new-category-form select {
+  flex: 0.7;
+  padding: .7rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  font-size: .9rem;
+}
+
+.admin-table select {
+  padding: .5rem .7rem;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  width: 100%;
+  background: var(--color-surface);
 }
 
 

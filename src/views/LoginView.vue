@@ -23,10 +23,10 @@ async function submit() {
     await authStore.login(email.value, password.value);
     await cartStore.loadCart();
 
-    if (route.query.redirect) {
-      router.push(route.query.redirect);
-    } else if (authStore.isAdmin) {
+     if (authStore.isAdmin) {
       router.push({ name: 'admin-home' });
+    } else if (route.query.redirect) {
+      router.push(route.query.redirect);
     } else {
       router.push({ name: 'home' });
     }
@@ -103,24 +103,58 @@ async function submit() {
   color: var(--color-ink-soft);
 }
 
+.password-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: 0 8px 0 12px;
+  box-sizing: border-box;
+}
 
-
-
-
-.password-toggle {
-  background: transparent;
-  border: none;
+/* Input dentro del campo */
+.password-box input {
+  flex: 1;
+  width: 100%;
+  height: 100%;
   padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-ink);
+  box-sizing: border-box;
+}
+
+/* Evita que el input vuelva a mostrar un borde al hacer click */
+.password-box input:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Botón del ojo */
+.password-toggle {
+  flex-shrink: 0;
   width: 28px;
   height: 28px;
+  padding: 0;
+  margin-left: 6px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  border: none;
+  background: transparent;
+  color: #3d3d3d;
+
   cursor: pointer;
-  color: var(--color-ink-soft);
   font-size: 16px;
 }
 
+/* Hover del ojo */
 .password-toggle:hover {
   background: transparent;
   transform: scale(1.1);

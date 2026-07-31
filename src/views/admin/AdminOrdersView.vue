@@ -63,357 +63,1011 @@ function lineSubtotal(detail) {
   return Number(unitPrice) * Number(detail.quantity);
 }
 
+function imageUrl(product) {
+  if (!product?.imageUrl) return null;
+  return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
+}
+
 onMounted(load);
 </script>
 
 <template>
   <div class="container admin-orders-view">
-    <h1>Pedidos</h1>
 
-    <p v-if="loading" class="loading-state">Cargando...</p>
-    
-    <table v-else class="admin-table">
-      <thead>
-        <tr><th>N° orden</th><th>Cliente</th><th>Total</th><th>Pago</th><th>Estado</th><th>Detalle</th></tr>
-      </thead>
-      <tbody>
-        <template v-for="order in orders" :key="order.id">
+    <!-- ================= HEADER ================= -->
+    <div class="orders-header">
+
+      <div>
+        <h1>
+          Pedidos
+        </h1>
+      </div>
+
+    </div>
+
+
+    <!-- ================= LOADING ================= -->
+    <p
+      v-if="loading"
+      class="loading-state"
+    >
+      Cargando pedidos...
+    </p>
+
+
+    <!-- ================= TABLA ================= -->
+    <div
+      v-else
+      class="orders-table-wrapper"
+    >
+
+      <table class="admin-table">
+
+        <thead>
           <tr>
-            <td class="table-mono">{{ order.orderNumber }}</td>
-            <td>{{ order.user?.name }} <span class="table-subtext">{{ order.user?.email }}</span></td>
-            <td class="table-mono">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
-            <td>{{ PAYMENT_LABELS[order.paymentMethod] || 'No especificado' }}</td>
-            <td>
-              <select :value="order.status" @change="changeStatus(order, $event.target.value)">
-                <option v-for="status in STATUSES" :key="status" :value="status">
-                  {{ STATUS_LABELS[status] }}
-                </option>
-              </select>
-            </td>
-            <td>
-              <button type="button" class="detail-toggle" @click="toggleDetail(order)">
-                {{ expandedOrderId === order.id ? 'Ocultar' : 'Ver detalle' }}
-              </button>
-            </td>
-          </tr>
-          <tr v-if="expandedOrderId === order.id" class="detail-row">
-            <td colspan="6">
-              <ul v-if="order.details?.length" class="detail-list">
-                <li v-for="detail in order.details" :key="detail.id">
-                  <span class="detail-qty">{{ detail.quantity }} ×</span>
-                  <span class="detail-name">{{ detail.product?.name || 'Producto eliminado' }}</span>
-                  <span v-if="detail.product?.code" class="table-subtext">({{ detail.product.code }})</span>
-                  <span v-if="lineSubtotal(detail) != null" class="detail-subtotal">
-                    $ {{ lineSubtotal(detail).toLocaleString('es-AR') }}
-                  </span>
-                </li>
-              </ul>
-              <p v-else class="table-subtext">Este pedido no tiene productos cargados.</p>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
 
-    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage" />
+            <th>
+              N° orden
+            </th>
+
+            <th>
+              Cliente
+            </th>
+
+            <th>
+              Total
+            </th>
+
+            <th>
+              Pago
+            </th>
+
+            <th>
+              Estado
+            </th>
+
+            <th class="detail-column">
+              Detalle
+            </th>
+
+          </tr>
+        </thead>
+
+
+        <tbody>
+
+          <template
+            v-for="order in orders"
+            :key="order.id"
+          >
+
+            <!-- ================= PEDIDO ================= -->
+            <tr class="order-row">
+
+              <!-- Orden -->
+              <td>
+
+                <span class="order-number">
+                  #{{ order.orderNumber }}
+                </span>
+
+              </td>
+
+
+              <!-- Cliente -->
+              <td>
+
+                <div class="customer-cell">
+
+                  <div class="customer-avatar">
+                    {{ order.user?.name?.charAt(0)?.toUpperCase() || '?' }}
+                  </div>
+
+                  <div>
+
+                    <strong class="customer-name">
+                      {{ order.user?.name || 'Cliente' }}
+                    </strong>
+
+                    <span class="table-subtext">
+                      {{ order.user?.email }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- Total -->
+              <td>
+
+                <span class="order-total">
+                  $ {{ Number(order.total).toLocaleString('es-AR') }}
+                </span>
+
+              </td>
+
+
+              <!-- Pago -->
+              <td>
+
+                <span class="payment-badge">
+                  {{ PAYMENT_LABELS[order.paymentMethod] || 'No especificado' }}
+                </span>
+
+              </td>
+
+
+              <!-- Estado -->
+              <td>
+
+                <div
+                  class="status-control"
+                  :class="`status-${order.status}`"
+                >
+
+                  <select
+                    :value="order.status"
+                    @change="
+                      changeStatus(
+                        order,
+                        $event.target.value
+                      )
+                    "
+                  >
+
+                    <option
+                      v-for="status in STATUSES"
+                      :key="status"
+                      :value="status"
+                    >
+                      {{ STATUS_LABELS[status] }}
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </td>
+
+
+              <!-- Detalle -->
+              <td class="detail-column">
+
+                <button
+                  type="button"
+                  class="detail-toggle"
+                  @click="toggleDetail(order)"
+                >
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                    />
+                  </svg>
+
+                  <span>
+                    {{ expandedOrderId === order.id
+                      ? 'Ocultar'
+                      : 'Ver detalle'
+                    }}
+                  </span>
+
+                </button>
+
+              </td>
+
+            </tr>
+
+
+            <!-- ================= DETALLE ================= -->
+            <tr
+              v-if="expandedOrderId === order.id"
+              class="detail-row"
+            >
+
+              <td colspan="6">
+
+                <div class="detail-container">
+
+                  <div class="detail-header">
+
+                    <div>
+
+                      <p class="detail-eyebrow">
+                        Pedido #{{ order.orderNumber }}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+
+                  <ul
+                    v-if="order.details?.length"
+                    class="detail-list"
+                  >
+
+                    <li
+                      v-for="detail in order.details"
+                      :key="detail.id"
+                      class="detail-item"
+                    >
+
+                      <!-- Imagen -->
+                      <div class="detail-image-wrapper">
+
+                        <img
+                          v-if="imageUrl(detail.product)"
+                          :src="imageUrl(detail.product)"
+                          :alt="detail.product?.name || 'Producto'"
+                          class="detail-image"
+                        />
+
+                        <div
+                          v-else
+                          class="detail-image-placeholder"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path
+                              d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm2 0v14h12V5H6Zm2 2h8v2H8V7Zm0 4h8v2H8v-2Zm0 4h5v2H8v-2Z"
+                            />
+                          </svg>
+                        </div>
+
+                      </div>
+
+
+                      <!-- Información -->
+                      <div class="detail-product">
+
+                        <span class="detail-qty">
+                          {{ detail.quantity }} ×
+                        </span>
+
+                        <div>
+
+                          <strong class="detail-name">
+                            {{
+                              detail.product?.name ||
+                              'Producto eliminado'
+                            }}
+                          </strong>
+
+                          <span
+                            v-if="detail.product?.code"
+                            class="detail-code"
+                          >
+                            Código:
+                            {{ detail.product.code }}
+                          </span>
+
+                        </div>
+
+                      </div>
+
+
+                      <!-- Subtotal -->
+                      <div
+                        v-if="lineSubtotal(detail) != null"
+                        class="detail-price"
+                      >
+                        $
+                        {{
+                          lineSubtotal(detail)
+                            .toLocaleString('es-AR')
+                        }}
+                      </div>
+
+                    </li>
+
+                  </ul>
+
+
+                  <p
+                    v-else
+                    class="empty-detail"
+                  >
+                    Este pedido no tiene productos cargados.
+                  </p>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          </template>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- ================= PAGINACIÓN ================= -->
+    <div class="pagination-wrapper">
+
+      <Pagination
+        :page="page"
+        :total-pages="totalPages"
+        @change-page="changePage"
+      />
+
+    </div>
+
   </div>
 </template>
 
 <style scoped>
 
+/* =========================================================
+   GENERAL
+========================================================= */
+
 .admin-orders-view {
-  padding: var(--space-5) var(--space-4);
+  padding: 55px 0 80px;
 }
 
 
-/* Header */
-.admin-orders-view h1 {
-  font-size: 2rem;
+/* =========================================================
+   HEADER
+========================================================= */
+
+.orders-header {
+  margin-bottom: 32px;
+}
+
+.orders-eyebrow {
+  margin: 0 0 7px;
+
+  color: var(--color-rust);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.72rem;
   font-weight: 700;
-  margin-bottom: var(--space-5);
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.14em;
+}
+
+.orders-header h1 {
+  margin: 0;
+
+  color: var(--color-ink);
+
+  font-size: clamp(2.1rem, 4vw, 2.8rem);
+
+  line-height: 1.05;
+}
+
+.orders-description {
+  margin: 10px 0 0;
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.95rem;
+
+  line-height: 1.6;
 }
 
 
+/* =========================================================
+   TABLA
+========================================================= */
 
-/* Tabla */
+.orders-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-line);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
 .admin-table {
+  width: 100%;
 
-  width:100%;
+  min-width: 950px;
 
-  border-collapse:separate;
+  border-collapse: separate;
 
-  border-spacing:0;
-
-  overflow:hidden;
-
-  background:var(--color-surface);
-
-  border:1px solid var(--color-line);
-
-  border-radius:16px;
-
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
-
+  border-spacing: 0;
 }
 
 
+/* =========================================================
+   HEADER TABLA
+========================================================= */
 
 .admin-table th {
+  padding: 16px 20px;
 
-  text-align:left;
+  text-align: left;
 
-  padding:1rem 1.2rem;
+  background:
+    rgba(0, 0, 0, 0.025);
 
-  background:rgba(0,0,0,.03);
+  border-bottom: 1px solid var(--color-line);
 
-  font-family:var(--font-display);
+  color: var(--color-ink-soft);
 
-  text-transform:uppercase;
+  font-family: var(--font-display);
 
-  font-size:.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
 
-  color:var(--color-ink-soft);
+  text-transform: uppercase;
 
+  letter-spacing: 0.06em;
+
+  white-space: nowrap;
 }
 
 
+/* =========================================================
+   FILAS
+========================================================= */
 
 .admin-table td {
+  padding: 17px 20px;
 
-  padding:1rem 1.2rem;
+  border-bottom: 1px solid var(--color-line);
 
-  border-top:1px solid var(--color-line);
+  vertical-align: middle;
+}
 
-  vertical-align:middle;
+.order-row {
+  background: var(--color-surface);
 
+  transition:
+    background .2s ease;
+}
+
+.order-row:hover {
+  background:
+    rgba(183, 53, 45, 0.025);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 
+/* =========================================================
+   ORDEN
+========================================================= */
 
-/* Hover */
-.admin-table tbody tr {
+.order-number {
+  display: inline-flex;
 
-  transition:.2s ease;
+  padding: 6px 9px;
 
+  border-radius: 8px;
+
+  background:
+    rgba(183, 53, 45, 0.08);
+
+  color: var(--color-rust);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.82rem;
+
+  font-weight: 700;
 }
 
 
-.admin-table tbody tr:hover {
+/* =========================================================
+   CLIENTE
+========================================================= */
 
-  background:rgba(0,0,0,.025);
+.customer-cell {
+  display: flex;
 
+  align-items: center;
+
+  gap: 12px;
 }
 
+.customer-avatar {
+  width: 38px;
+  height: 38px;
 
+  flex: 0 0 38px;
 
-/* Texto */
-.table-mono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  font-family:var(--font-mono);
+  border-radius: 50%;
 
-  font-weight:600;
+  background:
+    rgba(183, 53, 45, 0.10);
 
+  color: var(--color-rust);
+
+  font-size: 0.85rem;
+  font-weight: 800;
 }
 
+.customer-name {
+  display: block;
+
+  color: var(--color-ink);
+
+  font-size: 0.9rem;
+}
 
 .table-subtext {
+  display: block;
 
-  display:block;
+  margin-top: 3px;
 
-  margin-top:.25rem;
+  color: var(--color-ink-soft);
 
-  font-size:.85rem;
-
-  color:var(--color-ink-soft);
-
+  font-size: 0.78rem;
 }
 
 
+/* =========================================================
+   TOTAL
+========================================================= */
 
-/* Botón ver detalle */
+.order-total {
+  color: var(--color-ink);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.9rem;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PAGO
+========================================================= */
+
+.payment-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(0, 0, 0, 0.04);
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.75rem;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ESTADO
+========================================================= */
+
+.status-control {
+  position: relative;
+
+  display: inline-flex;
+
+  border-radius: 999px;
+
+  padding: 2px;
+
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.status-control select {
+  appearance: none;
+
+  border: none;
+
+  outline: none;
+
+  padding: 7px 30px 7px 11px;
+
+  border-radius: 999px;
+
+  background: transparent;
+
+  color: var(--color-ink);
+
+  font-size: 0.78rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.status-control::after {
+  content: "⌄";
+
+  position: absolute;
+
+  right: 10px;
+
+  top: 50%;
+
+  transform: translateY(-55%);
+
+  pointer-events: none;
+
+  color: currentColor;
+
+  font-size: 0.8rem;
+}
+
+
+/* Colores por estado */
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.14);
+  color: #a16207;
+}
+
+.status-confirmed {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.status-in_preparation {
+  background: rgba(124, 58, 237, 0.12);
+  color: #6d28d9;
+}
+
+.status-shipped {
+  background: rgba(14, 116, 144, 0.12);
+  color: #0e7490;
+}
+
+.status-delivered {
+  background: rgba(45, 151, 84, 0.13);
+  color: #258148;
+}
+
+
+/* =========================================================
+   DETALLE
+========================================================= */
+
+.detail-column {
+  text-align: right;
+}
+
 .detail-toggle {
+  display: inline-flex;
 
-  height:36px;
+  align-items: center;
+  justify-content: center;
 
-  display:inline-flex;
+  gap: 7px;
 
-  align-items:center;
+  padding: 8px 12px;
 
-  justify-content:center;
+  border: 1px solid var(--color-line);
 
-  padding:0 .9rem;
+  border-radius: 9px;
 
+  background: var(--color-surface);
 
-  border:none;
+  color: var(--color-ink);
 
-  border-radius:8px;
+  font-size: 0.78rem;
+  font-weight: 700;
 
+  cursor: pointer;
 
-  background:#2563eb;
-
-  color:white;
-
-
-  font-size:.85rem;
-
- 
-
-
-  cursor:pointer;
-
-  transition:.2s;
-
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
 }
 
-
+.detail-toggle svg {
+  width: 16px;
+  height: 16px;
+}
 
 .detail-toggle:hover {
+  background:
+    rgba(183, 53, 45, 0.07);
 
-  background:#1d4ed8;
+  border-color:
+    rgba(183, 53, 45, 0.20);
 
-  transform:translateY(-1px);
+  color: var(--color-rust);
 
+  transform: translateY(-1px);
 }
 
 
+/* =========================================================
+   FILA DETALLE
+========================================================= */
 
-/* Fila detalle */
 .detail-row td {
+  padding: 0;
 
-  background:rgba(0,0,0,.025);
+  background:
+    rgba(0, 0, 0, 0.018);
 
-  padding:1.2rem;
+  border-bottom: 1px solid var(--color-line);
+}
 
+.detail-container {
+  padding: 25px 30px;
+}
+
+.detail-header {
+  margin-bottom: 18px;
+}
+
+.detail-eyebrow {
+  margin: 0 0 5px;
+
+  color: var(--color-rust);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.68rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.12em;
+}
+
+.detail-header h3 {
+  margin: 0;
+
+  color: var(--color-ink);
+
+  font-size: 1.1rem;
 }
 
 
+/* =========================================================
+   LISTA PRODUCTOS
+========================================================= */
 
-/* Lista productos */
 .detail-list {
+  display: flex;
 
-  list-style:none;
+  flex-direction: column;
 
-  margin:0;
+  gap: 10px;
 
-  padding:0;
+  margin: 0;
+  padding: 0;
 
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:.8rem;
-
+  list-style: none;
 }
 
-
-
-.detail-list li {
-
-  display:flex;
-
-  align-items:center;
-
-  gap:1rem;
-
-  font-size:.9rem;
-
-}
-
-
-
-/* Cantidad */
-.detail-qty {
-
-  font-family:var(--font-mono);
-
-  color:var(--color-steel);
-
-  font-weight:700;
-
-}
-
-
-
-/* Nombre */
-.detail-name {
-
-  color:var(--color-ink);
-
-  font-weight:500;
-
-}
-
-
-
-/* Subtotal */
-.detail-subtotal {
-
-  margin-left:auto;
-
-  font-family:var(--font-mono);
-
-  font-weight:600;
-
-  color:var(--color-ink-soft);
-
-}
-
-
-
-/* Imagen producto */
 .detail-item {
+  display: grid;
 
-  display:flex;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
 
-  align-items:center;
+  align-items: center;
 
-  gap:12px;
+  gap: 15px;
 
+  padding: 12px;
+
+  background: #fff;
+
+  border: 1px solid var(--color-line);
+
+  border-radius: 13px;
 }
 
+.detail-image-wrapper {
+  width: 58px;
+  height: 58px;
+}
 
+.detail-image,
+.detail-image-placeholder {
+  width: 100%;
+  height: 100%;
+
+  border-radius: 10px;
+}
 
 .detail-image {
+  object-fit: cover;
 
-  width:60px;
+  border: 1px solid var(--color-line);
+}
 
-  height:60px;
+.detail-image-placeholder {
+  display: flex;
 
-  object-fit:cover;
+  align-items: center;
+  justify-content: center;
 
-  border-radius:12px;
+  background:
+    rgba(0, 0, 0, 0.04);
 
-  border:1px solid var(--color-line);
+  color: var(--color-ink-soft);
+}
 
+.detail-image-placeholder svg {
+  width: 22px;
+  height: 22px;
+}
+
+.detail-product {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.detail-qty {
+  flex-shrink: 0;
+
+  color: var(--color-rust);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.78rem;
+
+  font-weight: 700;
+}
+
+.detail-name {
+  display: block;
+
+  color: var(--color-ink);
+
+  font-size: 0.87rem;
+}
+
+.detail-code {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.75rem;
+}
+
+.detail-price {
+  color: var(--color-ink);
+
+  font-family: var(--font-mono);
+
+  font-size: 0.85rem;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.empty-detail {
+  margin: 0;
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.9rem;
 }
 
 
+/* =========================================================
+   PAGINACIÓN
+========================================================= */
 
-/* Loading */
+.pagination-wrapper {
+  display: flex;
+
+  justify-content: center;
+
+  margin-top: 35px;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
 .loading-state {
+  padding: 60px 0;
 
-  text-align:center;
+  text-align: center;
 
-  padding:2rem;
+  color: var(--color-ink-soft);
 
-  color:var(--color-ink-soft);
+  font-family: var(--font-mono);
 
+  font-size: 0.85rem;
 }
 
 
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
-/* Responsive */
-@media(max-width:900px){
+@media (max-width: 900px) {
 
-  .admin-table {
+  .admin-orders-view {
+    padding: 40px 20px 60px;
+  }
 
-    display:block;
-
-    overflow-x:auto;
-
+  .orders-table-wrapper {
+    border-radius: 16px;
   }
 
 }
 
+@media (max-width: 600px) {
+
+  .admin-orders-view {
+    padding: 30px 14px 50px;
+  }
+
+  .orders-header {
+    margin-bottom: 25px;
+  }
+
+  .orders-header h1 {
+    font-size: 2rem;
+  }
+
+  .orders-description {
+    font-size: 0.88rem;
+  }
+
+  .detail-container {
+    padding: 20px;
+  }
+
+  .detail-item {
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+
+  .detail-image-wrapper {
+    width: 50px;
+    height: 50px;
+  }
+
+  .detail-price {
+    grid-column: 2;
+  }
+
+}
 </style>

@@ -75,6 +75,10 @@ function logout() {
           Panel admin
 
         </RouterLink>
+
+        <RouterLink to="/perfil" class="user-menu-item">
+          Mi perfil
+        </RouterLink>
        
       </template>
       

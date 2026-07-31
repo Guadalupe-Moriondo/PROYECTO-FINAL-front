@@ -36,6 +36,16 @@ async function loadCategories() {
   categories.value = response.data;
 }
 
+function categoryLabel(category) {
+  const labels = {
+    sembradoras: 'Sembradoras',
+    cosechadoras: 'Cosechadoras',
+    otros: 'Otros',
+  };
+
+  return `${category.name} — ${labels[category.machineType] || 'Otros'}`;
+}
+
 async function loadProduct() {
   const response = await productsService.getById(route.params.id);
   const p = response.data;
@@ -124,7 +134,7 @@ onMounted(() => {
           <label for="categoryId">Categoría</label>
           <select id="categoryId" v-model="form.categoryId" required>
             <option value="" disabled>Elegir categoría...</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+            <option v-for="cat in categories" :key="cat.id" :value="cat.id"> {{ categoryLabel(cat) }}</option>
           </select>
         </div>
         <div class="field">

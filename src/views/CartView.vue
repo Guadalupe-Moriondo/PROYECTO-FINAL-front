@@ -26,6 +26,11 @@ function changeQuantity(item, newQuantity) {
 function goToCheckout() {
   router.push({ name: 'checkout' });
 }
+
+function imageUrl(product) {
+  if (!product?.imageUrl) return null;
+  return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
+}
 </script>
 
 <template>
@@ -46,6 +51,7 @@ function goToCheckout() {
       <div v-else class="cart-layout">
         <ul class="cart-list">
           <li v-for="item in cartStore.items" :key="item.id" class="cart-item">
+            <img  v-if="imageUrl(item.product)" :src="imageUrl(item.product)" :alt="item.product?.name || 'Producto'"  class="cart-item-image"/>
             <div class="cart-item-info">
               <p class="cart-item-name">{{ item.product.name }}</p>
               <p class="cart-item-code">Código {{ item.product.code }}</p>
@@ -103,7 +109,7 @@ function goToCheckout() {
 }
 .cart-item {
   display: grid;
-  grid-template-columns: 1fr auto auto auto;
+  grid-template-columns: 70px 1fr auto auto auto;
   align-items: center;
   gap: var(--space-3);
   background: var(--color-surface);
@@ -154,6 +160,32 @@ function goToCheckout() {
   background: rgb(236, 236, 236);
   border-color: grey;
   transform: scale(1.05);
+
+}
+
+.cart-item-image {
+  grid-column: 1;
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12%;
+  flex-shrink: 0;
+}
+
+.cart-item-info {
+  grid-column: 2;
+}
+
+.cart-item-quantity {
+  grid-column: 3;
+}
+
+.cart-item-subtotal {
+  grid-column: 4;
+}
+
+.cart-item-remove {
+  grid-column: 5;
 }
 
 .trash-icon {
