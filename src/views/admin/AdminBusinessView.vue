@@ -175,280 +175,288 @@ onMounted(load);
 
 <template>
 
-<div class="container admin-view admin-business-view">
+<div class="container admin-business-view">
 
-<h1>Datos del negocio</h1>
+  <header class="page-header">
+    <h1>
+      Datos del negocio
+    </h1>
+  </header>
 
+  <p
+    v-if="loading"
+    class="loading-state"
+  >
+    Cargando...
+  </p>
 
-<p v-if="loading" class="loading-state">
-  Cargando...
-</p>
-
-
-<form
+  <form
   v-else
   class="business-form"
   @submit.prevent="save"
 >
 
+  <!-- ================= INFORMACIÓN GENERAL ================= -->
 
-<div class="field">
-<label>Nombre del negocio</label>
-<input v-model="form.name" type="text">
-</div>
+  <section class="form-card">
 
+    <div class="card-header">
+      <h2>Información general</h2>
+    </div>
 
-<div class="field">
-<label>Dirección</label>
-<input v-model="form.address" type="text">
-</div>
+    <div class="form-grid">
 
+      <div class="field">
+        <label>Nombre del negocio</label>
+        <input
+          v-model="form.name"
+          type="text"
+        >
+      </div>
+
+      <div class="field">
+        <label>Dirección</label>
+        <input
+          v-model="form.address"
+          type="text"
+        >
+      </div>
 
-<div class="field">
-<label>Ciudad</label>
-<input
-  v-model="form.city"
-  type="text"
-  placeholder="Ej: San Francisco"
-/>
-</div>
+      <div class="field">
+        <label>Ciudad</label>
+        <input
+          v-model="form.city"
+          type="text"
+          placeholder="Ej: San Francisco"
+        >
+      </div>
 
+      <div class="field">
+        <label>Provincia</label>
 
-<div class="field">
+        <select v-model="form.province">
 
-<label>Provincia</label>
+          <option value="">
+            Seleccionar provincia
+          </option>
 
-<select v-model="form.province">
+          <option
+            v-for="province in provinces"
+            :key="province"
+            :value="province"
+          >
+            {{ province }}
+          </option>
 
-<option value="">
-Seleccionar provincia
-</option>
+        </select>
 
+      </div>
 
-<option
-v-for="province in provinces"
-:key="province"
-:value="province"
->
-{{ province }}
-</option>
+      <div class="field">
 
+        <label>País</label>
 
-</select>
+        <select v-model="form.country">
 
-</div>
+          <option value="">
+            Seleccionar país
+          </option>
 
+          <option
+            v-for="country in countries"
+            :key="country"
+            :value="country"
+          >
+            {{ country }}
+          </option>
 
+        </select>
 
-<div class="field">
+      </div>
 
-<label>País</label>
+    </div>
 
-<select v-model="form.country">
+  </section>
 
-<option value="">
-Seleccionar país
-</option>
+  <!-- ================= CONTACTO ================= -->
 
+  <section class="form-card">
 
-<option
-v-for="country in countries"
-:key="country"
-:value="country"
->
-{{ country }}
-</option>
+    <div class="card-header">
+      <h2>Información de contacto</h2>
+    </div>
 
+    <div class="form-grid">
 
-</select>
+      <div class="field">
+        <label>Teléfono</label>
+        <input
+          v-model="form.phone"
+          type="text"
+        >
+      </div>
 
-</div>
+      <div class="field">
+        <label>WhatsApp</label>
+        <input
+          v-model="form.whatsapp"
+          type="text"
+          placeholder="5493511234567"
+        >
+      </div>
 
+      <div class="field">
+        <label>Email</label>
+        <input
+          v-model="form.email"
+          type="email"
+        >
+      </div>
 
+    </div>
 
-<div class="field">
+  </section>
 
-<label>Teléfono</label>
 
-<input
-v-model="form.phone"
-type="text"
-/>
 
-</div>
+      <!-- ================= HORARIOS ================= -->
 
+  <section class="form-card">
 
+    <div class="card-header">
+      <h2>Horarios de atención</h2>
+    </div>
 
-<div class="field">
+    <div class="hours-grid">
 
-<label>WhatsApp</label>
+      <div class="hours-box">
 
-<input
-v-model="form.whatsapp"
-type="text"
-placeholder="5493511234567"
-/>
+        <h3>Lunes a Viernes (Mañana)</h3>
 
-</div>
+        <div class="hours-row">
 
+          <input
+            type="time"
+            v-model="form.mondayOpen"
+          >
 
+          <span>a</span>
 
-<div class="field">
+          <input
+            type="time"
+            v-model="form.mondayClose"
+          >
 
-<label>Email</label>
+        </div>
 
-<input
-v-model="form.email"
-type="email"
-/>
+      </div>
 
-</div>
+      <div class="hours-box">
 
+        <h3>Lunes a Viernes (Tarde)</h3>
 
+        <div class="hours-row">
 
+          <input
+            type="time"
+            v-model="form.afternoonOpen"
+          >
 
-<div class="field">
+          <span>a</span>
 
-<label>
-Horario Lunes a Viernes - Mañana
-</label>
+          <input
+            type="time"
+            v-model="form.afternoonClose"
+          >
 
+        </div>
 
-<div class="hours-row">
+      </div>
 
-<input
-type="time"
-v-model="form.mondayOpen"
-/>
+      <div class="hours-box">
 
-<input
-type="time"
-v-model="form.mondayClose"
-/>
+        <h3>Sábados</h3>
 
+        <div class="hours-row">
 
-</div>
+          <input
+            type="time"
+            v-model="form.saturdayOpen"
+          >
 
-</div>
+          <span>a</span>
 
+          <input
+            type="time"
+            v-model="form.saturdayClose"
+          >
 
+        </div>
 
+      </div>
 
+    </div>
 
-<div class="field">
+  </section>
 
-<label>
-Horario Lunes a Viernes - Tarde
-</label>
+  <!-- ================= REDES SOCIALES ================= -->
 
+  <section class="form-card">
 
-<div class="hours-row">
+    <div class="card-header">
+      <h2>Redes sociales</h2>
+    </div>
 
-<input
-type="time"
-v-model="form.afternoonOpen"
-/>
+    <div class="form-grid">
 
+      <div class="field">
 
+        <label>Instagram</label>
 
+        <input
+          v-model="form.instagram"
+          type="text"
+          placeholder="@tuempresa"
+        >
 
+      </div>
 
-<input
-type="time"
-v-model="form.afternoonClose"
-/>
+      <div class="field">
 
+        <label>Facebook</label>
 
-</div>
+        <input
+          v-model="form.facebook"
+          type="text"
+          placeholder="facebook.com/tuempresa"
+        >
 
-</div>
+      </div>
 
+    </div>
 
+  </section>
 
+  <p
+    v-if="message"
+    class="success-message"
+  >
+    {{ message }}
+  </p>
 
-<div class="field">
+  <div class="form-actions">
 
-<label>
-Horario Sábados
-</label>
+    <button
+      type="submit"
+      class="button button-primary"
+      :disabled="saving"
+    >
+      {{ saving ? 'Guardando cambios...' : 'Guardar cambios' }}
+    </button>
 
-
-<div class="hours-row">
-
-<input
-type="time"
-v-model="form.saturdayOpen"
-/>
-
-
-
-
-
-<input
-type="time"
-v-model="form.saturdayClose"
-/>
-
-
-</div>
-
-</div>
-
-
-
-
-<div class="field">
-
-<label>Instagram</label>
-
-<input
-v-model="form.instagram"
-type="text"
-/>
-
-</div>
-
-
-
-
-<div class="field">
-
-<label>Facebook</label>
-
-<input
-v-model="form.facebook"
-type="text"
-/>
-
-</div>
-
-
-
-
-<p
-v-if="message"
-class="success-message"
->
-{{ message }}
-</p>
-
-
-
-
-<button
-type="submit"
-class="button button-primary"
-:disabled="saving"
->
-
-{{ saving ? 'Guardando...' : 'Guardar cambios' }}
-
-</button>
-
-
+  </div>
 
 </form>
-
 
 </div>
 
@@ -461,271 +469,289 @@ class="button button-primary"
   padding: var(--space-5) var(--space-4);
 }
 
+/*==============================
+  TÍTULO
+==============================*/
 
-/* Título */
 .admin-business-view h1 {
-
-  font-size:2rem;
-
-  font-weight:700;
-
-  margin-bottom:var(--space-5);
-
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--space-5);
 }
 
+/*==============================
+  FORMULARIO
+==============================*/
 
-
-/* Formulario */
 .business-form {
-
-  background:var(--color-surface);
-
-  border:1px solid var(--color-line);
-
-  border-radius:16px;
-
-  padding:1.5rem;
-
-  max-width:700px;
-
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
-
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
+/*==============================
+  TARJETAS
+==============================*/
 
+.form-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: 1.6rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
 
-/* Campos */
+.card-header {
+  margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.card-header p {
+  margin-top: .35rem;
+  color: var(--color-ink-soft);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+/*==============================
+  GRID
+==============================*/
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+/*==============================
+  CAMPOS
+==============================*/
+
 .field {
-
-  margin-bottom:1.2rem;
-
+  display: flex;
+  flex-direction: column;
 }
-
-
 
 .field label {
-
-  display:block;
-
-  margin-bottom:.4rem;
-
-  font-size:.85rem;
-
-  font-weight:600;
-
-  color:var(--color-ink-soft);
-
+  margin-bottom: .45rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
 }
-
-
 
 .field input,
-.field textarea,
-.field select {
+.field select,
+.field textarea {
 
-  width:100%;
+  width: 100%;
 
-  padding:.7rem 1rem;
+  padding: .85rem 1rem;
 
-  border-radius:12px;
+  background: var(--color-surface);
 
-  border:1px solid var(--color-line);
+  border: 1px solid var(--color-line);
 
-  background:var(--color-surface);
+  border-radius: 12px;
 
-  font-size:.9rem;
+  font-size: .95rem;
+
+  transition:
+    border-color .2s,
+    box-shadow .2s,
+    transform .15s;
 
 }
-
-
 
 .field textarea {
 
-  resize:vertical;
+  resize: vertical;
 
-  min-height:90px;
+  min-height: 120px;
 
 }
 
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
 
+  border-color: #bfc8d6;
+
+}
 
 .field input:focus,
-.field textarea:focus,
-.field select:focus {
+.field select:focus,
+.field textarea:focus {
 
-  outline:none;
+  outline: none;
 
-  border-color:var(--color-steel);
+  border-color: var(--color-steel);
 
-}
-
-
-
-/* Horarios */
-.hours-section {
-
-  margin-top:1.5rem;
-
-  padding-top:1.5rem;
-
-  border-top:1px solid var(--color-line);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.08);
 
 }
 
+.field input[type="time"] {
 
-
-.hours-section h2 {
-
-  font-size:1.2rem;
-
-  font-weight:700;
-
-  margin-bottom:1rem;
+  font-family: var(--font-mono);
 
 }
 
+/*==============================
+  HORARIOS
+==============================*/
 
+.hours-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hours-box {
+  background: rgba(0,0,0,.02);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  transition: .2s;
+}
+
+.hours-box:hover {
+  border-color: #cfd8e3;
+  transform: translateY(-1px);
+}
+
+.hours-box h3 {
+  margin: 0 0 1rem;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
 
 .hours-row {
-
-  display:flex;
-
-  align-items:center;
-
-  gap:12px;
-
-  margin-bottom:12px;
-
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
-
-
-
-.hours-row span {
-
-  width:90px;
-
-  font-weight:600;
-
-  font-size:.9rem;
-
-}
-
-
 
 .hours-row input {
-
-  flex:1;
-
+  flex: 1;
 }
 
-
-
-/* Botón guardar */
-.button-primary {
-
-  background:var(--color-steel);
-
-  color:white;
-
-  padding:.7rem 1.3rem;
-
-  border-radius:12px;
-
-  border:none;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:.2s;
-
-  box-shadow:0 4px 12px rgba(0,0,0,.12);
-
+.hours-row span {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
 }
 
+/*==============================
+  MENSAJES
+==============================*/
 
-
-.button-primary:hover {
-
-  transform:translateY(-2px);
-
-  opacity:.9;
-
-}
-
-
-
-/* Mensajes */
 .success-message {
-
-  background:#e8f7ec;
-
-  color:#207a3c;
-
-  padding:.8rem 1rem;
-
-  border-radius:10px;
-
-  margin-bottom:1rem;
-
+  background: #e8f7ec;
+  color: #207a3c;
+  border: 1px solid #b7e2c4;
+  padding: .9rem 1rem;
+  border-radius: 12px;
 }
-
-
 
 .error-message {
-
-  background:#ffe8e8;
-
-  color:#c0392b;
-
-  padding:.8rem 1rem;
-
-  border-radius:10px;
-
-  margin-bottom:1rem;
-
+  background: #ffe8e8;
+  color: #c0392b;
+  border: 1px solid #f3bcbc;
+  padding: .9rem 1rem;
+  border-radius: 12px;
 }
 
+/*==============================
+  BOTÓN
+==============================*/
 
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: .5rem;
+}
 
-/* Loading */
+.button-primary {
+  background: var(--color-steel);
+  color: white;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: .85rem 1.6rem;
+
+  font-size: .95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all .2s ease;
+
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  opacity: .95;
+}
+
+.button-primary:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/*==============================
+  LOADING
+==============================*/
+
 .loading-state {
-
-  text-align:center;
-
-  padding:2rem;
-
-  color:var(--color-ink-soft);
-
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-ink-soft);
 }
 
+/*==============================
+  RESPONSIVE
+==============================*/
 
+@media (max-width: 900px) {
 
-/* Responsive */
-@media(max-width:700px){
-
-  .business-form {
-
-    padding:1rem;
-
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
+}
+
+@media (max-width: 700px) {
+
+  .form-card {
+    padding: 1.2rem;
+  }
 
   .hours-row {
-
-    flex-direction:column;
-
-    align-items:stretch;
-
+    flex-direction: column;
+    align-items: stretch;
   }
 
-
   .hours-row span {
+    display: none;
+  }
 
-    width:auto;
+  .form-actions {
+    justify-content: stretch;
+  }
 
+  .button-primary {
+    width: 100%;
   }
 
 }
-
 </style>

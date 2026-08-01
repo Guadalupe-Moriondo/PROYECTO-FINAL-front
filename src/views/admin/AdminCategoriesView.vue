@@ -112,416 +112,619 @@ onMounted(load);
 
 
 <template>
-  <div class="container admin-view admin-categories-view">
-    <h1>Categorías</h1>
-    <form class="new-category-form" @submit.prevent="create">
-      <input
-        v-model="newName"
-        type="text"
-        placeholder="Nombre de la categoría"
-        required
-      />
+  <div class="container admin-categories-view">
 
-      <input
-        v-model="newDescription"
-        type="text"
-        placeholder="Descripción (opcional)"
-      />
+    <!-- ================= HEADER ================= -->
 
-      <select v-model="newMachineType">
-        <option value="sembradoras">Sembradoras</option>
-        <option value="cosechadoras">Cosechadoras</option>
-        <option value="otros">Otros</option>
-      </select>
+    <header class="page-header">
 
-      <button type="submit" class="button button-primary">
-        Agregar
-      </button>
-    </form>
-    <p v-if="error" class="error-message">{{ error }}</p>
+      <div>
+        <h1>
+          Categorías
+        </h1>
 
-    <p v-if="loading" class="loading-state">Cargando...</p>
+      </div>
 
-    <div v-else class="table-scroll">
-      <table class="admin-table">
-        <thead>
-          <tr><th>Nombre</th><th>Tipo</th><th>Descripción</th><th>Productos</th><th></th></tr>
-        </thead>
-        <tbody>
-          <tr v-for="cat in categories" :key="cat.id">
-            <template v-if="editingId === cat.id">
-              <td><input v-model="editForm.name" type="text" /></td>
-              <td>
-                <select v-model="editForm.machineType">
-                  <option value="sembradoras">Sembradoras</option>
-                  <option value="cosechadoras">Cosechadoras</option>
-                  <option value="otros">Otros</option>
-                </select>
-              </td>
-              <td><input v-model="editForm.description" type="text" /></td>
-              <td>{{ cat.productCount ?? '—' }}</td>
-              <td class="table-actions">
-                <button class="link-button" @click="saveEdit(cat.id)">Guardar</button>
-                <button class="link-button" @click="editingId = null">Cancelar</button>
-              </td>
-            </template>
-            <template v-else>
-              <td>{{ cat.name }}</td>
-              <td>{{ machineTypeLabel(cat.machineType) }}</td>
-              <td>{{ cat.description }}</td>
-              <td>{{ cat.productCount ?? '—' }}</td>
-              <td class="table-actions">
-                <button class="link-button" @click="startEditing(cat)">Editar</button>
-                <button class="link-button link-button-danger" @click="remove(cat)">Dar de baja</button>
-              </td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    </header>
+
+    <!-- ================= NUEVA CATEGORÍA ================= -->
+
+    <section class="category-card">
+
+      <h2 class="section-title">
+        Nueva categoría
+      </h2>
+
+      <form
+        class="category-form"
+        @submit.prevent="create"
+      >
+
+        <div class="field">
+
+          <label for="name">
+            Nombre
+          </label>
+
+          <input
+            id="name"
+            v-model="newName"
+            type="text"
+            placeholder="Ej. Rodamientos"
+            required
+          />
+
+        </div>
+
+        <div class="field">
+
+          <label for="description">
+            Descripción
+          </label>
+
+          <input
+            id="description"
+            v-model="newDescription"
+            type="text"
+            placeholder="Descripción opcional"
+          />
+
+        </div>
+
+        <div class="field">
+
+          <label for="machine">
+            Tipo de maquinaria
+          </label>
+
+          <select
+            id="machine"
+            v-model="newMachineType"
+          >
+            <option value="sembradoras">
+              Sembradoras
+            </option>
+
+            <option value="cosechadoras">
+              Cosechadoras
+            </option>
+
+            <option value="otros">
+              Otros
+            </option>
+
+          </select>
+
+        </div>
+
+        <button
+          type="submit"
+          class="button button-primary"
+        >
+
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 11H13V5h-2v6H5v2h6v6h2v-6h6z"/>
+          </svg>
+
+          <span>
+            Agregar categoría
+          </span>
+
+        </button>
+
+      </form>
+
+    </section>
+
+    <p
+      v-if="error"
+      class="error-message"
+    >
+      {{ error }}
+    </p>
+
+    <p
+      v-if="loading"
+      class="loading-state"
+    >
+      Cargando categorías...
+    </p>
+
+    <!-- ================= TABLA ================= -->
+
+    <section
+      v-else
+      class="table-card"
+    >
+
+      <div class="table-header">
+
+        <h2>
+          Categorías existentes
+        </h2>
+
+        <span>
+          {{ categories.length }}
+          categorías
+        </span>
+
+      </div>
+
+      <div class="table-scroll">
+
+        <table class="admin-table">
+
+          <thead>
+
+            <tr>
+
+              <th>Nombre</th>
+
+              <th>Tipo</th>
+
+              <th>Descripción</th>
+
+              <th>Productos</th>
+
+              <th></th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr
+              v-for="cat in categories"
+              :key="cat.id"
+            >
+
+              <!-- ================= EDICIÓN ================= -->
+
+              <template v-if="editingId === cat.id">
+
+                <td>
+
+                  <input
+                    v-model="editForm.name"
+                    type="text"
+                  />
+
+                </td>
+
+                <td>
+
+                  <select v-model="editForm.machineType">
+
+                    <option value="sembradoras">
+                      Sembradoras
+                    </option>
+
+                    <option value="cosechadoras">
+                      Cosechadoras
+                    </option>
+
+                    <option value="otros">
+                      Otros
+                    </option>
+
+                  </select>
+
+                </td>
+
+                <td>
+
+                  <input
+                    v-model="editForm.description"
+                    type="text"
+                  />
+
+                </td>
+
+                <td>
+
+                  {{ cat.productCount ?? "—" }}
+
+                </td>
+
+                <td class="table-actions">
+
+                  <button
+                    class="save-button"
+                    @click="saveEdit(cat.id)"
+                  >
+                    Guardar
+                  </button>
+
+                  <button
+                    class="cancel-button"
+                    @click="editingId = null"
+                  >
+                    Cancelar
+                  </button>
+
+                </td>
+
+              </template>
+
+              <!-- ================= NORMAL ================= -->
+
+              <template v-else>
+
+                <td class="table-name">
+                  {{ cat.name }}
+                </td>
+
+                <td>
+
+                  <span class="machine-tag">
+                    {{ machineTypeLabel(cat.machineType) }}
+                  </span>
+
+                </td>
+
+                <td class="table-description">
+                  {{ cat.description || "—" }}
+                </td>
+
+                <td>
+
+                  {{ cat.productCount ?? "—" }}
+
+                </td>
+
+                <td class="table-actions">
+
+                  <button
+                    class="edit-button"
+                    @click="startEditing(cat)"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    class="delete-button"
+                    @click="remove(cat)"
+                  >
+                    Dar de baja
+                  </button>
+
+                </td>
+
+              </template>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
   </div>
 </template>
 
 <style scoped>
 
 .admin-categories-view {
-  padding: var(--space-5) var(--space-4);
+  padding: 2.5rem 0 4rem;
 }
 
+/* ================= HEADER ================= */
 
-/* Header */
-.admin-categories-view h1 {
-  font-size: 2rem;
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-eyebrow {
+  color: var(--color-rust);
+  font-size: .8rem;
   font-weight: 700;
-  margin-bottom: var(--space-5);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-bottom: .5rem;
 }
 
-
-/* Formulario nueva categoría */
-.new-category-form {
-
-  display:flex;
-  gap:1rem;
-
-  margin-bottom:var(--space-5);
-
+.page-header h1 {
+  margin: 0;
+  font-size: 2.4rem;
+  color: var(--color-steel);
 }
 
-
-.new-category-form input {
-
-  flex:1;
-
-  padding:.7rem 1rem;
-
-  border:1px solid var(--color-line);
-
-  border-radius:12px;
-
-  background:var(--color-surface);
-
-  font-size:.9rem;
-
+.page-description {
+  margin-top: .7rem;
+  max-width: 620px;
+  color: var(--color-ink-soft);
+  line-height: 1.7;
 }
 
+/* ================= CARDS ================= */
 
-.new-category-form input:focus {
-
-  outline:none;
-
-  border-color:var(--color-steel);
-
+.category-card,
+.table-card {
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 24px;
+  box-shadow: 0 15px 40px rgba(15,23,42,.08);
 }
 
+.category-card {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
 
-/* Botón agregar */
+.table-card {
+  overflow: hidden;
+}
+
+/* ================= TITLES ================= */
+
+.section-title {
+  margin: 0 0 1.8rem;
+  color: var(--color-steel);
+  font-size: 1.35rem;
+}
+
+/* ================= FORM ================= */
+
+.category-form {
+  display: grid;
+  grid-template-columns: repeat(3,1fr) auto;
+  gap: 1.2rem;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: .55rem;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.field input,
+.field select,
+.admin-table input,
+.admin-table select {
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  padding: 0 1rem;
+  background: white;
+  font-size: .95rem;
+  transition: .2s;
+}
+
+.admin-table input {
+  width: 100%;
+}
+
+.field input:focus,
+.field select:focus,
+.admin-table input:focus,
+.admin-table select:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 4px rgba(188,34,34,.12);
+}
+
+/* ================= BOTÓN AGREGAR ================= */
+
 .button-primary {
-
-  background:var(--color-steel);
-
-  color:white;
-
-  padding:.7rem 1.3rem;
-
-  border-radius:12px;
-
-  border:none;
-
-  text-decoration:none;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:.2s;
-
-  box-shadow:0 4px 12px rgba(0,0,0,.12);
-
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  justify-content: center;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg,#b91c1c,#dc2626);
+  color: white;
+  font-weight: 700;
+  padding: 0 1.4rem;
+  cursor: pointer;
+  transition: .25s;
 }
 
+.button-primary svg {
+  width: 18px;
+  height: 18px;
+}
 
 .button-primary:hover {
-
-  transform:translateY(-2px);
-
-  opacity:.9;
-
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(185,28,28,.28);
 }
 
+/* ================= MENSAJES ================= */
 
-
-/* Mensajes */
 .error-message {
-
-  background:#ffe8e8;
-
-  color:#c0392b;
-
-  padding:.8rem 1rem;
-
-  border-radius:10px;
-
-  margin-bottom:1rem;
-
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 14px;
+  background: #fff1f2;
+  color: #be123c;
 }
 
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-ink-soft);
+}
 
+/* ================= TABLA ================= */
 
-/* Tabla */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.6rem 2rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.table-header span {
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: var(--color-ink-soft);
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
 .admin-table {
-
-  width:100%;
-
-  border-collapse:separate;
-
-  border-spacing:0;
-
-  overflow:hidden;
-
-  background:var(--color-surface);
-
-  border:1px solid var(--color-line);
-
-  border-radius:16px;
-
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
-
+  width: 100%;
+  border-collapse: collapse;
 }
-
-
 
 .admin-table th {
-
-  text-align:left;
-
-  padding:1rem 1.2rem;
-
-  background:rgba(0,0,0,.03);
-
-  font-family:var(--font-display);
-
-  text-transform:uppercase;
-
-  font-size:.75rem;
-
-  color:var(--color-ink-soft);
-
+  background: #fafafa;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-ink-soft);
 }
-
-
 
 .admin-table td {
-
-  padding:1rem 1.2rem;
-
-  border-top:1px solid var(--color-line);
-
-  vertical-align:middle;
-
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid var(--color-line);
 }
 
-
-
-/* Hover filas */
 .admin-table tbody tr {
-
-  transition:.2s;
-
+  transition: .2s;
 }
-
 
 .admin-table tbody tr:hover {
-
-  background:rgba(0,0,0,.025);
-
+  background: #fafafa;
 }
 
+/* ================= CELDAS ================= */
 
+.table-name {
+  font-weight: 700;
+  color: var(--color-steel);
+}
 
-/* Acciones */
+.table-description {
+  color: var(--color-ink-soft);
+}
+
+/* ================= TAG ================= */
+
+.machine-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  background: rgb(230, 229, 229);
+  color: rgb(56, 56, 56);
+  font-size: .82rem;
+  
+}
+
+/* ================= BOTONES ================= */
+
 .table-actions {
+  display: flex;
+  gap: .6rem;
+}
 
-  display:flex;
+.edit-button,
+.save-button,
+.cancel-button,
+.delete-button {
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 1rem;
+  cursor: pointer;
+  transition: .2s;
+}
 
-  align-items:center;
+.edit-button {
+  background: #dbeafe;
+  color: #4c6ba8;
+}
 
-  gap:.6rem;
+.edit-button:hover {
+  background: #bfdbfe;
+}
 
-  white-space:nowrap;
+.save-button {
+  background: #56a572;
+  color: #ffffff;
+}
+
+.save-button:hover {
+  background: #488a5f;
+}
+
+.cancel-button {
+  background: #7ea1e7;
+  color: #ffffff;
+}
+
+.cancel-button:hover {
+  background: #4c6ba8;
+}
+
+.delete-button {
+  background: #ecb5b5;
+  color: #992525;
+}
+
+.delete-button:hover {
+  background: #f3a9a9;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width:1100px){
+
+  .category-form{
+    grid-template-columns:1fr 1fr;
+  }
 
 }
 
+@media (max-width:700px){
 
+  .category-form{
+    grid-template-columns:1fr;
+  }
 
-.link-button {
-
-  height:36px;
-
-  display:inline-flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  padding:0 .9rem;
-
-  border:none;
-
-  border-radius:8px;
-
-  cursor:pointer;
-
-  font-size:.85rem;
-
-  font-weight:600;
-
-  text-decoration:none;
-
-  transition:.2s;
-
-}
-
-
-
-/* Editar */
-.table-actions .link-button:first-child {
-
-  background:#9fb9f3;
-
-  color: #1b3d86;
-
-}
-
-
-.table-actions .link-button:first-child:hover {
-
-  background:#5a7bd8;
-
-  transform:translateY(-1px);
-
-}
-
-
-
-/* Guardar */
-.table-actions .link-button:not(.link-button-danger) {
-
-  color: #1b3d86;
-
-}
-
-
-
-/* Dar de baja */
-.link-button-danger {
-
-  background:#ffe8e8;
-
-  color:#c0392b;
-
-}
-
-
-.link-button-danger:hover {
-
-  background:#ffd2d2;
-
-}
-
-
-
-/* Inputs edición */
-.admin-table input {
-
-  padding:.5rem .7rem;
-
-  border:1px solid var(--color-line);
-
-  border-radius:8px;
-
-  width:100%;
-
-}
-
-
-
-/* Loading */
-.loading-state {
-
-  text-align:center;
-
-  padding:2rem;
-
-  color:var(--color-ink-soft);
-
-}
-
-
-
-/* Scroll */
-.table-scroll {
-
-  overflow-x:auto;
-
-  -webkit-overflow-scrolling:touch;
-
-}
-
-.new-category-form select {
-  flex: 0.7;
-  padding: .7rem 1rem;
-  border: 1px solid var(--color-line);
-  border-radius: 12px;
-  background: var(--color-surface);
-  font-size: .9rem;
-}
-
-.admin-table select {
-  padding: .5rem .7rem;
-  border: 1px solid var(--color-line);
-  border-radius: 8px;
-  width: 100%;
-  background: var(--color-surface);
-}
-
-
-
-/* Responsive */
-@media(max-width:900px){
-
-  .new-category-form {
-
+  .table-header{
     flex-direction:column;
-
+    align-items:flex-start;
+    gap:1rem;
   }
 
-
-  .admin-table {
-
-    display:block;
-
+  .table-actions{
+    flex-direction:column;
   }
 
+  .edit-button,
+  .save-button,
+  .cancel-button,
+  .delete-button{
+    width:100%;
+  }
 
 }
 

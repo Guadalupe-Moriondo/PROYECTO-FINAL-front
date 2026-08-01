@@ -203,7 +203,7 @@ watch(
               type="submit"
               class="button filter-button"
             >
-              Aplicar filtros
+              Aplicar 
             </button>
 
           </form>

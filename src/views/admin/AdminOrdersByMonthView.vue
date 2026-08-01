@@ -79,7 +79,6 @@ onMounted(load);
   <div class="container admin-month-view">
     <div class="page-header">
       <h1>Pedidos por mes</h1>
-      <p class="page-subtitle">Buscá los pedidos entregados de un mes puntual.</p>
     </div>
 
     <div class="month-search">
