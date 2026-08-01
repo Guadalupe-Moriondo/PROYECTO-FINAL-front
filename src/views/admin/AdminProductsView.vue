@@ -9,7 +9,6 @@ const products = ref([]);
 const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
-const uploadingImageId = ref(null);
 const message = ref('');
 
 async function load() {
@@ -31,27 +30,6 @@ async function remove(product) {
   load();
 }
 
-// Triggers the hidden file input for the matching product
-function selectImage(productId) {
-  uploadingImageId.value = productId;
-  document.getElementById(`image-input-${productId}`).click();
-}
-
-async function onFileSelected(event, product) {
-  const file = event.target.files[0];
-  if (!file) return;
-  message.value = '';
-  try {
-    await productsService.uploadImage(product.id, file);
-    message.value = `Imagen actualizada para "${product.name}".`;
-    load();
-  } catch (e) {
-    message.value = 'No se pudo subir la imagen (revisá el formato y el tamaño).';
-  } finally {
-    uploadingImageId.value = null;
-    event.target.value = ''; // allow picking the same file again if needed
-  }
-}
 
 function imageUrl(product) {
   if (!product.imageUrl) return null;
@@ -146,10 +124,6 @@ onMounted(load);
 
             <th>
               Precio
-            </th>
-
-            <th>
-              Imagen
             </th>
 
             <th class="actions-column">
@@ -248,78 +222,7 @@ onMounted(load);
             </td>
 
 
-            <!-- ================= IMAGEN ================= -->
-            <td>
-
-              <div class="image-upload">
-
-                <input
-                  :id="`image-input-${product.id}`"
-                  type="file"
-                  accept=".jpg,.jpeg,.png,.webp"
-                  class="visually-hidden"
-                  @change="
-                    onFileSelected(
-                      $event,
-                      product
-                    )
-                  "
-                />
-
-
-                <button
-                  type="button"
-                  class="image-button"
-                  @click="
-                    selectImage(product.id)
-                  "
-                  title="Cambiar imagen"
-                >
-
-                  <img
-                    v-if="imageUrl(product)"
-                    :src="imageUrl(product)"
-                    :alt="product.name"
-                    class="product-image"
-                  />
-
-                  <div
-                    v-else
-                    class="no-image"
-                  >
-
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h14V6H5Zm2 9 2.5-3 2 2.3 1.8-2.2L17 15H7Zm2-5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
-                      />
-                    </svg>
-
-                  </div>
-
-
-                  <div class="image-overlay">
-
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M12 3v10.2l3.5-3.5 1.4 1.4-5.9 5.9-5.9-5.9 1.4-1.4 3.5 3.5V3h2Zm-7 15h14v2H5v-2Z"
-                      />
-                    </svg>
-
-                    Cambiar
-
-                  </div>
-
-                </button>
-
-              </div>
-
-            </td>
+            
 
 
             <!-- ================= ACCIONES ================= -->
@@ -346,11 +249,6 @@ onMounted(load);
                       d="M4 17.3V20h2.7L17.8 8.9l-2.7-2.7L4 17.3Zm15.7-9.6a1 1 0 0 0 0-1.4l-1.9-1.9a1 1 0 0 0-1.4 0l-1.3 1.3 2.7 2.7 1.9-1.9Z"
                     />
                   </svg>
-
-                  <span>
-                    Editar
-                  </span>
-
                 </RouterLink>
 
 
@@ -369,10 +267,6 @@ onMounted(load);
                       d="M6 7h12v13H6V7Zm2 2v9h2V9H8Zm4 0v9h2V9h-2Zm5-5V2h-2v2H9V2H7v2H4v2h16V4h-3Z"
                     />
                   </svg>
-
-                  <span>
-                    Dar de baja
-                  </span>
 
                 </button>
 
@@ -624,7 +518,7 @@ onMounted(load);
 
 .product-row:hover {
   background:
-    rgba(183, 53, 45, 0.025);
+    rgba(48, 47, 47, 0.025);
 }
 
 .admin-table tbody tr:last-child td {

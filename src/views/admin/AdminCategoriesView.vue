@@ -243,11 +243,6 @@ onMounted(load);
           Categorías existentes
         </h2>
 
-        <span>
-          {{ categories.length }}
-          categorías
-        </span>
-
       </div>
 
       <div class="table-scroll">
@@ -633,7 +628,7 @@ onMounted(load);
   padding: .45rem .9rem;
   border-radius: 999px;
   background: rgb(230, 229, 229);
-  color: rgb(56, 56, 56);
+  color: rgb(49, 49, 49);
   font-size: .82rem;
   
 }

@@ -155,15 +155,9 @@ onMounted(load);
         <div class="group-header">
 
           <div>
-
-            <p class="group-eyebrow">
-              En curso
-            </p>
-
             <h2>
               Pedidos en proceso
             </h2>
-
           </div>
         </div>
 
@@ -311,11 +305,6 @@ onMounted(load);
         <div class="group-header">
 
           <div>
-
-            <p class="group-eyebrow">
-              Historial
-            </p>
-
             <h2>
               Pedidos entregados
             </h2>

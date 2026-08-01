@@ -170,16 +170,7 @@ onMounted(() => {
         class="button-primary"
         @click="registerMovement"
       >
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M11 5h2v14h-2zm-6 6h14v2H5z"/>
-        </svg>
-
         Registrar 
-
       </button>
 
     </section>
@@ -195,10 +186,6 @@ onMounted(() => {
         <h2>
           Alertas de stock bajo
         </h2>
-
-        <span>
-          {{ alerts.length }} productos
-        </span>
 
       </div>
 
@@ -229,8 +216,6 @@ onMounted(() => {
 
               <th>Producto</th>
 
-              <th>Código</th>
-
               <th>Estado</th>
 
             </tr>
@@ -249,12 +234,6 @@ onMounted(() => {
                 <strong>
                   {{ product.name }}
                 </strong>
-
-              </td>
-
-              <td>
-
-                {{ product.code }}
 
               </td>
 
@@ -424,7 +403,7 @@ onMounted(() => {
 
 .button-primary{
 
-    display:inline-flex;
+    display:flex;
 
     align-items:center;
 
@@ -444,7 +423,7 @@ onMounted(() => {
 
     color:white;
 
-    font-weight:700;
+    font-weight:600;
 
     cursor:pointer;
 
@@ -474,11 +453,7 @@ onMounted(() => {
 
     margin-bottom:1rem;
 
-    padding:1rem;
-
     border-radius:14px;
-
-    background:#ecfdf5;
 
     color:#15803d;
 
@@ -488,11 +463,7 @@ onMounted(() => {
 
     margin-bottom:1rem;
 
-    padding:1rem;
-
     border-radius:14px;
-
-    background:#fff1f2;
 
     color:#be123c;
 

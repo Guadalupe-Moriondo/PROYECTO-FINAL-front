@@ -65,7 +65,6 @@ onMounted(load);
   <div class="container admin-year-view">
     <div class="page-header">
       <h1>Pedidos por año</h1>
-      <p class="page-subtitle">Buscá los pedidos entregados de un año puntual.</p>
     </div>
 
     <div class="year-search">
@@ -117,10 +116,30 @@ onMounted(load);
                 </td>
                 <td>{{ new Date(order.createdAt).toLocaleDateString('es-AR') }}</td>
                 <td class="table-mono">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
-                <td>
-                  <button type="button" class="detail-toggle" @click="toggleDetail(order)">
-                    {{ expandedOrderId === order.id ? 'Ocultar' : 'Ver detalle' }}
-                  </button>
+                <td class="detail-column">
+                  <button
+                  type="button"
+                  class="detail-toggle"
+                  @click="toggleDetail(order)"
+                >
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                    />
+                  </svg>
+
+                  <span>
+                    {{ expandedOrderId === order.id
+                      ? 'Ocultar'
+                      : 'Ver detalle'
+                    }}
+                  </span>
+
+                </button>
                 </td>
               </tr>
               <tr v-if="expandedOrderId === order.id" class="detail-row">
@@ -456,60 +475,55 @@ onMounted(load);
 
 
 /* Botón detalle */
-.detail-toggle {
-
-  height:36px;
-
-  display:inline-flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-
-  padding:0 .9rem;
-
-
-  border:none;
-
-  border-radius:8px;
-
-
-  background:#2563eb;
-
-  color:white;
-
-
-  font-size:.85rem;
-
-  font-weight:600;
-
-
-  cursor:pointer;
-
-  transition:.2s;
-
+.detail-column {
+  text-align: right;
 }
 
+.detail-toggle {
+  display: inline-flex;
 
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 8px 12px;
+
+  border: 1px solid var(--color-line);
+
+  border-radius: 9px;
+
+  background: var(--color-surface);
+
+  color: var(--color-ink);
+
+  font-size: 0.78rem;
+ 
+
+  cursor: pointer;
+
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+
+.detail-toggle svg {
+  width: 16px;
+  height: 16px;
+}
 
 .detail-toggle:hover {
+  background:
+    rgba(183, 53, 45, 0.07);
 
-  background:#1d4ed8;
+  border-color:
+    rgba(183, 53, 45, 0.20);
 
-  transform:translateY(-1px);
+  color: var(--color-rust);
 
-}
-
-
-
-/* Detalle */
-.detail-row td {
-
-  background:rgba(0,0,0,.025);
-
-  padding:1.2rem;
-
+  transform: translateY(-1px);
 }
 
 

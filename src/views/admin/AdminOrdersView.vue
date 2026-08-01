@@ -274,20 +274,7 @@ onMounted(load);
               <td colspan="6">
 
                 <div class="detail-container">
-
-                  <div class="detail-header">
-
-                    <div>
-
-                      <p class="detail-eyebrow">
-                        Pedido #{{ order.orderNumber }}
-                      </p>
-
-                    </div>
-
-                  </div>
-
-
+  
                   <ul
                     v-if="order.details?.length"
                     class="detail-list"
@@ -543,7 +530,7 @@ onMounted(load);
 
 .order-row:hover {
   background:
-    rgba(183, 53, 45, 0.025);
+    rgba(48, 47, 47, 0.025);
 }
 
 .admin-table tbody tr:last-child td {
@@ -562,16 +549,13 @@ onMounted(load);
 
   border-radius: 8px;
 
-  background:
-    rgba(183, 53, 45, 0.08);
-
-  color: var(--color-rust);
+ 
+  color: black;
 
   font-family: var(--font-mono);
 
   font-size: 0.82rem;
 
-  font-weight: 700;
 }
 
 
@@ -702,8 +686,6 @@ onMounted(load);
   color: var(--color-ink);
 
   font-size: 0.78rem;
-
-  font-weight: 700;
 
   cursor: pointer;
 }

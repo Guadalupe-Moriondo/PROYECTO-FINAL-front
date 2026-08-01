@@ -122,10 +122,30 @@ onMounted(load);
                 </td>
                 <td>{{ new Date(order.createdAt).toLocaleDateString('es-AR') }}</td>
                 <td class="table-mono">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
-                <td>
-                  <button type="button" class="detail-toggle" @click="toggleDetail(order)">
-                    {{ expandedOrderId === order.id ? 'Ocultar' : 'Ver detalle' }}
-                  </button>
+                <td class="detail-column">
+                  <button
+                  type="button"
+                  class="detail-toggle"
+                  @click="toggleDetail(order)"
+                >
+
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                    />
+                  </svg>
+
+                  <span>
+                    {{ expandedOrderId === order.id
+                      ? 'Ocultar'
+                      : 'Ver detalle'
+                    }}
+                  </span>
+
+                </button>
                 </td>
               </tr>
               <tr v-if="expandedOrderId === order.id" class="detail-row">
@@ -426,7 +446,6 @@ onMounted(load);
 }
 
 
-
 /* Textos */
 .table-mono {
 
@@ -450,66 +469,56 @@ onMounted(load);
 
 }
 
+.detail-column {
+  text-align: right;
+}
 
-
-/* Botón detalle */
 .detail-toggle {
+  display: inline-flex;
 
-  height:36px;
+  align-items: center;
+  justify-content: center;
 
-  display:inline-flex;
+  gap: 7px;
 
-  align-items:center;
+  padding: 8px 12px;
 
-  justify-content:center;
+  border: 1px solid var(--color-line);
 
+  border-radius: 9px;
 
-  padding:0 .9rem;
+  background: var(--color-surface);
 
+  color: var(--color-ink);
 
-  border:none;
-
-  border-radius:8px;
-
-
-  background:#2563eb;
-
-  color:white;
-
-
-  font-size:.85rem;
-
+  font-size: 0.78rem;
  
 
+  cursor: pointer;
 
-  cursor:pointer;
-
-  transition:.2s;
-
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
 }
 
-
+.detail-toggle svg {
+  width: 16px;
+  height: 16px;
+}
 
 .detail-toggle:hover {
+  background:
+    rgba(183, 53, 45, 0.07);
 
-  background:#1d4ed8;
+  border-color:
+    rgba(183, 53, 45, 0.20);
 
-  transform:translateY(-1px);
+  color: var(--color-rust);
 
+  transform: translateY(-1px);
 }
-
-
-
-/* Detalle */
-.detail-row td {
-
-  background:rgba(0,0,0,.025);
-
-  padding:1.2rem;
-
-}
-
-
 
 .detail-list {
 
