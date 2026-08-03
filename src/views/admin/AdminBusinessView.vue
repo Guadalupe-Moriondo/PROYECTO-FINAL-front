@@ -451,7 +451,7 @@ onMounted(load);
       class="button button-primary"
       :disabled="saving"
     >
-      {{ saving ? 'Guardando cambios...' : 'Guardar cambios' }}
+      {{ saving ? 'Guardando cambios...' : 'Guardar' }}
     </button>
 
   </div>
@@ -497,7 +497,7 @@ onMounted(load);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: 18px;
-  padding: 1.6rem;
+  padding: 2rem;
   box-shadow: 0 8px 25px rgba(0,0,0,.08);
 }
 
@@ -526,7 +526,7 @@ onMounted(load);
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  gap: 1.4rem;
 }
 
 /*==============================
@@ -623,6 +623,7 @@ onMounted(load);
 .hours-box:hover {
   border-color: #cfd8e3;
   transform: translateY(-1px);
+  
 }
 
 .hours-box h3 {
@@ -678,35 +679,6 @@ onMounted(load);
   margin-top: .5rem;
 }
 
-.button-primary {
-  background: var(--color-steel);
-  color: white;
-
-  border: none;
-  border-radius: 12px;
-
-  padding: .85rem 1.6rem;
-
-  font-size: .95rem;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: all .2s ease;
-
-  box-shadow: 0 6px 16px rgba(0,0,0,.12);
-}
-
-.button-primary:hover {
-  transform: translateY(-2px);
-  opacity: .95;
-}
-
-.button-primary:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-  transform: none;
-}
 
 /*==============================
   LOADING

@@ -157,6 +157,6 @@ async function submit() {
 /* Hover del ojo */
 .password-toggle:hover {
   background: transparent;
-  transform: scale(1.1);
+  
 }
 </style>

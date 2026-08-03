@@ -170,7 +170,7 @@ onMounted(() => {
         class="button-primary"
         @click="registerMovement"
       >
-        Registrar 
+        REGISTRAR 
       </button>
 
     </section>
@@ -401,51 +401,7 @@ onMounted(() => {
 
 /*================ BOTON ================*/
 
-.button-primary{
 
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:.8rem;
-
-    height:48px;
-
-    padding:0 1.6rem;
-
-    border:none;
-
-    border-radius:14px;
-
-    background:linear-gradient(135deg,#b91c1c,#dc2626);
-
-    color:white;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.25s;
-
-}
-
-.button-primary svg{
-
-    width:18px;
-
-    height:18px;
-
-}
-
-.button-primary:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 14px 28px rgba(185,28,28,.28);
-
-}
 
 /*================ MENSAJES ================*/
 
@@ -499,7 +455,7 @@ onMounted(() => {
 
     border-radius:999px;
 
-    background:#f3f4f6;
+    background:#f6f6f3;
 
     color:var(--color-ink-soft);
 

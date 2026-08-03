@@ -12,16 +12,11 @@ import BucoLogo from '../assets/Brands/Buco.png';
 import OmbuLogo from '../assets/Brands/Ombu.png';
 import OncativoLogo from '../assets/Brands/Oncativo.png';
 import RotorLogo from '../assets/Brands/Rotor.png';
-import AgrometalLogo from '../assets/Brands/Agrometal.png';
-import CaseLogo from '../assets/Brands/Case.png';
 import CeleLogo from '../assets/Brands/Cele.png';
 import CrucianelliLogo from '../assets/Brands/Crucianelli.png';
-import ErcaLogo from '../assets/Brands/Erca.png';
-import JohnDeereLogo from '../assets/Brands/John Deere.png';
-import NewHollandLogo from '../assets/Brands/New Holland.jpg';
-import TanziLogo from '../assets/Brands/Tanzi.jpg';
-import TedeschiLogo from '../assets/Brands/Tedeschi.png';
 import TossoliniLogo from '../assets/Brands/Tossolini.png';
+import AgrometalLogo from '../assets/Brands/Agrometal.png';
+import IngersollLogo from '../assets/Brands/Ingersoll.png';
 
 const { business } = useBusiness();
 
@@ -32,15 +27,10 @@ const brands = [
   { name: 'Oncativo', image: OncativoLogo },
   { name: 'Rotor', image: RotorLogo },
   { name: 'Agrometal', image: AgrometalLogo },
-  { name: 'Case', image: CaseLogo },
   { name: 'Cele', image: CeleLogo },
   { name: 'Crucianelli', image: CrucianelliLogo },
-  { name: 'Erca', image: ErcaLogo },
-  { name: 'John Deere', image: JohnDeereLogo },
-  { name: 'New Holland', image: NewHollandLogo },
-  { name: 'Tanzi', image: TanziLogo },
-  { name: 'Tedeschi', image: TedeschiLogo },
   { name: 'Tossolini', image: TossoliniLogo },
+  { name: 'Ingersoll', image: IngersollLogo },
 ];
 
 const whatsappUrl = computed(() => {
@@ -275,12 +265,6 @@ onUnmounted(() => {
           <h2>
             Productos
           </h2>
-
-          <p class="products-description">
-            Repuestos seleccionados para que tu maquinaria
-            nunca se detenga.
-          </p>
-
         </div>
 
 
@@ -730,13 +714,7 @@ onUnmounted(() => {
   line-height: 1.05;
 }
 
-.products-description {
-  margin: 12px 0 0;
 
-  color: rgba(255, 255, 255, 0.88);
-
-  font-size: 0.95rem;
-}
 
 
 .products-scroll {
@@ -915,19 +893,20 @@ onUnmounted(() => {
 }
 
 .brand-item {
-  min-height: 75px;
 
-  display: flex;
+    height: 90px;
 
-  justify-content: center;
-  align-items: center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-  padding: 10px;
+    padding:20px;
+
 }
 
 .brand-logo {
-  width: 100%;
-  height: 62px;
+  max-width:100%;
+  max-height:1000%;
 
   object-fit: contain;
 

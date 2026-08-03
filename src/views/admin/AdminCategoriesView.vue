@@ -201,15 +201,7 @@ onMounted(load);
           type="submit"
           class="button button-primary"
         >
-
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 11H13V5h-2v6H5v2h6v6h2v-6h6z"/>
-          </svg>
-
-          <span>
-            Agregar categoría
-          </span>
-
+          Agregar 
         </button>
 
       </form>
@@ -325,17 +317,29 @@ onMounted(load);
                 <td class="table-actions">
 
                   <button
-                    class="save-button"
+                    type="button"
+                    class="icon-button success"
                     @click="saveEdit(cat.id)"
+                    title="Guardar"
                   >
-                    Guardar
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="m9.2 16.6-4-4L3.8 14l5.4 5.4L21 7.6 19.6 6.2 9.2 16.6Z"
+                      />
+                    </svg>
                   </button>
 
                   <button
-                    class="cancel-button"
+                    type="button"
+                    class="icon-button danger"
                     @click="editingId = null"
+                    title="Cancelar"
                   >
-                    Cancelar
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                         d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
+                      />
+                    </svg>
                   </button>
 
                 </td>
@@ -371,17 +375,28 @@ onMounted(load);
                 <td class="table-actions">
 
                   <button
-                    class="edit-button"
+                    class="icon-button edit-button"
                     @click="startEditing(cat)"
+                    title="Editar categoría"
                   >
-                    Editar
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 20h9"/>
+                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                    </svg>
                   </button>
 
                   <button
-                    class="delete-button"
+                    class="icon-button delete-button"
                     @click="remove(cat)"
+                    title="Dar de baja"
                   >
-                    Dar de baja
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14H6L5 6"/>
+                      <path d="M10 11v6"/>
+                      <path d="M14 11v6"/>
+                      <path d="M9 6V4h6v2"/>
+                    </svg>
                   </button>
 
                 </td>
@@ -511,31 +526,7 @@ onMounted(load);
 
 /* ================= BOTÓN AGREGAR ================= */
 
-.button-primary {
-  height: 48px;
-  display: inline-flex;
-  align-items: center;
-  gap: .75rem;
-  justify-content: center;
-  border: none;
-  border-radius: 14px;
-  background: linear-gradient(135deg,#b91c1c,#dc2626);
-  color: white;
-  font-weight: 700;
-  padding: 0 1.4rem;
-  cursor: pointer;
-  transition: .25s;
-}
 
-.button-primary svg {
-  width: 18px;
-  height: 18px;
-}
-
-.button-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(185,28,28,.28);
-}
 
 /* ================= MENSAJES ================= */
 
@@ -635,58 +626,9 @@ onMounted(load);
 
 /* ================= BOTONES ================= */
 
-.table-actions {
-  display: flex;
-  gap: .6rem;
-}
 
-.edit-button,
-.save-button,
-.cancel-button,
-.delete-button {
-  height: 38px;
-  border: none;
-  border-radius: 10px;
-  padding: 0 1rem;
-  cursor: pointer;
-  transition: .2s;
-}
 
-.edit-button {
-  background: #dbeafe;
-  color: #4c6ba8;
-}
 
-.edit-button:hover {
-  background: #bfdbfe;
-}
-
-.save-button {
-  background: #56a572;
-  color: #ffffff;
-}
-
-.save-button:hover {
-  background: #488a5f;
-}
-
-.cancel-button {
-  background: #7ea1e7;
-  color: #ffffff;
-}
-
-.cancel-button:hover {
-  background: #4c6ba8;
-}
-
-.delete-button {
-  background: #ecb5b5;
-  color: #992525;
-}
-
-.delete-button:hover {
-  background: #f3a9a9;
-}
 
 /* ================= RESPONSIVE ================= */
 

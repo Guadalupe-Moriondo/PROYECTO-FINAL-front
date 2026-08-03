@@ -120,11 +120,6 @@ watch(
         <aside class="filters-sidebar">
 
           <div class="filters-header">
-
-            <p class="filters-eyebrow">
-              Filtrar productos
-            </p>
-
             <h2>
               Buscá tu repuesto
             </h2>

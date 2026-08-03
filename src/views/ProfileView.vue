@@ -195,18 +195,13 @@ onMounted(loadProfile);
 
                 <button
                   type="button"
-                  class="icon-button-edit"
+                  class="icon-button edit-button"
                   @click="startEditName"
-                  aria-label="Editar nombre"
+                  title="Editar nombre"
                 >
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M4 17.3V20h2.7L17.8 8.9l-2.7-2.7L4 17.3Zm15.7-9.6a1 1 0 0 0 0-1.4l-1.9-1.9a1 1 0 0 0-1.4 0l-1.3 1.3 2.7 2.7 1.9-1.9Z"
-                    />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                   </svg>
 
                 </button>
@@ -230,13 +225,10 @@ onMounted(loadProfile);
                   type="button"
                   class="icon-button success"
                   @click="saveField('name', nameValue)"
-                  aria-label="Guardar nombre"
+                  title="Guardar"
                 >
 
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
+                  <svg viewBox="0 0 24 24" fill="currentColor">
                     <path
                       d="m9.2 16.6-4-4L3.8 14l5.4 5.4L21 7.6 19.6 6.2 9.2 16.6Z"
                     />
@@ -249,17 +241,14 @@ onMounted(loadProfile);
                   type="button"
                   class="icon-button danger"
                   @click="cancelEditName"
-                  aria-label="Cancelar edición"
+                  title="Cancelar"
                 >
 
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
-                    />
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                         d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
+                      />
+                    </svg>
 
                 </button>
 
@@ -784,43 +773,29 @@ onMounted(loadProfile);
   line-height: 1.15;
 }
 
-.icon-button-edit {
-  width: 32px;
-  height: 32px;
-
+.icon-button  {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 0;
-
-  border: 1px solid var(--color-line);
-
-  border-radius: 9px;
-
-  background: var(--color-bg);
-
+  border-radius: 8px;
+  background:
+    rgba(207, 81, 74, 0.08);
   color: var(--color-rust);
-
-  cursor: pointer;
-
   transition:
     background .2s ease,
-    transform .2s ease;
+    color .2s ease;
 }
 
-.icon-button-edit svg {
-  width: 15px;
-  height: 15px;
+.edit-button {
+  background: #fcdada;
+  color: #d33f3f;
 }
 
-.icon-button-edit:hover {
-  background:
-    rgba(183, 53, 45, 0.08);
-
-  transform: translateY(-1px);
+.edit-button:hover {
+  background: #ffc3c3;
 }
-
 .profile-meta {
   display: flex;
 
@@ -900,37 +875,7 @@ onMounted(loadProfile);
     0 0 0 3px rgba(183, 53, 45, 0.08);
 }
 
-.icon-button {
-  width: 34px;
-  height: 34px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: 1px solid var(--color-line);
-
-  border-radius: 9px;
-
-  background: #fff;
-
-  cursor: pointer;
-}
-
-.icon-button svg {
-  width: 15px;
-  height: 15px;
-}
-
-.icon-button.success {
-  color: #2d9754;
-}
-
-.icon-button.danger {
-  color: var(--color-danger);
-}
 
 
 /* =========================================================

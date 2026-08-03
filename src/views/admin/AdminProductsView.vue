@@ -126,9 +126,7 @@ onMounted(load);
               Precio
             </th>
 
-            <th class="actions-column">
-              Acciones
-            </th>
+            <th class="actions-column"></th>
 
           </tr>
 
@@ -233,39 +231,32 @@ onMounted(load);
                 <RouterLink
                   :to="{
                     name: 'admin-product-edit',
-                    params: {
-                      id: product.id
+                    params: {id: product.id
                     }
                   }"
-                  class="action-button edit-button"
+                  class="icon-button edit-button"
                   title="Editar producto"
+                  
                 >
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M4 17.3V20h2.7L17.8 8.9l-2.7-2.7L4 17.3Zm15.7-9.6a1 1 0 0 0 0-1.4l-1.9-1.9a1 1 0 0 0-1.4 0l-1.3 1.3 2.7 2.7 1.9-1.9Z"
-                    />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                   </svg>
                 </RouterLink>
 
 
                 <button
                   type="button"
-                  class="action-button delete-button"
+                  class="icon-button delete-button"
                   @click="remove(product)"
                   title="Dar de baja"
                 >
-
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M6 7h12v13H6V7Zm2 2v9h2V9H8Zm4 0v9h2V9h-2Zm5-5V2h-2v2H9V2H7v2H4v2h16V4h-3Z"
-                    />
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14H6L5 6"/>
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                    <path d="M9 6V4h6v2"/>
                   </svg>
 
                 </button>
@@ -734,90 +725,7 @@ onMounted(load);
    ACCIONES
 ========================================================= */
 
-.actions-column {
-  text-align: right;
-}
 
-.table-actions {
-  display: flex;
-
-  align-items: center;
-  justify-content: flex-end;
-
-  gap: 8px;
-
-  white-space: nowrap;
-}
-
-.action-button {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-
-  min-height: 36px;
-
-  padding: 0 11px;
-
-  border-radius: 9px;
-
-  font-size: .77rem;
-
-  font-weight: 700;
-
-  text-decoration: none;
-
-  cursor: pointer;
-
-  transition:
-    transform .2s ease,
-    background .2s ease;
-}
-
-.action-button svg {
-  width: 16px;
-  height: 16px;
-}
-
-.action-button:hover {
-  transform: translateY(-1px);
-}
-
-
-/* Editar */
-
-.edit-button {
-  border: 1px solid rgba(37, 99, 235, .16);
-
-  background:
-    rgba(37, 99, 235, .09);
-
-  color: #2563eb;
-}
-
-.edit-button:hover {
-  background:
-    rgba(37, 99, 235, .15);
-}
-
-
-/* Eliminar */
-
-.delete-button {
-  border: 1px solid rgba(183, 53, 45, .14);
-
-  background:
-    rgba(183, 53, 45, .07);
-
-  color: var(--color-rust);
-}
-
-.delete-button:hover {
-  background:
-    rgba(183, 53, 45, .13);
-}
 
 
 /* =========================================================

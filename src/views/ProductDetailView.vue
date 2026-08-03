@@ -76,40 +76,122 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container detail-view">
-    <p v-if="loading" class="loading-state">Cargando producto...</p>
-    <p v-else-if="error" class="error-message">{{ error }}</p>
+  <div class="container product-page">
 
-    <template v-else>
+    <!-- Estados -->
+    <p v-if="loading" class="page-state">
+      Cargando producto...
+    </p>
 
-      <div class="detail-back-row">
+    <p v-else-if="error" class="page-state page-state-error">
+      {{ error }}
+    </p>
+
+
+    <div v-else>
+
+      <div class="product-back">
         <BackButton />
       </div>
-      <div class="detail-grid">
-        <div class="detail-image">
-          <img v-if="imageUrl" :src="imageUrl" :alt="product.name" />
-          <span v-else class="detail-image-placeholder">Sin foto disponible</span>
-        </div>
 
-        <div class="detail-info">
-          <p class="detail-brand" v-if="product.brand">{{ product.brand }}</p>
-          <h1 class="detail-name">{{ product.name }}</h1>
-          <AvailabilityTag
-            :code="product.code"
-            :stock="product.stock"
-          />
-          <p class="detail-price">$ {{ Number(product.price).toLocaleString('es-AR') }}</p>
 
-          <p v-if="product.description" class="detail-text">{{ product.description }}</p>
+      <main class="product-layout">
 
-          <div v-if="product.machineryCompatibility" class="detail-compatibility">
-            <h3>Compatibilidad de maquinaria</h3>
-            <p>{{ product.machineryCompatibility }}</p>
+
+        <!-- Imagen principal -->
+        <section class="product-media">
+
+          <div class="image-frame">
+
+            <img
+              v-if="imageUrl"
+              :src="imageUrl"
+              :alt="product.name"
+            />
+
+            <span v-else>
+              Sin imagen disponible
+            </span>
+
           </div>
 
-          <div class="detail-actions">
-            <div class="field field-quantity">
-              <label for="quantity">Cantidad</label>
+        </section>
+
+
+
+
+
+        <!-- Información -->
+        <section class="product-panel">
+
+
+          <div class="product-heading">
+
+            <p
+              v-if="product.brand"
+              class="product-brand"
+            >
+              {{ product.brand }}
+            </p>
+
+
+            <h1>
+              {{ product.name }}
+            </h1>
+
+
+            <AvailabilityTag
+              :code="product.code"
+              :stock="product.stock"
+            />
+
+          </div>
+
+
+
+
+
+          <div class="product-price">
+
+            $ {{ Number(product.price).toLocaleString('es-AR') }}
+
+          </div>
+
+
+
+
+
+          <div
+            v-if="product.description"
+            class="product-description"
+          >
+
+            <h3>
+              Descripción
+            </h3>
+
+            <p>
+              {{ product.description }}
+            </p>
+
+          </div>
+
+
+
+
+
+          <!-- Compra -->
+
+          <div class="purchase-box">
+
+
+            <div class="quantity-control">
+
+              <label for="quantity">
+                Cantidad
+              </label>
+
+
               <input
                 id="quantity"
                 type="number"
@@ -118,168 +200,592 @@ onMounted(() => {
                 v-model.number="quantity"
                 :disabled="product.stock === 0"
               />
+
             </div>
+
+
+
             <button
-              class="button button-primary"
+              class="button button-primary purchase-button"
               :disabled="product.stock === 0"
               @click="addToCart"
             >
-              {{ product.stock === 0 ? 'Sin stock' : 'Agregar al carrito' }}
+
+              {{
+                product.stock === 0
+                ? 'Sin stock'
+                : 'Agregar al carrito'
+              }}
+
             </button>
+
+
           </div>
-          <p v-if="cartMessage" class="success-message">
+
+
+
+
+          <p
+            v-if="cartMessage"
+            class="cart-message"
+          >
             {{ cartMessage }}
           </p>
-          
-          <div v-if="whatsappUrl" class="whatsapp-help">
-            <p>¿Necesitás más información sobre este repuesto?</p>
+
+
+
+
+
+
+          <!-- WhatsApp -->
+
+          <div
+            v-if="whatsappUrl"
+            class="contact-box"
+          >
+
+            <div>
+
+              <strong>
+                ¿Necesitás ayuda?
+              </strong>
+
+              <p>
+                Consultanos por compatibilidad o disponibilidad.
+              </p>
+
+            </div>
+
 
             <a
               :href="whatsappUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="button-whatsapp"
+              class="whatsapp-button"
             >
+
               <svg
                 viewBox="0 0 24 24"
-                width="20"
-                height="20"
+                width="22"
+                height="22"
                 fill="currentColor"
               >
                 <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
               </svg>
 
-              <span>Consultar</span>
+              WhatsApp
+
             </a>
+
+
           </div>
-        </div>  
-      </div>      
-    </template>
+
+
+
+        </section>
+
+      </main>
+
+
+
+
+
+      <!-- Compatibilidad abajo -->
+
+      <section
+        v-if="product.machineryCompatibility"
+        class="compatibility-section"
+      >
+
+        <h2>
+          Compatibilidad de maquinaria
+        </h2>
+
+
+        <p>
+          {{ product.machineryCompatibility }}
+        </p>
+
+
+      </section>
+
+
+    </div>
+
+
   </div>
 </template>
 
 <style scoped>
-.detail-view {
-  padding: var(--space-5) var(--space-4);
-}
-.detail-back {
-  display: inline-block;
-  text-decoration: none;
-  color: var(--color-ink-soft);
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: var(--space-4);
-}
-.detail-back:hover { color: var(--color-rust); }
-.detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-5);
-}
-@media (max-width: 760px) {
-  .detail-grid { grid-template-columns: 1fr; }
-}
-.detail-image {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-top: 3px solid var(--color-rust);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.detail-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.detail-image-placeholder {
-  font-family: var(--font-mono);
-  color: var(--color-ink-soft);
-  text-transform: uppercase;
-  font-size: 0.85rem;
-}
-.detail-brand {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-ink-soft);
-  margin: 0 0 var(--space-1);
-}
-.detail-name {
-  margin-bottom: var(--space-2);
-}
-.detail-price {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 1.8rem;
-  color: var(--color-rust);
-  margin: var(--space-3) 0;
-}
-.detail-text {
-  color: var(--color-ink-soft);
-  line-height: 1.6;
-}
-.detail-compatibility {
-  margin-top: var(--space-4);
-  padding: var(--space-3);
-  background: var(--color-surface);
-  border-left: 3px solid var(--color-safety);
-  border-radius: var(--radius-sm);
-}
-.detail-compatibility h3 { margin-bottom: var(--space-1); }
-.detail-actions {
-  display: flex;
-  align-items: end;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-  margin-top: var(--space-4);
-}
-.field-quantity {
-  width: 100px;
-  margin-bottom: 0;
+
+
+.product-page {
+
+  padding:
+    var(--space-5)
+    var(--space-4);
+
 }
 
-.whatsapp-help {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-line);
-  
-  
+
+
+.page-state {
+
+  text-align:center;
+
+  padding:3rem;
+
+  font-family:
+    var(--font-mono);
+
+  color:
+    var(--color-ink-soft);
+
 }
 
-.whatsapp-help p {
-  margin-bottom: 0.8rem;
-  color: var(--color-ink-soft);
-  font-size: 0.95rem;
+
+.page-state-error {
+
+  color:
+    var(--color-rust);
+
 }
 
-.button-whatsapp {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
 
-  background: #33ad60;
-  color: white;
-  text-decoration: none;
 
-  padding: 0.85rem 1.4rem;
-  border-radius: 999px;
+/* BACK */
 
-  transition: 0.2s ease;
+.product-back {
+
+  margin-bottom:
+    var(--space-4);
+
 }
 
-.button-whatsapp:hover {
-  background: #2d9754;
-  transform: translateY(-2px);
+
+
+
+/* LAYOUT PRINCIPAL */
+
+.product-layout {
+
+  display:grid;
+
+  grid-template-columns:
+    1.25fr
+    .85fr;
+
+  gap:
+    var(--space-5);
+
+  align-items:start;
+
 }
 
-.button-whatsapp svg {
-  flex-shrink: 0;
+
+
+@media(max-width:900px){
+
+  .product-layout{
+
+    grid-template-columns:1fr;
+
+  }
+
 }
+
+
+
+
+
+/* IMAGEN */
+
+.product-media {
+
+  position:sticky;
+
+  top:20px;
+
+}
+
+
+
+.image-frame {
+
+  aspect-ratio:
+    1 / 1;
+
+  background:
+    var(--color-surface);
+
+  border:
+    1px solid var(--color-line);
+
+  border-top:
+    4px solid var(--color-rust);
+
+  border-radius:
+    var(--radius-md);
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  overflow:hidden;
+
+}
+
+
+
+.image-frame img {
+
+  width:100%;
+
+  height:100%;
+
+  object-fit:contain;
+
+  padding:2rem;
+
+}
+
+
+
+.image-frame span {
+
+  font-family:
+    var(--font-mono);
+
+  color:
+    var(--color-ink-soft);
+
+}
+
+
+
+
+
+/* PANEL DERECHO */
+
+
+.product-panel {
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:var(--space-3);
+
+}
+
+
+
+
+.product-brand {
+
+  font-family:
+    var(--font-mono);
+
+  text-transform:
+    uppercase;
+
+  letter-spacing:.1em;
+
+  color:
+    var(--color-ink-soft);
+
+  margin:0;
+
+}
+
+
+
+.product-heading h1 {
+
+  margin:
+    .5rem 0;
+
+  line-height:1.15;
+
+}
+
+
+
+.product-code {
+
+  margin-top:.8rem;
+
+  font-family:
+    var(--font-mono);
+
+  font-size:.85rem;
+
+  color:
+    var(--color-ink-soft);
+
+}
+
+
+
+.product-price {
+
+  font-family:
+    var(--font-mono);
+
+  font-weight:700;
+
+  font-size:2.2rem;
+
+  color:
+    var(--color-rust);
+
+}
+
+
+
+
+
+/* DESCRIPCION */
+
+.product-description {
+
+  border-top:
+    1px solid var(--color-line);
+
+  padding-top:
+    var(--space-3);
+
+}
+
+
+
+.product-description h3 {
+
+  margin-bottom:.5rem;
+
+}
+
+
+
+
+
+/* COMPRA */
+
+.purchase-box {
+
+  background:
+    var(--color-surface);
+
+  border:
+    1px solid var(--color-line);
+
+  padding:
+    var(--space-3);
+
+  border-radius:
+    var(--radius-md);
+
+}
+
+
+
+.quantity-control {
+
+  display:flex;
+  gap:1rem;
+
+}
+
+
+
+.quantity-control input {
+
+  max-width:100px;
+
+}
+
+
+
+.purchase-button {
+
+  margin-top:
+    var(--space-3);
+
+  width:100%;
+
+}
+
+
+
+
+
+.cart-message {
+
+  color:
+    var(--color-safety);
+
+}
+
+
+
+
+
+/* WHATSAPP */
+
+.contact-box {
+
+  margin-top:
+    var(--space-3);
+
+  padding:
+    var(--space-3);
+
+  border:
+    1px solid var(--color-line);
+
+  border-radius:
+    var(--radius-md);
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:1rem;
+
+}
+
+
+
+.contact-box p {
+
+  margin:.3rem 0 0;
+
+  color:
+    var(--color-ink-soft);
+
+  font-size:.9rem;
+
+}
+
+
+
+.whatsapp-button {
+
+
+  display:flex;
+
+  align-items:center;
+
+  gap:.5rem;
+
+
+  background:#33ad60;
+
+  color:white;
+
+
+  padding:
+    .8rem 1.2rem;
+
+
+  border-radius:
+    999px;
+
+
+  text-decoration:none;
+
+
+  white-space:nowrap;
+
+
+  transition:.2s ease;
+
+
+}
+
+
+
+.whatsapp-button:hover {
+
+  background:#2d9754;
+
+  transform:
+    translateY(-2px);
+
+}
+
+
+
+
+
+/* COMPATIBILIDAD */
+
+.compatibility-section {
+
+  margin-top:
+    var(--space-5);
+
+  padding:
+    var(--space-4);
+
+
+  background:
+    var(--color-surface);
+
+
+  border-left:
+    4px solid var(--color-safety);
+
+
+  border-radius:
+    var(--radius-md);
+
+}
+
+
+
+.compatibility-section h2 {
+
+  margin-bottom:
+    var(--space-2);
+
+}
+
+
+
+
+
+@media(max-width:600px){
+
+
+  .contact-box{
+
+    flex-direction:column;
+
+    align-items:stretch;
+
+  }
+
+
+  .whatsapp-button{
+
+    justify-content:center;
+
+  }
+
+
+  .product-media{
+
+    position:static;
+
+  }
+
+
+}
+
+
 </style>

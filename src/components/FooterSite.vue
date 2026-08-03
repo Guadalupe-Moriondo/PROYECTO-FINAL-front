@@ -119,7 +119,7 @@ const facebookLink = computed(() => {
   letter-spacing: 0.1em;
   font-size: 0.85rem;
   color: #fff;
-  margin: 5px;
+  margin: 10% 0 6px;
 }
 
 .footer-col-right {
@@ -149,9 +149,8 @@ const facebookLink = computed(() => {
 }
 .footer-social {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 20px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 .footer-social-link {
@@ -163,21 +162,13 @@ const facebookLink = computed(() => {
   font-size: 0.85rem;
 }
 .footer-social-link svg {
-  width: 18px;
+  width: 20px;
   height: 18px;
 }
 .footer-social-link:hover {
   color: var(--color-rust);
 }
-.footer-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  font-size: 0.9rem;
-}
+
 .footer-list a {
   text-decoration: none;
   color: #cfd3d1;

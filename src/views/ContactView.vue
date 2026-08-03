@@ -547,7 +547,7 @@ onMounted(loadBusiness);
   text-decoration: none;
 
   font-size: 0.9rem;
-  font-weight: 700;
+
 
   transition:
     transform .2s ease,
