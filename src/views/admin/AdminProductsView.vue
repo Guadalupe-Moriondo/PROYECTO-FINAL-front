@@ -403,34 +403,7 @@ onMounted(load);
    MENSAJE
 ========================================================= */
 
-.success-message {
-  display: flex;
 
-  align-items: center;
-
-  gap: 9px;
-
-  margin-bottom: 20px;
-
-  padding: 13px 16px;
-
-  border: 1px solid rgba(45, 151, 84, .16);
-
-  border-radius: 12px;
-
-  background: rgba(45, 151, 84, .07);
-
-  color: #258148;
-
-  font-size: 0.82rem;
-
-  font-weight: 600;
-}
-
-.success-message svg {
-  width: 17px;
-  height: 17px;
-}
 
 
 /* =========================================================
@@ -593,7 +566,7 @@ onMounted(load);
 
   color: var(--color-rust);
 
-  font-size: 0.77rem;
+  font-size: 0.78rem;
 
   font-weight: 700;
 }
@@ -603,9 +576,9 @@ onMounted(load);
 
   color: var(--color-ink-soft);
 
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
 
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 
@@ -616,13 +589,13 @@ onMounted(load);
 .table-price {
   color: var(--color-ink);
 
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
 
-  font-size: 0.87rem;
+  font-size: 1rem;
 
   font-weight: 700;
 
-  white-space: nowrap;
+  
 }
 
 

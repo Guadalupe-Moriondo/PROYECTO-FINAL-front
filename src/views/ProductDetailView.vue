@@ -531,8 +531,7 @@ onMounted(() => {
 
 .product-price {
 
-  font-family:
-    var(--font-mono);
+  font-family: var(--font-display);
 
   font-weight:700;
 
@@ -623,8 +622,11 @@ onMounted(() => {
 
 .cart-message {
 
-  color:
-    var(--color-safety);
+  background: #e8f7ec;
+  color: #207a3c;
+  border: 1px solid #b7e2c4;
+  padding: .9rem 1rem;
+  border-radius: 12px;
 
 }
 

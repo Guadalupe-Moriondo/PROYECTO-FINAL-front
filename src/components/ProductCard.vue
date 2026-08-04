@@ -80,7 +80,7 @@ function imageUrl(product) {
 }
 .card-brand {
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 0.72rem;
   text-transform: uppercase;
   color: var(--color-ink-soft);
@@ -93,9 +93,9 @@ function imageUrl(product) {
 }
 .card-price {
   margin: 0 0 var(--space-2);
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   color: var(--color-rust);
 }
 </style>

@@ -369,15 +369,6 @@ onMounted(loadProfile);
           class="success-message"
         >
 
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm4.2 7.2-5.1 5.1-3-3 1.4-1.4 1.6 1.6 3.7-3.7 1.4 1.4Z"
-            />
-          </svg>
-
           {{ profileMessage }}
 
         </p>
@@ -399,6 +390,8 @@ onMounted(loadProfile);
               <path
                 d="M12 2.5 20 5v6.2c0 5.1-3.2 8.7-8 10.3-4.8-1.6-8-5.2-8-10.3V5l8-2.5Zm0 2.1L6 6.5v4.7c0 3.9 2.3 6.7 6 8.1 3.7-1.4 6-4.2 6-8.1V6.5l-6-1.9Zm-1.1 10.2-2.5-2.5 1.4-1.4 1.1 1.1 3.3-3.3 1.4 1.4-4.7 4.7Z"
               />
+
+              
             </svg>
 
           </div>
@@ -600,16 +593,7 @@ onMounted(loadProfile);
           v-if="passwordMessage"
           class="success-message"
         >
-
-          <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm4.2 7.2-5.1 5.1-3-3 1.4-1.4 1.6 1.6 3.7-3.7 1.4 1.4Z"
-            />
-          </svg>
-
+        
           {{ passwordMessage }}
 
         </p>
@@ -1150,7 +1134,7 @@ onMounted(loadProfile);
 
   background: transparent;
 
-  color: var(--color-ink-soft);
+  color: rgb(133, 133, 133);;
 
   cursor: pointer;
 }
@@ -1161,7 +1145,7 @@ onMounted(loadProfile);
 }
 
 .password-toggle:hover {
-  color: var(--color-rust);
+  color: rgb(77, 76, 76);
 
   background: transparent;
 }
@@ -1219,41 +1203,6 @@ onMounted(loadProfile);
 /* =========================================================
    MENSAJES
 ========================================================= */
-
-.success-message {
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  margin: 8px 0 0;
-
-  color: #2d9754;
-
-  font-size: 0.8rem;
-
-  font-weight: 600;
-}
-
-.success-message svg {
-  width: 16px;
-  height: 16px;
-
-  flex: 0 0 16px;
-}
-
-.loading-state {
-  padding: 60px 0;
-
-  text-align: center;
-
-  color: var(--color-ink-soft);
-
-  font-family: var(--font-mono);
-
-  font-size: 0.85rem;
-}
 
 
 /* =========================================================

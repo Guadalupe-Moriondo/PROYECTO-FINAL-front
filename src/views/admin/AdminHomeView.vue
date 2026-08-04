@@ -7,7 +7,8 @@ const sections = [
   { to: 'admin-orders', title: 'Pedidos', description: 'Ver y actualizar el estado de los pedidos recibidos' },
   { to: 'admin-stock', title: 'Stock', description: 'Registrar movimientos y ver alertas de stock bajo' },
   { to: 'admin-business', title: 'Datos del negocio', description: 'Dirección, teléfono, horarios y redes sociales' },
-  {to: 'admin-order-history',title: 'Historial de pedidos',description: 'Estadísticas de ventas.'},
+  { to: 'admin-order-history',title: 'Historial de pedidos',description: 'Estadísticas de ventas.'},
+  { to:'admin-users',title:'Usuarios',description:'Administrar clientes y administradores'}
 ];
 </script>
 

@@ -649,25 +649,6 @@ onMounted(load);
   color: var(--color-ink-soft);
 }
 
-/*==============================
-  MENSAJES
-==============================*/
-
-.success-message {
-  background: #e8f7ec;
-  color: #207a3c;
-  border: 1px solid #b7e2c4;
-  padding: .9rem 1rem;
-  border-radius: 12px;
-}
-
-.error-message {
-  background: #ffe8e8;
-  color: #c0392b;
-  border: 1px solid #f3bcbc;
-  padding: .9rem 1rem;
-  border-radius: 12px;
-}
 
 /*==============================
   BOTÓN

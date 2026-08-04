@@ -68,20 +68,7 @@ onMounted(load);
       v-if="route.query.created"
       class="success-message"
     >
-
-      <div class="success-icon">
-
-        <svg
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path
-            d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm4.2 7.2-5.1 5.1-3-3 1.4-1.4 1.6 1.6 3.7-3.7 1.4 1.4Z"
-          />
-        </svg>
-
-      </div>
-
+ 
       <div>
 
         <strong>
@@ -510,63 +497,9 @@ onMounted(load);
 }
 
 
-/* =========================================================
-   MENSAJE DE ÉXITO
-========================================================= */
 
-.success-message {
-  display: flex;
 
-  align-items: center;
 
-  gap: 14px;
-
-  margin-bottom: 30px;
-
-  padding: 17px 20px;
-
-  border: 1px solid rgba(45, 151, 84, 0.18);
-
-  border-radius: 14px;
-
-  background: rgba(45, 151, 84, 0.07);
-
-  color: var(--color-ink);
-}
-
-.success-icon {
-  width: 40px;
-  height: 40px;
-
-  flex: 0 0 40px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 11px;
-
-  background: rgba(45, 151, 84, 0.12);
-
-  color: #2d9754;
-}
-
-.success-icon svg {
-  width: 19px;
-  height: 19px;
-}
-
-.success-message strong {
-  font-size: 0.9rem;
-}
-
-.success-message p {
-  margin: 3px 0 0;
-
-  color: var(--color-ink-soft);
-
-  font-size: 0.84rem;
-}
 
 
 /* =========================================================

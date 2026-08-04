@@ -166,17 +166,21 @@ button, input, select, textarea {
   outline-offset: 1px;
 }
 
-.error-message {
-  color: var(--color-danger);
-  font-size: 0.9rem;
-  margin-top: var(--space-2);
-}
 .success-message {
-  color: var(--color-success);
-  font-size: 0.9rem;
-  margin-top: var(--space-2);
+  background: #e8f7ec;
+  color: #207a3c;
+  border: 1px solid #b7e2c4;
+  padding: .9rem 1rem;
+  border-radius: 12px;
 }
 
+.error-message {
+  background: #ffe8e8;
+  color: #c0392b;
+  border: 1px solid #f3bcbc;
+  padding: .9rem 1rem;
+  border-radius: 12px;
+}
 /* Utilities */
 .visually-hidden {
   position: absolute;
@@ -204,7 +208,7 @@ button, input, select, textarea {
   justify-content: center;
 
   border: none;
-  border-radius: 10px;
+  border-radius: 50px;
 
   cursor: pointer;
   transition: .2s;
@@ -218,42 +222,43 @@ button, input, select, textarea {
 /* Editar */
 
 .edit-button {
-  background: #b4d2fa;
+  background: #d1e3fa;
   color: #2563eb;
+  
 }
 
 .edit-button:hover {
-  background: #d5e6ff;
+  background: #a6c6f3;
 }
 
 /* Eliminar */
 
 .delete-button {
-  background: #d1d1d1;
+  background: #e7e5e5;
   color: #686868;
 }
 
 .delete-button:hover {
-  background: #e6e6e6;
+  background: #c7c6c6;
 }
 
 
 .icon-button.success {
-  background: #dcfce7;
-  color: #16a34a;
+  background: #abe2be;
+  color: #398b57;
 }
 
 .icon-button.success:hover {
-  background: #bbf7d0;
+  background: #8ccaa1;
 }
 
 .icon-button.danger {
-  background: #fee2e2;
+  background: #ffcdcd;
   color: #dc2626;
 }
 
 .icon-button.danger:hover {
-  background: #fecaca;
+  background: #fdabab;
 }
 
 /* ============================================================

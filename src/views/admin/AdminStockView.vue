@@ -405,25 +405,7 @@ onMounted(() => {
 
 /*================ MENSAJES ================*/
 
-.success-message{
 
-    margin-bottom:1rem;
-
-    border-radius:14px;
-
-    color:#15803d;
-
-}
-
-.error-message{
-
-    margin-bottom:1rem;
-
-    border-radius:14px;
-
-    color:#be123c;
-
-}
 
 /*================ TABLA ================*/
 

@@ -8,6 +8,9 @@ export default {
   getById(id) {
     return api.get(`/users/${id}`);
   },
+   list() {
+   return api.get('/users');
+  },
   updateRole(id, role) {
     // role: 'admin' | 'customer'
     return api.put(`/users/${id}/role`, { role });
@@ -21,5 +24,6 @@ export default {
   },
   changePassword(data) {
   return api.patch('/users/change-password', data);
-  }
+  },
+ 
 };

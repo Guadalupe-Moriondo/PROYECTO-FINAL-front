@@ -8,8 +8,7 @@ defineProps({
 
 <template>
   <div class="tag" :class="{ 'tag-low-stock': stock <= minStock && stock > 0, 'tag-out-of-stock': stock === 0 }">
-    <span class="tag-hole" aria-hidden="true"></span>
-    <span class="tag-code">{{ code }}</span>
+    <span class="tag-hole" aria-hidden="true"></span> 
     <span class="tag-stock">
       <template v-if="stock === 0">SIN STOCK</template>
       <template v-else-if="stock <= minStock">STOCK BAJO · {{ stock }}</template>

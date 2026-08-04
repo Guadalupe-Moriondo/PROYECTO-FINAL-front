@@ -26,7 +26,7 @@ import AdminBusinessView from '../views/admin/AdminBusinessView.vue';
 import AdminStatisticsView from '../views/admin/AdminStatisticsView.vue';
 import AdminOrdersByMonthView from '../views/admin/AdminOrdersByMonthView.vue';
 import AdminOrdersByYearView from '../views/admin/AdminOrdersByYearView.vue';
-
+import AdminUsersView from '../views/admin/AdminUsersView.vue';
 const router = createRouter({
   history: createWebHistory(),
   scrollBehavior() {
@@ -138,6 +138,16 @@ const router = createRouter({
       name: 'admin-order-history-year',
       component: AdminOrdersByYearView,
       meta: { requiresAuth: true, requiresAdmin: true },
+    },
+
+    {
+      path:'/admin/users',
+      name:'admin-users',
+      component:AdminUsersView,
+      meta:{
+        requiresAuth:true,
+        requiresAdmin:true
+      }
     },
 
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
