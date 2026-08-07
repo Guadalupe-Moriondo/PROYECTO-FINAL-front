@@ -109,7 +109,7 @@ onMounted(load);
           <tbody>
             <template v-for="order in orders" :key="order.id">
               <tr>
-                <td class="table-mono">{{ order.orderNumber }}</td>
+                <td class="table-mono-ord">{{ order.orderNumber }}</td>
                 <td>
                   {{ order.user?.name }}
                   <span class="table-subtext">{{ order.user?.email }}</span>
@@ -275,7 +275,7 @@ onMounted(load);
 
   border:1px solid var(--color-line);
 
-  font-family:var(--font-mono);
+  font-family:var(--font-display);
 
 }
 
@@ -349,7 +349,7 @@ onMounted(load);
 
 .stat-value {
 
-  font-family:var(--font-mono);
+  font-family:var(--font-display);
 
   font-size:1.8rem;
 
@@ -452,11 +452,21 @@ onMounted(load);
 /* Textos */
 .table-mono {
 
-  font-family:var(--font-mono);
+  font-family:var(--font-display);
 
-  font-weight:600;
+  font-weight: 600;
+
+  
 
 }
+
+.table-mono-ord {
+
+  font-family:var(--font-mono);
+
+  font-weight: 600;
+}
+
 
 
 
@@ -516,12 +526,12 @@ onMounted(load);
 
 .detail-toggle:hover {
   background:
-    rgba(183, 53, 45, 0.07);
+    rgba(107, 107, 107, 0.07);
 
   border-color:
-    rgba(183, 53, 45, 0.20);
+    rgba(95, 95, 95, 0.2);
 
-  color: var(--color-rust);
+  color: rgb(63, 63, 63);
 
   transform: translateY(-1px);
 }
@@ -585,7 +595,7 @@ onMounted(load);
 
   margin-left:auto;
 
-  font-family:var(--font-mono);
+  font-family:var(--font-display);
 
   color:var(--color-ink-soft);
 

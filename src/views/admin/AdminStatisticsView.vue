@@ -64,7 +64,7 @@ onMounted(load);
             Pedidos del mes
 
             <span class="stat-toggle-hint">
-              ver detalle
+              detalle ▼
             </span>
           </span>
 
@@ -97,7 +97,7 @@ onMounted(load);
             Pedidos del año
 
             <span class="stat-toggle-hint">
-              ver detalle
+              detalle ▼
             </span>
           </span>
 
@@ -182,7 +182,7 @@ onMounted(load);
   color: var(--color-ink-soft);
 }
 .stat-value {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 1.8rem;
   font-weight: 600;
   color: var(--color-ink);

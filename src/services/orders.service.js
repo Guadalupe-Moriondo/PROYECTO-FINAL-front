@@ -24,4 +24,9 @@ export default {
       params: { page, limit, month: month || undefined, year: year || undefined },
     });
   },
+  notifyCustomer(id, method) {
+    return api.put(`/orders/${id}/notify`, {
+      method,
+    });
+  },
 };

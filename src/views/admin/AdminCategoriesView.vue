@@ -379,7 +379,7 @@ onMounted(load);
                     @click="startEditing(cat)"
                     title="Editar"
                   >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
                       <path d="M12 20h9"/>
                       <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                     </svg>
@@ -390,7 +390,7 @@ onMounted(load);
                     @click="remove(cat)"
                     title="Dar de baja"
                   >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
                       <polyline points="3 6 5 6 21 6"/>
                       <path d="M19 6l-1 14H6L5 6"/>
                       <path d="M10 11v6"/>
@@ -618,7 +618,6 @@ onMounted(load);
   align-items: center;
   padding: .45rem .9rem;
   border-radius: 999px;
-  background: rgb(230, 229, 229);
   color: rgb(49, 49, 49);
   font-size: .82rem;
   

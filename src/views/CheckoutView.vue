@@ -43,10 +43,6 @@ async function confirmOrder() {
       v-if="cartStore.items.length === 0"
       class="empty-card"
     >
-      <div class="empty-icon">
-        🛒
-      </div>
-
       <h2>Tu carrito está vacío</h2>
 
       <p>
@@ -366,6 +362,8 @@ async function confirmOrder() {
   color: var(--color-ink-soft);
 
   font-size: .88rem;
+
+  font-family: var(--font-mono);
 
 }
 

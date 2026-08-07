@@ -64,6 +64,8 @@ function imageUrl(product) {
         v-else-if="cartStore.items.length === 0"
         class="empty-cart"
       >
+        
+
         <h2>Tu carrito está vacío</h2>
 
         <p>
@@ -132,7 +134,7 @@ function imageUrl(product) {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    
                   >
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6l-1 14H6L5 6"/>
@@ -455,8 +457,6 @@ function imageUrl(product) {
 
   border: none;
 
-  background: #f5f5f5;
-
   color: #666;
 
   cursor: pointer;
@@ -476,12 +476,7 @@ function imageUrl(product) {
   height: 18px;
 }
 
-.delete-button:hover {
 
-  background: #ffe8e8;
-
-  color: #c0392b;
-}
 
 /* =========================
    Resumen

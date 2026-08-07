@@ -916,11 +916,11 @@ onMounted(load);
 .order-total {
   color: var(--color-rust);
 
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
 
   font-size: 1rem;
 
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .order-status-mobile {

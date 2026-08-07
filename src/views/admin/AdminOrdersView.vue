@@ -1,12 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import ordersService from '../../services/orders.service';
+import { useBusiness } from '../../composables/useBusiness';
 import Pagination from '../../components/Pagination.vue';
+
 
 const orders = ref([]);
 const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
+
+const { business, loadBusiness } = useBusiness();
 
 const STATUSES = ['pending', 'confirmed', 'in_preparation', 'shipped', 'delivered'];
 const STATUS_LABELS = {
@@ -22,6 +26,10 @@ const PAYMENT_LABELS = {
   transfer: 'Transferencia ',
   card: 'Tarjeta',
 };
+
+function canNotify(order) {
+  return order.status === 'shipped';
+}
 
 async function load() {
   loading.value = true;
@@ -57,10 +65,116 @@ function toggleDetail(order) {
   expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
 }
 
+
 function lineSubtotal(detail) {
   const unitPrice = detail.unitPrice ?? detail.product?.price;
   if (unitPrice == null) return null;
   return Number(unitPrice) * Number(detail.quantity);
+}
+
+// ==============================
+// CONTACTAR CLIENTE
+// ==============================
+
+
+async function sendWhatsapp(order) {
+  if (!order.user?.phone) {
+    alert('Este cliente no tiene un teléfono cargado.');
+    return;
+  }
+
+  const phone = order.user.phone.replace(/\D/g, '');
+
+  const text = encodeURIComponent(
+    `¡Hola ${order.user.name}!
+
+    Te avisamos que tu pedido 
+    #${order.orderNumber} 
+    ya está preparado y listo para retirar.
+
+    📍 Dirección: ${business.value.address || 'Consultar ubicación.'}
+
+    🕒 Horarios: ${business.value.hours || 'Consultar horarios.'}
+
+    Muchas gracias por confiar en 
+    DM Repuestos Agrícolas.
+
+    ¡Te esperamos!`
+  );
+
+  window.open(
+    `https://wa.me/${phone}?text=${text}`,
+    '_blank'
+  );
+
+  await ordersService.notifyCustomer(
+    order.id,
+    'whatsapp'
+  );
+
+  order.customerNotified = true;
+  order.notificationMethod = 'whatsapp';
+  order.customerNotifiedAt = new Date();
+}
+
+
+
+// ==============================
+// EMAIL
+// ==============================
+
+function emailUrl(order) {
+
+  if (!order.user?.email) {
+    return null;
+  }
+
+  const subject = encodeURIComponent(
+    `Pedido listo para retirar`
+  );
+
+  const body = encodeURIComponent(
+    `Hola ${order.user.name}!
+
+    Queremos avisarte que tu pedido #${order.orderNumber} ya se encuentra preparado y listo para retirar.
+
+    📍 Dirección: ${business.value.address || 'Consultar ubicación.'}
+
+    📞 Teléfono: ${business.value.phone}
+
+    🕒 Horarios de atención: ${business.value.hours || 'Consultar horarios.'}
+
+    Muchas gracias por confiar en DM Repuestos Agrícolas.
+
+    Saludos.`
+  );
+
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${order.user.email}&su=${subject}&body=${body}`;
+
+}
+
+
+async function sendEmail(order) {
+  const url = emailUrl(order);
+
+  if (!url) {
+    alert('Este cliente no tiene un correo electrónico.');
+    return;
+  }
+
+  window.open(
+    url,
+    '_blank'
+  );
+
+  await ordersService.notifyCustomer(
+    order.id,
+    'email'
+  );
+
+  order.customerNotified = true;
+  order.notificationMethod = 'email';
+  order.customerNotifiedAt = new Date();
 }
 
 function imageUrl(product) {
@@ -68,7 +182,10 @@ function imageUrl(product) {
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 
-onMounted(load);
+onMounted(async () => {
+  await load();
+  await loadBusiness();
+});
 </script>
 
 <template>
@@ -160,7 +277,15 @@ onMounted(load);
                 <div class="customer-cell">
 
                   <div class="customer-avatar">
-                    {{ order.user?.name?.charAt(0)?.toUpperCase() || '?' }}
+                    <svg
+                      viewBox="0 0 24 24 "
+                      fill="none"
+                      stroke="currentColor"
+                      
+                    >
+                      <path d="M20 21a8 8 0 0 0-16 0"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
                   </div>
 
                   <div>
@@ -201,7 +326,7 @@ onMounted(load);
 
 
               <!-- Estado -->
-              <td>
+              <td class="notification-cell">
 
                 <div
                   class="status-control"
@@ -229,36 +354,91 @@ onMounted(load);
                   </select>
 
                 </div>
+                <div v-if="canNotify(order)">
+                  <div v-if="!order.customerNotified" class="notify-buttons">
+                      <!-- WhatsApp -->
+                    <button
+                      class="notify-icon whatsapp"
+                      @click="sendWhatsapp(order)"
+                      title="Avisar por Whatsapp"
+                    >
+                      <svg
+                         viewBox="0 0 24 24"
+                        fill="currentColor"
+                       >
+                         <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
+                      </svg>
+                    </button>
 
+                    <!-- Email -->
+                     <button
+                      class="notify-icon email"
+                      @click="sendEmail(order)"
+                      title="Avisar por Email"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.4 5.7a.6.6 0 0 0 .8 0L19.8 6H4.2ZM4 7.8V18h16V7.8l-7.4 5.7a2.1 2.1 0 0 1-2.6 0L4 7.8Z" />
+                      </svg>
+
+                    </button>
+
+                  </div>
+                  <div v-else class="notification-success">
+                    <strong>
+                      ✔ Cliente notificado
+                    </strong>
+
+                    <small>
+
+                      {{
+                        order.notificationMethod === 'whatsapp'
+                          ? 'Por WhatsApp'
+                          : 'Por Email'
+                      }}
+
+                    </small>
+
+                  </div>                   
+                </div>
               </td>
 
 
               <!-- Detalle -->
               <td class="detail-column">
 
-                <button
-                  type="button"
-                  class="detail-toggle"
-                  @click="toggleDetail(order)"
-                >
+                <div class="actions-column">
 
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
+                  <!-- Ver detalle -->
+                  <button
+                    type="button"
+                    class="detail-toggle"
+                    @click="toggleDetail(order)"
                   >
-                    <path
-                      d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
-                    />
-                  </svg>
 
-                  <span>
-                    {{ expandedOrderId === order.id
-                      ? 'Ocultar'
-                      : 'Ver detalle'
-                    }}
-                  </span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                      />
+                    </svg>
 
-                </button>
+                    <span>
+                      {{ expandedOrderId === order.id
+                        ? 'Ocultar'
+                        : 'Ver detalle'
+                      }}
+                    </span>
+
+                  </button>
+
+                  
+
+                </div>
 
               </td>
 
@@ -572,25 +752,35 @@ onMounted(load);
 }
 
 .customer-avatar {
-  width: 38px;
-  height: 38px;
+   width:38px;
 
-  flex: 0 0 38px;
+    height:38px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    border-radius:50%;
 
-  border-radius: 50%;
+    display:flex;
 
-  background:
-    rgba(183, 53, 45, 0.10);
+    align-items:center;
 
-  color: var(--color-rust);
+    justify-content:center;
 
-  font-size: 0.85rem;
-  font-weight: 800;
+    background:var(--color-bg);
+
+    border:1px solid var(--color-line);
+
+    flex-shrink:0;
+
+ 
 }
+
+.customer-avatar svg{
+
+    width:30px;
+
+    height:30px;
+
+}
+
 
 .customer-name {
   display: block;
@@ -618,7 +808,7 @@ onMounted(load);
 .order-total {
   color: var(--color-ink);
 
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
 
   font-size: 0.9rem;
 
@@ -661,7 +851,7 @@ onMounted(load);
 .status-control {
   position: relative;
 
-  display: inline-flex;
+  display: flex;
 
   border-radius: 999px;
 
@@ -764,7 +954,7 @@ onMounted(load);
   color: var(--color-ink);
 
   font-size: 0.78rem;
-  font-weight: 700;
+ 
 
   cursor: pointer;
 
@@ -782,12 +972,12 @@ onMounted(load);
 
 .detail-toggle:hover {
   background:
-    rgba(183, 53, 45, 0.07);
+    rgba(107, 107, 107, 0.07);
 
   border-color:
-    rgba(183, 53, 45, 0.20);
+    rgba(95, 95, 95, 0.2);
 
-  color: var(--color-rust);
+  color: rgb(63, 63, 63);
 
   transform: translateY(-1px);
 }
@@ -952,7 +1142,7 @@ onMounted(load);
 .detail-price {
   color: var(--color-ink);
 
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
 
   font-size: 0.85rem;
 
@@ -999,6 +1189,129 @@ onMounted(load);
   font-size: 0.85rem;
 }
 
+/* ==============================
+   ACCIONES DEL PEDIDO
+============================== */
+
+.actions-column{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+}
+.notification-cell {
+  white-space: nowrap;
+  
+}
+
+.notify-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin:8px;
+}
+
+.notify-icons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+}
+
+.notify-icon {
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  cursor: pointer;
+  transition: .2s;
+
+  color: white;
+}
+
+.notify-icon svg{
+    width:17px;
+    height:17px;
+}
+
+.notify-icon.whatsapp{
+    background:#33ad60;
+}
+
+
+.notify-icon.email{
+    background: var(--color-rust);
+}
+
+.notify-icon:hover{
+    transform:translateY(-2px) scale(1.08);
+}
+
+.notification-success{
+
+    margin-top:10px;
+
+    padding:8px;
+
+    border-radius:8px;
+
+    background:#e8f7ec;
+
+    border:1px solid #b8dfc4;
+
+    color:#207a3c;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+.notification-success strong{
+
+    font-size:.8rem;
+
+}
+
+.notification-success small{
+
+    color:#4d6655;
+    font-size:.8rem;
+
+
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width:768px){
+
+  .order-actions{
+    flex-direction:column;
+  }
+
+  .action-btn{
+    width:100%;
+    justify-content:center;
+  }
+
+}
 
 /* =========================================================
    RESPONSIVE

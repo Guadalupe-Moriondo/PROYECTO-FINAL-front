@@ -16,7 +16,7 @@ function goTo(page) {
     <button class="pagination-button" :disabled="page === 1" @click="goTo(page - 1)">
       ← 
     </button>
-    <span class="pagination-info">Página {{ page }} de {{ totalPages }}</span>
+    <span class="pagination-info"> {{ page }} de {{ totalPages }}</span>
     <button class="pagination-button" :disabled="page === totalPages" @click="goTo(page + 1)">
        →
     </button>

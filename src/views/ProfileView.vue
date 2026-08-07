@@ -180,7 +180,15 @@ onMounted(loadProfile);
         <div class="profile-card-header">
 
           <div class="avatar">
-            {{ initials }}
+            <svg
+              viewBox="0 0 24 24 "
+              fill="none"
+              stroke="currentColor"
+                      
+            >
+              <path d="M20 21a8 8 0 0 0-16 0"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
           </div>
 
           <div class="profile-header-info">
@@ -199,7 +207,7 @@ onMounted(loadProfile);
                   @click="startEditName"
                   title="Editar nombre"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
                     <path d="M12 20h9"/>
                     <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                   </svg>
@@ -714,25 +722,33 @@ onMounted(loadProfile);
 }
 
 .avatar {
-  width: 64px;
-  height: 64px;
+   width:70px;
 
-  flex: 0 0 64px;
+    height:70px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    border-radius:50%;
 
-  border-radius: 50%;
+    display:flex;
 
-  background:
-    rgba(183, 53, 45, 0.10);
+    align-items:center;
 
-  color: var(--color-rust);
+    justify-content:center;
 
-  font-size: 1.2rem;
+    background:var(--color-bg);
 
-  font-weight: 800;
+    border:1px solid var(--color-line);
+
+    flex-shrink:0;
+
+ 
+}
+
+.avatar svg{
+
+    width:50px;
+
+    height:50px;
+
 }
 
 .profile-header-info {

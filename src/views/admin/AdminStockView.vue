@@ -170,7 +170,7 @@ onMounted(() => {
         class="button-primary"
         @click="registerMovement"
       >
-        REGISTRAR 
+        Registrar
       </button>
 
     </section>
@@ -509,6 +509,34 @@ onMounted(() => {
     padding:3rem;
 
     color:var(--color-ink-soft);
+
+}
+
+button.button-primary{
+
+    display:block;
+
+    margin:0 auto;
+
+    padding:.9rem 2.5rem;
+
+    border-radius:14px;
+
+    background:var(--color-rust);
+
+    color:white;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+    text-transform:uppercase;
+
+    letter-spacing:.04em;
+
+    transition:.25s;
+
+   
 
 }
 

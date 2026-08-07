@@ -542,7 +542,7 @@ onMounted(loadBusiness);
 
   padding: 13px 20px;
 
-  border-radius: 10px;
+  border-radius: 50px;
 
   text-decoration: none;
 
@@ -563,13 +563,13 @@ onMounted(loadBusiness);
 }
 
 .contact-button.whatsapp {
-  background: #2d9754;
+  background: #33ad60;
 
   color: #fff;
 }
 
 .contact-button.whatsapp:hover {
-  background: #258148;
+  background: #2d9754;
 }
 
 .contact-button.email {

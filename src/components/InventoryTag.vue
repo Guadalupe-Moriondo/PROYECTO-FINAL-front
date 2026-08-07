@@ -56,7 +56,7 @@ defineProps({
   padding-left: var(--space-2);
 }
 .tag-low-stock .tag-stock {
-  color: var(--color-safety);
+  color: rgb(223, 156, 69);
   font-weight: 600;
 }
 .tag-out-of-stock .tag-stock {
