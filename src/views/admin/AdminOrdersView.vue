@@ -12,12 +12,12 @@ const totalPages = ref(1);
 
 const { business, loadBusiness } = useBusiness();
 
-const STATUSES = ['pending', 'confirmed', 'in_preparation', 'shipped', 'delivered'];
+const STATUSES = ['pending', 'confirmed', 'in_preparation', 'withdraw', 'delivered'];
 const STATUS_LABELS = {
   pending: 'Pendiente',
   confirmed: 'Confirmado',
   in_preparation: 'En preparación',
-  shipped: 'Enviado',
+  withdraw: 'Retirar',
   delivered: 'Entregado',
 };
 
@@ -28,7 +28,7 @@ const PAYMENT_LABELS = {
 };
 
 function canNotify(order) {
-  return order.status === 'shipped';
+  return order.status === 'withdraw';
 }
 
 async function load() {
@@ -63,6 +63,17 @@ const expandedOrderId = ref(null);
 
 function toggleDetail(order) {
   expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('es-AR');
+}
+
+function formatTime(date) {
+  return new Date(date).toLocaleTimeString('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 
@@ -232,6 +243,10 @@ onMounted(async () => {
             </th>
 
             <th>
+              Fecha
+            </th>
+
+            <th>
               Total
             </th>
 
@@ -239,6 +254,7 @@ onMounted(async () => {
               Pago
             </th>
 
+            
             <th>
               Estado
             </th>
@@ -298,10 +314,27 @@ onMounted(async () => {
                       {{ order.user?.email }}
                     </span>
 
+                    <span class="table-subtext">
+                      {{ order.user?.phone }}
+                    </span>
+
                   </div>
 
                 </div>
 
+              </td>
+
+              <!-- Fecha -->
+
+              <td class="date-cell">
+                <div class="date-content">
+                  <span class="date">
+                  {{ formatDate(order.createdAt) }}
+                  </span>
+                  <span class="time">
+                    {{ formatTime(order.createdAt) }}
+                  </span>
+                </div>
               </td>
 
 
@@ -323,6 +356,8 @@ onMounted(async () => {
                 </span>
 
               </td>
+
+              
 
 
               <!-- Estado -->
@@ -354,7 +389,7 @@ onMounted(async () => {
                   </select>
 
                 </div>
-                <div v-if="canNotify(order)">
+                <div v-if="canNotify(order)" class="notification-actions">
                   <div v-if="!order.customerNotified" class="notify-buttons">
                       <!-- WhatsApp -->
                     <button
@@ -451,7 +486,7 @@ onMounted(async () => {
               class="detail-row"
             >
 
-              <td colspan="6">
+              <td colspan="7">
 
                 <div class="detail-container">
   
@@ -812,7 +847,13 @@ onMounted(async () => {
 
   font-size: 0.9rem;
 
-  font-weight: 700;
+  font-weight: 600;
+
+  background-color: #c6e6d0;
+
+  border:6px solid #c6e6d0;
+
+  border-radius: 50px;
 
   white-space: nowrap;
 }
@@ -843,21 +884,40 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
+.date-cell {
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+}
 
+.date-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
 /* =========================================================
    ESTADO
 ========================================================= */
 
 .status-control {
   position: relative;
-
   display: flex;
-
   border-radius: 999px;
-
   padding: 2px;
-
   background: rgba(0, 0, 0, 0.05);
+  transform: none !important;
 }
 
 .status-control select {
@@ -916,9 +976,10 @@ onMounted(async () => {
   color: #6d28d9;
 }
 
-.status-shipped {
+.status-withdraw {
   background: rgba(14, 116, 144, 0.12);
   color: #0e7490;
+  transform: none !important;
 }
 
 .status-delivered {
@@ -1137,6 +1198,8 @@ onMounted(async () => {
   color: var(--color-ink-soft);
 
   font-size: 0.75rem;
+
+  font-family: var(--font-mono);
 }
 
 .detail-price {
@@ -1200,18 +1263,23 @@ onMounted(async () => {
     gap:10px;
 }
 .notification-cell {
+  vertical-align: middle;
   white-space: nowrap;
-  
 }
+
+.notification-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
 
 .notify-buttons {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 12px;
-  justify-content: center;
   align-items: center;
-  margin:8px;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
 }
 
 .notify-icons {
@@ -1221,6 +1289,7 @@ onMounted(async () => {
   gap: 14px;
   justify-content: center;
   align-items: center;
+  
 }
 
 .notify-icon {
@@ -1240,6 +1309,8 @@ onMounted(async () => {
   transition: .2s;
 
   color: white;
+
+ 
 }
 
 .notify-icon svg{
@@ -1249,11 +1320,13 @@ onMounted(async () => {
 
 .notify-icon.whatsapp{
     background:#33ad60;
+    
 }
 
 
 .notify-icon.email{
     background: var(--color-rust);
+    
 }
 
 .notify-icon:hover{
@@ -1279,6 +1352,7 @@ onMounted(async () => {
     flex-direction:column;
 
     gap:4px;
+    
 
 }
 

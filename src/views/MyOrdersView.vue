@@ -14,7 +14,7 @@ const STATUS_LABELS = {
   pending: 'Pendiente',
   confirmed: 'Confirmado',
   in_preparation: 'En preparación',
-  shipped: 'Enviado',
+  withdraw: 'Retirar',
   delivered: 'Entregado',
 };
 
@@ -762,7 +762,7 @@ onMounted(load);
 
 /* Enviado */
 
-.order-status-shipped {
+.order-status-withdraw {
   background: rgba(14, 116, 144, 0.10);
 
   color: #0e7490;
