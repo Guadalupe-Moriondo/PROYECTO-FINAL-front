@@ -577,7 +577,7 @@ onMounted(load);
 
   color:var(--color-steel);
 
-  font-weight:700;
+ 
 
 }
 

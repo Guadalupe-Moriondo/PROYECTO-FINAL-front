@@ -18,6 +18,20 @@ const editForm = ref({
 });
 
 const error = ref('');
+const message = ref('');
+let messageTimeout = null;
+
+function showMessage(text) { 
+  message.value = text;
+
+  if (messageTimeout) { 
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => { 
+    message.value = ''; 
+  }, 3000); 
+}
 
 async function load() {
   loading.value = true;
@@ -49,6 +63,7 @@ async function create() {
     newMachineType.value = 'sembradoras';
 
     await load();
+    showMessage('¡Categoría creada correctamente!');
   } catch (e) {
     error.value =
       e.response?.data?.message ||
@@ -75,6 +90,7 @@ async function saveEdit(id) {
     editingId.value = null;
 
     await load();
+    showMessage('Categoría actualizada correctamente');
   } catch (e) {
     error.value =
       e.response?.data?.message ||
@@ -87,9 +103,12 @@ async function remove(category) {
     return;
   }
 
+  error.value = '';
+
   try {
     await categoriesService.remove(category.id);
     await load();
+    showMessage('Categoría dada de baja correctamente');
   } catch (e) {
     error.value =
       e.response?.data?.message ||
@@ -127,6 +146,34 @@ onMounted(load);
 
     </header>
 
+    <!-- ================= MENSAJE ÉXITO ================= -->
+
+    <Transition name="success-toast">
+      <div
+        v-if="message"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2.5"
+          >
+            <path 
+              d="M5 12.5l4 4L19 7" 
+              stroke-linecap="round" 
+              stroke-linejoin="round" 
+            />
+          </svg>
+        </div>
+        <div class="success-toast-content">
+          <strong> {{ message }} </strong>
+          <span> Los cambios se guardaron correctamente. </span>
+        </div>
+      </div>
+
+    </Transition>
     <!-- ================= NUEVA CATEGORÍA ================= -->
 
     <section class="category-card">
@@ -526,7 +573,72 @@ onMounted(load);
 
 /* ================= BOTÓN AGREGAR ================= */
 
+/* ================= MENSAJE DE ÉXITO ================= */
 
+.success-toast { 
+  position: fixed; 
+  top: 30px; 
+  right: 30px;
+  z-index: 9999; 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  min-width: 300px; 
+  max-width: 380px; 
+  padding: 14px 18px; 
+  background: #ffffff; 
+  border: 1px solid #b8dfc4; 
+  border-radius: 14px; 
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12); 
+  color: #207a3c; 
+}
+
+.success-toast-icon { 
+  width: 36px; 
+  height: 36px; 
+  flex-shrink: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border-radius: 50%;
+   background: #e8f7ec; 
+  }
+
+  .success-toast-icon svg {
+     width: 20px; 
+     height: 20px; 
+  } 
+
+  .success-toast-content { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 3px; 
+  }
+
+  .success-toast-content strong { 
+    font-size: 0.88rem; 
+    font-weight: 700; 
+  } 
+
+  .success-toast-content span { 
+    color: #4d6655; 
+    font-size: 0.78rem; 
+  }
+
+  /* ================= ANIMACIÓN ================= */
+
+  .success-toast-enter-active, 
+  .success-toast-leave-active {
+     transition: 
+     opacity 0.25s ease, 
+     transform 0.25s ease; 
+  } 
+
+  .success-toast-enter-from, 
+  .success-toast-leave-to { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
 
 /* ================= MENSAJES ================= */
 

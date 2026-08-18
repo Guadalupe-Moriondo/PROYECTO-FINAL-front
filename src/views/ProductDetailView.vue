@@ -222,15 +222,32 @@ onMounted(() => {
 
           </div>
 
+          <Transition name="success-toast">
+            <div
+              v-if="cartMessage"
+              class="success-toast"
+            >
+              <div class="success-toast-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path
+                    d="M5 12.5l4 4L19 7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
 
-
-
-          <p
-            v-if="cartMessage"
-            class="cart-message"
-          >
-            {{ cartMessage }}
-          </p>
+              <div class="success-toast-content">
+                <strong>¡Agregado correctamente!</strong>
+                <span>{{ cartMessage }}</span>
+              </div>
+            </div>
+          </Transition>
 
 
 
@@ -411,21 +428,6 @@ onMounted(() => {
 
 
 .image-frame {
-
-  aspect-ratio:
-    1 / 1;
-
-  background:
-    var(--color-surface);
-
-  border:
-    1px solid var(--color-line);
-
-  border-top:
-    4px solid var(--color-rust);
-
-  border-radius:
-    var(--radius-md);
 
   display:flex;
 
@@ -620,15 +622,87 @@ onMounted(() => {
 
 
 
-.cart-message {
+/* ==============================
+   MENSAJE DE ÉXITO
+============================== */
+
+.success-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #b8dfc4;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #207a3c;
+}
+
+.success-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
 
   background: #e8f7ec;
-  color: #207a3c;
-  border: 1px solid #b7e2c4;
-  padding: .9rem 1rem;
-  border-radius: 12px;
-
 }
+
+.success-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.success-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.success-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.success-toast-content span {
+  color: #4d6655;
+  font-size: 0.78rem;
+}
+
+
+/* Animación */
+
+.success-toast-enter-active,
+.success-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.success-toast-enter-from,
+.success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
 
 
 
@@ -787,6 +861,18 @@ onMounted(() => {
   }
 
 
+}
+/* Responsive mensaje exito */
+
+@media (max-width: 600px) {
+  .success-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
+  }
 }
 
 

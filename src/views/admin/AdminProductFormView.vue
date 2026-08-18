@@ -72,22 +72,40 @@ async function loadProduct() {
 async function save() {
   error.value = '';
   saving.value = true;
+
   try {
+    let successMessage = '';
+
     if (isEditing.value) {
       await productsService.update(route.params.id, form.value);
+
+      successMessage = 'updated';
     } else {
       const response = await productsService.create(form.value);
       const productId = response.data.id;
+
       if (selectedImage.value) {
         await productsService.uploadImage(
           productId,
           selectedImage.value
         );
       }
+
+      successMessage = 'created';
     }
-    router.push({ name: 'admin-products' });
+
+    router.push({
+      name: 'admin-products',
+      query: {
+        success: successMessage
+      }
+    });
+
   } catch (e) {
-    error.value = e.response?.data?.message || 'No se pudo guardar el producto';
+    error.value =
+      e.response?.data?.message ||
+      'No se pudo guardar el producto';
+
   } finally {
     saving.value = false;
   }

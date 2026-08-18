@@ -32,3 +32,4 @@ export default {
     return api.get('/products/admin/low-stock');
   },
 };
+

@@ -4,12 +4,17 @@ import { RouterLink } from 'vue-router';
 import productsService from '../../services/products.service';
 import Pagination from '../../components/Pagination.vue';
 import InventoryTag from '../../components/InventoryTag.vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const products = ref([]);
 const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
+const showSuccessMessage = ref(false);
+const successMessage = ref('');
 
 async function load() {
   loading.value = true;
@@ -36,7 +41,25 @@ function imageUrl(product) {
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 
-onMounted(load);
+onMounted(async () => {
+  await load();
+
+  if (route.query.success === 'created') {
+    message.value = '¡Producto creado correctamente!';
+
+    setTimeout(() => {
+      message.value = '';
+    }, 3000);
+  }
+
+  if (route.query.success === 'updated') {
+    message.value = '¡Producto actualizado correctamente!';
+
+    setTimeout(() => {
+      message.value = '';
+    }, 3000);
+  }
+});
 </script>
 
 <template>
@@ -74,23 +97,35 @@ onMounted(load);
 
 
     <!-- ================= MENSAJE ================= -->
-    <p
-      v-if="message"
-      class="success-message"
-    >
-
-      <svg
-        viewBox="0 0 24 24"
-        fill="currentColor"
+    <Transition name="success-toast">
+      <div
+        v-if="message"
+        class="success-toast"
       >
-        <path
-          d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm4.2 7.2-5.1 5.1-3-3 1.4-1.4 1.6 1.6 3.7-3.7 1.4 1.4Z"
-        />
-      </svg>
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
 
-      {{ message }}
+        <div class="success-toast-content">
+          <strong>{{ message }}</strong>
 
-    </p>
+          <span>
+            Los cambios se guardaron correctamente.
+          </span>
+        </div>
+      </div>
+    </Transition>
 
 
     <!-- ================= LOADING ================= -->
@@ -399,9 +434,90 @@ onMounted(load);
 }
 
 
-/* =========================================================
-   MENSAJE
-========================================================= */
+/* ==============================
+   MENSAJE DE ÉXITO
+============================== */
+
+.success-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #b8dfc4;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #207a3c;
+}
+
+.success-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e8f7ec;
+}
+
+.success-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.success-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.success-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.success-toast-content span {
+  color: #4d6655;
+  font-size: 0.78rem;
+}
+
+
+/* ==============================
+   ANIMACIÓN
+============================== */
+
+.success-toast-enter-active,
+.success-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.success-toast-enter-from,
+.success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+
 
 
 
@@ -755,5 +871,20 @@ onMounted(load);
     padding: 40px 14px 60px;
   }
 
+}
+
+/* ==============================
+   RESPONSIVE mensaje exito
+============================== */
+
+@media (max-width: 600px) {
+  .success-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
+  }
 }
 </style>

@@ -9,6 +9,7 @@ const orders = ref([]);
 const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
+const showSuccessMessage = ref(false);
 
 const STATUS_LABELS = {
   pending: 'Pendiente',
@@ -45,7 +46,17 @@ function imageUrl(product) {
 }
 
 
-onMounted(load);
+onMounted(async () => {
+  await load();
+
+  if (route.query.created) {
+    showSuccessMessage.value = true;
+
+    setTimeout(() => {
+      showSuccessMessage.value = false;
+    }, 3000);
+  }
+});
 </script>
 
 <template>
@@ -64,26 +75,37 @@ onMounted(load);
 
 
     <!-- ================= PEDIDO CONFIRMADO ================= -->
-    <div
-      v-if="route.query.created"
-      class="success-message"
-    >
- 
-      <div>
+    <Transition name="success-toast">
+      <div
+        v-if="showSuccessMessage"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
 
-        <strong>
-          ¡Pedido confirmado!
-        </strong>
+        <div class="success-toast-content">
+          <strong>¡Pedido confirmado!</strong>
 
-        <p>
-          Tu pedido
-          <strong>#{{ route.query.created }}</strong>
-          fue realizado correctamente.
-        </p>
-
+          <span>
+            Tu pedido #{{ route.query.created }} fue realizado correctamente.
+          </span>
+        </div>
       </div>
 
-    </div>
+    </Transition>
+   
 
 
     <!-- ================= LOADING ================= -->
@@ -1031,6 +1053,92 @@ onMounted(load);
   margin-top: 35px;
 }
 
+/* ==============================
+   MENSAJE DE ÉXITO
+============================== */
+
+.success-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #b8dfc4;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #207a3c;
+}
+
+.success-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e8f7ec;
+}
+
+.success-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.success-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.success-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.success-toast-content span {
+  color: #4d6655;
+  font-size: 0.78rem;
+}
+
+
+/* ==============================
+   ANIMACIÓN
+============================== */
+
+.success-toast-enter-active,
+.success-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.success-toast-enter-from,
+.success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+
+
+
 
 /* =========================================================
    RESPONSIVE
@@ -1104,5 +1212,20 @@ onMounted(load);
     font-size: 0.82rem;
   }
 
+}
+
+/* ==============================
+   RESPONSIVE mensaje exito
+============================== */
+
+@media (max-width: 600px) {
+  .success-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
+  }
 }
 </style>
