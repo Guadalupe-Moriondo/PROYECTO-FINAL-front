@@ -18,7 +18,6 @@ const form = ref({
   name: '',
   description: '',
   machineryCompatibility: '',
-  brand: '',
   price: '',
   stock: 0,
   minStock: 5,
@@ -36,15 +35,7 @@ async function loadCategories() {
   categories.value = response.data;
 }
 
-function categoryLabel(category) {
-  const labels = {
-    sembradoras: 'Sembradoras',
-    cosechadoras: 'Cosechadoras',
-    otros: 'Otros',
-  };
 
-  return `${category.name} — ${labels[category.machineType] || 'Otros'}`;
-}
 
 async function loadProduct() {
   const response = await productsService.getById(route.params.id);
@@ -54,7 +45,6 @@ async function loadProduct() {
     name: p.name,
     description: p.description || '',
     machineryCompatibility: p.machineryCompatibility || '',
-    brand: p.brand || '',
     price: Number (p.price),
     stock: p.stock,
     minStock: p.minStock,
@@ -182,14 +172,7 @@ onMounted(() => {
             />
           </div>
 
-          <div class="field">
-            <label for="brand">Marca</label>
-            <input
-              id="brand"
-              v-model="form.brand"
-              type="text"
-            />
-          </div>
+       
 
           <div class="field">
             <label for="categoryId">
@@ -210,7 +193,7 @@ onMounted(() => {
                 :key="cat.id"
                 :value="cat.id"
               >
-                {{ categoryLabel(cat) }}
+                {{ cat.name }}
               </option>
 
             </select>

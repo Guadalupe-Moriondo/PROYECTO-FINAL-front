@@ -2,13 +2,13 @@
 import { RouterLink } from 'vue-router';
 
 const sections = [
-  { to: 'admin-categories', title: 'Categorías', description: 'Organizar el catálogo por tipo de repuesto' },
-  { to: 'admin-products', title: 'Productos', description: 'Cargar, editar y dar de baja repuestos del catálogo' },
-  { to: 'admin-orders', title: 'Pedidos', description: 'Ver y actualizar el estado de los pedidos recibidos' },
-  { to: 'admin-stock', title: 'Stock', description: 'Registrar movimientos y ver alertas de stock bajo' },
-  { to: 'admin-business', title: 'Datos del negocio', description: 'Dirección, teléfono, horarios y redes sociales' },
+  { to: 'admin-categories', title: 'Categorías', description: 'Organizar el catálogo por marca.' },
+  { to: 'admin-products', title: 'Productos', description: 'Cargar, editar y dar de baja repuestos del catálogo.' },
+  { to: 'admin-orders', title: 'Pedidos', description: 'Ver y actualizar el estado de los pedidos recibidos.' },
+  { to: 'admin-stock', title: 'Stock', description: 'Registrar movimientos y ver alertas de stock bajo.' },
+  { to: 'admin-business', title: 'Datos del negocio', description: 'Dirección, teléfono, horarios y redes sociales.' },
   { to: 'admin-order-history',title: 'Historial de pedidos',description: 'Estadísticas de ventas.'},
-  { to:'admin-users',title:'Usuarios',description:'Administrar clientes y administradores'}
+  { to:'admin-users',title:'Usuarios',description:'Administrar clientes y administradores.'}
 ];
 </script>
 

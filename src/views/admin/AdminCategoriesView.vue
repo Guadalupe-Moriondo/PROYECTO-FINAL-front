@@ -7,14 +7,14 @@ const loading = ref(true);
 
 const newName = ref('');
 const newDescription = ref('');
-const newMachineType = ref('sembradoras');
+
 
 const editingId = ref(null);
 
 const editForm = ref({
   name: '',
   description: '',
-  machineType: 'sembradoras',
+
 });
 
 const error = ref('');
@@ -55,12 +55,10 @@ async function create() {
     await categoriesService.create({
       name: newName.value,
       description: newDescription.value || undefined,
-      machineType: newMachineType.value,
     });
 
     newName.value = '';
     newDescription.value = '';
-    newMachineType.value = 'sembradoras';
 
     await load();
     showMessage('¡Categoría creada correctamente!');
@@ -77,7 +75,6 @@ function startEditing(category) {
   editForm.value = {
     name: category.name,
     description: category.description || '',
-    machineType: category.machineType || 'otros',
   };
 }
 
@@ -116,15 +113,6 @@ async function remove(category) {
   }
 }
 
-function machineTypeLabel(type) {
-  const labels = {
-    sembradoras: 'Sembradoras',
-    cosechadoras: 'Cosechadoras',
-    otros: 'Otros',
-  };
-
-  return labels[type] || 'Otros';
-}
 
 onMounted(load);
 </script>
@@ -190,14 +178,14 @@ onMounted(load);
         <div class="field">
 
           <label for="name">
-            Nombre
+            Marca
           </label>
 
           <input
             id="name"
             v-model="newName"
             type="text"
-            placeholder="Ej. Rodamientos"
+            placeholder="Ej. Apache"
             required
           />
 
@@ -218,31 +206,6 @@ onMounted(load);
 
         </div>
 
-        <div class="field">
-
-          <label for="machine">
-            Tipo de maquinaria
-          </label>
-
-          <select
-            id="machine"
-            v-model="newMachineType"
-          >
-            <option value="sembradoras">
-              Sembradoras
-            </option>
-
-            <option value="cosechadoras">
-              Cosechadoras
-            </option>
-
-            <option value="otros">
-              Otros
-            </option>
-
-          </select>
-
-        </div>
 
         <button
           type="submit"
@@ -292,9 +255,7 @@ onMounted(load);
 
             <tr>
 
-              <th>Nombre</th>
-
-              <th>Tipo</th>
+              <th>Marca</th>
 
               <th>Descripción</th>
 
@@ -401,13 +362,6 @@ onMounted(load);
                   {{ cat.name }}
                 </td>
 
-                <td>
-
-                  <span class="machine-tag">
-                    {{ machineTypeLabel(cat.machineType) }}
-                  </span>
-
-                </td>
 
                 <td class="table-description">
                   {{ cat.description || "—" }}

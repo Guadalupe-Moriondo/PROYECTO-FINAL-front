@@ -5,7 +5,7 @@ export default {
     return api.get('/products', { params: { page, limit } });
   },
   search(filters) {
-    // filters: { name, brand, categoryId, minPrice, maxPrice, available, page, limit }
+    // filters: { name, categoryId, minPrice, maxPrice, available, page, limit }
     return api.get('/products/search', { params: filters });
   },
   getById(id) {

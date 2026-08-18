@@ -328,7 +328,7 @@ onUnmounted(() => {
         <div class="brands-header">
 
           <p class="section-kicker">
-            Nuestras marcas
+            Marcas con las que trabajamos
           </p>
 
           <h2>

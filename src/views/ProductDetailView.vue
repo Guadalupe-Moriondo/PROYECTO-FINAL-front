@@ -128,10 +128,10 @@ onMounted(() => {
           <div class="product-heading">
 
             <p
-              v-if="product.brand"
-              class="product-brand"
+              v-if="product.category"
+              class="product-category"
             >
-              {{ product.brand }}
+              {{ product.category.name }}
             </p>
 
 
@@ -176,9 +176,18 @@ onMounted(() => {
 
           </div>
 
+          <div
+            v-if="product.machineryCompatibility"
+            class="product-description"
+          >
+            <h3>
+              Compatibilidad maquinaria
+            </h3>
 
-
-
+            <p>
+              {{ product.machineryCompatibility }}
+            </p>
+          </div>
 
           <!-- Compra -->
 
@@ -296,40 +305,9 @@ onMounted(() => {
 
 
           </div>
-
-
-
         </section>
-
-      </main>
-
-
-
-
-
-      <!-- Compatibilidad abajo -->
-
-      <section
-        v-if="product.machineryCompatibility"
-        class="compatibility-section"
-      >
-
-        <h2>
-          Compatibilidad de maquinaria
-        </h2>
-
-
-        <p>
-          {{ product.machineryCompatibility }}
-        </p>
-
-
-      </section>
-
-
+      </main>  
     </div>
-
-
   </div>
 </template>
 
@@ -485,7 +463,7 @@ onMounted(() => {
 
 
 
-.product-brand {
+.product-category {
 
   font-family:
     var(--font-mono);
@@ -496,7 +474,7 @@ onMounted(() => {
   letter-spacing:.1em;
 
   color:
-    var(--color-ink-soft);
+    var(--color-rust);
 
   margin:0;
 

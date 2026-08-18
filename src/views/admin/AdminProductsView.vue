@@ -214,8 +214,11 @@ onMounted(async () => {
                     {{ product.name }}
                   </strong>
 
-                  <span class="product-brand">
-                    {{ product.brand }}
+                  <span
+                    v-if="product.category"
+                    class="product-brand"
+                  >
+                    {{ product.category.name }}
                   </span>
 
                   <span class="product-code">

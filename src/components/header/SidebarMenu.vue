@@ -15,39 +15,11 @@ const cartStore = useCartStore();
 const router = useRouter();
 
 const categories = ref([]);
-const categoryGroups = computed(() => [
-  {
-    key: 'sembradoras',
-    label: 'Sembradoras',
-    categories: categories.value.filter(
-      (cat) => cat.machineType === 'sembradoras'
-    ),
-  },
-  {
-    key: 'cosechadoras',
-    label: 'Cosechadoras',
-    categories: categories.value.filter(
-      (cat) => cat.machineType === 'cosechadoras'
-    ),
-  },
-  {
-    key: 'otros',
-    label: 'Otros',
-    categories: categories.value.filter(
-      (cat) => cat.machineType === 'otros'
-    ),
-  },
-]);
 const categoriesExpanded = ref(false);
-const expandedGroups = ref({
-  sembradoras: false,
-  cosechadoras: false,
-  otros: false,
-});
 
-function toggleGroup(group) {
-  expandedGroups.value[group] = !expandedGroups.value[group];
-}
+
+
+
 
 async function loadCategories() {
   try {
@@ -115,59 +87,36 @@ watch(
             >
               Categorías
 
-              <span class="sidebar-chevron" 
+              <span
+                class="sidebar-chevron"
                 :class="{ 'sidebar-chevron-open': categoriesExpanded }"
               >
                 ›
               </span>
             </button>
-            <div v-if="categoriesExpanded" class="sidebar-category-groups">
-              <div
-                  v-for="group in categoryGroups"
-                  :key="group.key"
-                  class="sidebar-category-group"
-                >
-                  <button
-                    type="button"
-                    class="sidebar-category-toggle"
-                    :aria-expanded="expandedGroups[group.key]"
-                    @click="toggleGroup(group.key)"
-                  >
 
-                    <span>{{ group.label }}</span>
-                    <span
-                      class="sidebar-chevron"
-                      :class="{
-                      'sidebar-chevron-open': expandedGroups[group.key]}"
+            <div
+              v-if="categoriesExpanded"
+              class="sidebar-subitems"
+            >
+              <button
+                v-for="cat in categories"
+                :key="cat.id"
+                type="button"
+                class="sidebar-sublink"
+                @click="goToCategory(cat.id)"
+              >
+                {{ cat.name }}
+              </button>
 
-                    >
-                      ›
-                    </span>
-                  </button>
-                  <div
-                    v-if="expandedGroups[group.key]"
-                    class="sidebar-subitems sidebar-group-items"
-                  >
-                    <button
-                      v-for="cat in group.categories"
-                      :key="cat.id"
-                      type="button"
-                      class="sidebar-sublink"
-                      @click="goToCategory(cat.id)"
-                    >
-                      {{ cat.name }}
-                    </button>
-                    <p
-                      v-if="group.categories.length === 0"
-                      class="sidebar-subempty"
-                    >
-                      No hay categorías.
-                     </p>
-                  
-                  </div>
-                </div>
-              </div>
+              <p
+                v-if="categories.length === 0"
+                class="sidebar-subempty"
+              >
+                No hay categorías.
+              </p>
             </div>
+          </div>
 
           <RouterLink
             :to="{ name: 'catalog', query: { available: 'true' } }"

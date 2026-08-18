@@ -111,8 +111,11 @@ function imageUrl(product) {
 
                 <div>
 
-                  <p class="product-brand">
-                    {{ item.product.brand }}
+                  <p
+                    v-if="item.product.category"
+                    class="product-brand"
+                  >
+                    {{ item.product.category.name }}
                   </p>
 
                   <h2 class="product-name">

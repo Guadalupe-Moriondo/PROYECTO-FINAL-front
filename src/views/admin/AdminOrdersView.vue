@@ -33,6 +33,25 @@ function canNotify(order) {
   return order.status === 'withdraw';
 }
 
+function canChangeTo(order, status) {
+  const nextStatus = {
+    pending: 'confirmed',
+    confirmed: 'in_preparation',
+    in_preparation: 'withdraw',
+    withdraw: 'delivered',
+  };
+
+  if (status === order.status) {
+    return true;
+  }
+
+  if (status === 'delivered' && !order.customerNotified) {
+    return false;
+  }
+
+  return nextStatus[order.status] === status;
+}
+
 async function load() {
   loading.value = true;
   const response = await ordersService.listAll(page.value, 10);
@@ -47,29 +66,42 @@ function changePage(newPage) {
 }
 
 async function changeStatus(order, newStatus) {
-  await ordersService.updateStatus(order.id, newStatus);
-  order.status = newStatus;
+  try {
+    await ordersService.updateStatus(order.id, newStatus);
 
-  // Mostrar mensaje cuando el pedido fue entregado
-  if (newStatus === 'delivered') {
-    successMessage.value = `Pedido #${order.orderNumber} entregado correctamente`;
+    order.status = newStatus;
 
-    // Limpiar un timeout anterior si existiera
-    if (successTimeout) {
-      clearTimeout(successTimeout);
+    // Mostrar mensaje cuando el pedido fue entregado
+    if (newStatus === 'delivered') {
+      successMessage.value = `Pedido #${order.orderNumber} entregado correctamente`;
+
+      if (successTimeout) {
+        clearTimeout(successTimeout);
+      }
+
+      successTimeout = setTimeout(() => {
+        successMessage.value = '';
+      }, 3000);
+
+      orders.value = orders.value.filter(
+        (o) => o.id !== order.id
+      );
+
+      if (expandedOrderId.value === order.id) {
+        expandedOrderId.value = null;
+      }
     }
 
-    // Ocultar el mensaje después de 3 segundos
-    successTimeout = setTimeout(() => {
-      successMessage.value = '';
-    }, 3000);
+  } catch (error) {
+    console.error('Error al cambiar el estado:', error);
 
-    // Sacamos el pedido de la lista
-    orders.value = orders.value.filter((o) => o.id !== order.id);
+    alert(
+      error.response?.data?.message ||
+      'No se pudo cambiar el estado del pedido.'
+    );
 
-    if (expandedOrderId.value === order.id) {
-      expandedOrderId.value = null;
-    }
+    // Volvemos a dejar el select en el estado real
+    await load();
   }
 }
 
@@ -423,6 +455,7 @@ onMounted(async () => {
                       v-for="status in STATUSES"
                       :key="status"
                       :value="status"
+                      :disabled="!canChangeTo(order, status)"
                     >
                       {{ STATUS_LABELS[status] }}
                     </option>

@@ -23,7 +23,7 @@ function imageUrl(product) {
       <span v-else class="card-image-placeholder">Sin foto</span>
     </div>
     <div class="card-body">
-      <p class="card-brand" v-if="product.brand">{{ product.brand }}</p>
+      <p class="card-brand" v-if="product.category && product.category.name !== 'Otros'">{{ product.category.name }}</p>
       <h3 class="card-name">{{ product.name }}</h3>
       <p class="card-price">$ {{ Number(product.price).toLocaleString('es-AR') }}</p>
       <AvailabilityTag
@@ -81,9 +81,10 @@ function imageUrl(product) {
 .card-brand {
   margin: 0;
   font-family: var(--font-display);
+  letter-spacing: 0.1em;
   font-size: 0.72rem;
   text-transform: uppercase;
-  color: var(--color-ink-soft);
+  color: var(--color-rust);
 }
 .card-name {
   margin: 0;

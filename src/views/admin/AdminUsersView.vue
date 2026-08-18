@@ -382,12 +382,7 @@ onMounted(() => {
                   {{ roleLabel(user.role) }}
                 </span>
 
-                <span
-                  v-if="user.owner"
-                  class="owner-badge"
-                >
-                  Principal
-                </span>
+              
 
               </div>
 
@@ -739,23 +734,7 @@ onMounted(() => {
 
 }
 
-.owner-badge{
 
-    background:#fff6d8;
-
-    color:rgb(180, 148, 59);
-
-    border:1px solid #edd07f;
-
-    padding:5px 12px;
-
-    border-radius:999px;
-
-    font-size:.75rem;
-
-    font-weight:700;
-
-}
 
 .user-data{
 
@@ -771,16 +750,12 @@ onMounted(() => {
 
 }
 
-.user-actions{
-
-    width:20px;
-
-    display:flex;
-
-    justify-content:flex-end;
-
-    align-items:center;
-
+.user-actions {
+    width: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 .user-actions select{
@@ -797,17 +772,13 @@ onMounted(() => {
 
 }
 
-.owner-text{
-
-    font-size:.8rem;
-
-    color:#535353;
-
-    text-align:right;
-
+.owner-text {
+    font-size: .8rem;
+    color: #535353;
+    text-align: center;
     font-style: italic;
-
-
+    line-height: 1.5;
+    width: 100%;
 }
 
 .success-message{
@@ -916,7 +887,7 @@ onMounted(() => {
 
     width:100%;
 
-    justify-content:flex-start;
+    justify-content:center;
 
 }
 
