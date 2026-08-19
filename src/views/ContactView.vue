@@ -825,7 +825,7 @@ onMounted(loadBusiness);
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 950px) {
+@media (max-width: 900px) {
 
   .contact-cta-card {
     flex-direction: column;

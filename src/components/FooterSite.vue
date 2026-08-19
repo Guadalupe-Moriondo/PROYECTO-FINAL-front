@@ -105,21 +105,22 @@ const facebookLink = computed(() => {
 .site-footer {
   background: var(--color-steel);
   color: #a9b0ac;
-  margin-top: var(--space-6);
+  margin-top: var(--space-5);        /* antes: --space-6 (64px) → 40px */
 }
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: var(--space-5);
-  padding: var(--space-5) var(--space-4);
+  gap: var(--space-4);               /* antes: --space-5 (40px) → 24px */
+  padding: var(--space-4);           /* antes: --space-5 var(--space-4) → 24px parejo */
 }
+
 .footer-col-title {
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.85rem;
   color: #fff;
-  margin: 10% 0 6px;
+  margin: var(--space-3) 0 var(--space-1);  /* antes: 10% 0 6px */
 }
 
 .footer-col-right {
@@ -129,28 +130,17 @@ const facebookLink = computed(() => {
 }
 
 .footer-address {
-  margin-top: 12px;
+  margin-top: var(--space-2);        /* antes: 12px */
   color: #cfd3d1;
   font-size: .95rem;
   max-width: 320px;
 }
-.footer-brand {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-size: 1.3rem;
-  color: #fff;
-  margin: 0 0 4px;
-}
-.footer-tagline {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  margin: 0 0 var(--space-3);
-  color: #9aa19d;
-}
+
+
 .footer-social {
   display: flex;
-  gap: 20px;
-  margin-bottom: 10px;
+  gap: var(--space-3);               /* antes: 20px */
+  margin-bottom: var(--space-2);     /* antes: 10px */
   flex-wrap: wrap;
 }
 .footer-social-link {
@@ -169,23 +159,12 @@ const facebookLink = computed(() => {
   color: var(--color-rust);
 }
 
-.footer-list a {
-  text-decoration: none;
-  color: #cfd3d1;
-}
-.footer-list a:hover {
-  color: var(--color-rust);
-}
-.footer-icon {
-  display: inline-block;
-  width: 1.4em;
-}
 .footer-nav-list a {
   display: inline-block;
 }
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);  /* antes: --space-3 (16px) → 8px arriba/abajo */
 }
 .footer-copy {
   margin: 0;
@@ -219,11 +198,11 @@ const facebookLink = computed(() => {
   white-space: nowrap;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: var(--space-4);
-    padding: var(--space-4);
+    gap: var(--space-3);
+    padding: var(--space-3);
   }
 }
 </style>

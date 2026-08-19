@@ -270,7 +270,7 @@ button, input, select, textarea {
    en su <div class="container ..."> raiz para el ajuste de
    padding general.
    ============================================================ */
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .admin-view {
     padding-left: var(--space-3);
     padding-right: var(--space-3);
@@ -328,7 +328,7 @@ button, input, select, textarea {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .statistics-grid {
     grid-template-columns: 1fr;
   }

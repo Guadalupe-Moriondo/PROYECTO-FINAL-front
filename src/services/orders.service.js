@@ -4,8 +4,10 @@ export default {
   createFromCart(paymentMethod) {
     return api.post('/orders', { paymentMethod });
   },
-  myOrders(page = 1, limit = 10) {
-    return api.get('/orders/mine', { params: { page, limit } });
+  myOrders(page = 1, limit = 10, status = '') {
+    return api.get('/orders/mine', {
+      params: { page, limit, status: status || undefined },
+    });
   },
   listAll(page = 1, limit = 10) {
     return api.get('/orders', { params: { page, limit } });

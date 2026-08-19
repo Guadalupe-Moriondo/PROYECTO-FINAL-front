@@ -90,11 +90,6 @@ onMounted(() => {
 
     <div v-else>
 
-      <div class="product-back">
-        <BackButton />
-      </div>
-
-
       <main class="product-layout">
 
 
@@ -387,34 +382,22 @@ onMounted(() => {
 
   }
 
-}
-
-
-
-
-
-/* IMAGEN */
-
-.product-media {
-
-  position:sticky;
-
-  top:20px;
+  .product-media {
+    position: static;
+  }
 
 }
+
 
 
 
 .image-frame {
-
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-  overflow:hidden;
-
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 

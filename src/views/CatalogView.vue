@@ -670,7 +670,7 @@ watch(
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 1050px) {
+@media (max-width: 1200px) {
 
   .catalog-layout {
     grid-template-columns: 230px minmax(0, 1fr);
@@ -686,7 +686,7 @@ watch(
 }
 
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
 
   .catalog-layout {
     grid-template-columns: 1fr;

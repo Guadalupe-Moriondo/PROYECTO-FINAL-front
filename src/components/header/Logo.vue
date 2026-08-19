@@ -35,7 +35,7 @@ import { RouterLink } from 'vue-router';
   line-height: 1.2;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 600px) {
   .logo-text {
     display: none;
   }

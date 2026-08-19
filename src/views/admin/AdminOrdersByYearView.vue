@@ -164,7 +164,11 @@ onMounted(load);
 
       <p v-else class="empty-state">No hay pedidos entregados en {{ selectedYear }}.</p>
 
-      <Pagination :page="page" :total-pages="totalPages" @change-page="changePage" />
+      <Pagination 
+        :page="page" 
+        :total-pages="totalPages" 
+        @change-page="changePage" 
+      />
     </template>
   </div>
 </template>

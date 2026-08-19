@@ -79,11 +79,24 @@ function closeSidebar() {
   margin-left: auto;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .app-header-inner {
     flex-wrap: wrap;
   }
+  .app-header-inner :deep(.hamburger-btn) {
+    order: 1;
+  }
+
+  .app-header-inner :deep(.logo) {
+    order: 2;
+  }
+
+  .app-header-inner :deep(.search-bar) {
+    order: 3;
+  }
+
   .app-header-actions {
+    order: 4;
     margin-left: 0;
   }
 }

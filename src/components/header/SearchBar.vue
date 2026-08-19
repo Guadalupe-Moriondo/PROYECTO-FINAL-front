@@ -80,9 +80,8 @@ function submit() {
 .search-input:focus {
   outline: none;
 }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .search-bar {
-    order: 4;
     max-width: none;
     width: 100%;
   }

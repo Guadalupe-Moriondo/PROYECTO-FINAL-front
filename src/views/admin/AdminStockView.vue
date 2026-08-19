@@ -631,7 +631,7 @@ button.button-primary{
 
     display:block;
 
-    margin:0 auto;
+    margin:0 0 0 auto;
 
     padding:.9rem 2.5rem;
 

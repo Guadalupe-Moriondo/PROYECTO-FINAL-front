@@ -99,7 +99,7 @@ Muchas gracias.`
   background: var(--color-rust);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .floating-btn {
     width: 46px;
     height: 46px;

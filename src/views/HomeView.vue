@@ -956,7 +956,7 @@ onUnmounted(() => {
 }
 
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
 
   .hero {
     min-height: 70vh;
@@ -1013,7 +1013,7 @@ onUnmounted(() => {
 }
 
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
 
   .container {
     width: min(100% - 28px, 1200px);

@@ -4,12 +4,29 @@ import { useRoute } from 'vue-router';
 import ordersService from '../services/orders.service';
 import Pagination from '../components/Pagination.vue';
 
+
 const route = useRoute();
-const orders = ref([]);
 const loading = ref(true);
-const page = ref(1);
-const totalPages = ref(1);
 const showSuccessMessage = ref(false);
+
+const activeTab = ref('pending'); // 'pending' | 'delivered'
+
+const pendingOrders = ref([]);
+const pendingPage = ref(1);
+const pendingTotalPages = ref(1);
+const pendingLoaded = ref(false);
+const pendingTotal = ref(0);
+
+const deliveredOrders = ref([]);
+const deliveredPage = ref(1);
+const deliveredTotalPages = ref(1);
+const deliveredLoaded = ref(false);
+const deliveredTotal = ref(0);
+
+const hasOrders = computed(() => {
+  return pendingOrders.value.length > 0 || deliveredOrders.value.length > 0;
+});
+
 
 const STATUS_LABELS = {
   pending: 'Pendiente',
@@ -19,26 +36,56 @@ const STATUS_LABELS = {
   delivered: 'Entregado',
 };
 
-const deliveredOrders = computed(() =>
-  orders.value.filter(order => order.status === 'delivered')
-);
-
-const pendingOrders = computed(() =>
-  orders.value.filter(order => order.status !== 'delivered')
-);
-
-async function load() {
+async function loadPending() {
   loading.value = true;
-  const response = await ordersService.myOrders(page.value, 10);
-  orders.value = response.data.data;
-  totalPages.value = response.data.totalPages;
+
+  const response = await ordersService.myOrders(
+    pendingPage.value,
+    10,
+    'pending'
+  );
+
+  pendingOrders.value = response.data.data;
+  pendingTotalPages.value = response.data.totalPages;
+  pendingTotal.value = response.data.total;
+  pendingLoaded.value = true;
+
   loading.value = false;
 }
 
-function changePage(newPage) {
-  page.value = newPage;
-  load();
+async function loadDelivered() {
+  loading.value = true;
+
+  const response = await ordersService.myOrders(
+    deliveredPage.value,
+    10,
+    'delivered'
+  );
+
+  deliveredOrders.value = response.data.data;
+  deliveredTotalPages.value = response.data.totalPages;
+  deliveredTotal.value = response.data.total;
+  deliveredLoaded.value = true;
+
+  loading.value = false;
 }
+
+function selectTab(tab) {
+  activeTab.value = tab;
+  if (tab === 'pending' && !pendingLoaded.value) loadPending();
+  if (tab === 'delivered' && !deliveredLoaded.value) loadDelivered();
+}
+
+function changePendingPage(newPage) {
+  pendingPage.value = newPage;
+  loadPending();
+}
+
+function changeDeliveredPage(newPage) {
+  deliveredPage.value = newPage;
+  loadDelivered();
+}
+
 
 function imageUrl(product) {
   if (!product?.imageUrl) return null;
@@ -47,7 +94,10 @@ function imageUrl(product) {
 
 
 onMounted(async () => {
-  await load();
+  await Promise.all([
+    loadPending(),
+    loadDelivered(),
+  ]);
 
   if (route.query.created) {
     showSuccessMessage.value = true;
@@ -71,6 +121,28 @@ onMounted(async () => {
         </h1>
       </div>
 
+    </div>
+
+    <div class="orders-tabs" v-if="hasOrders">
+      <button
+        type="button"
+        class="orders-tab"
+        :class="{ 'orders-tab-active': activeTab === 'pending' }"
+        @click="selectTab('pending')"
+      >
+        En proceso
+        <span class="orders-tab-count">{{ pendingTotal }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="orders-tab"
+        :class="{ 'orders-tab-active': activeTab === 'delivered' }"
+        @click="selectTab('delivered')"
+      >
+        Entregados
+        <span class="orders-tab-count">{{ deliveredTotal }}</span>
+      </button>
     </div>
 
 
@@ -119,7 +191,7 @@ onMounted(async () => {
 
     <!-- ================= SIN PEDIDOS ================= -->
     <div
-      v-else-if="orders.length === 0"
+      v-else-if="!hasOrders"
       class="empty-state"
     >
 
@@ -157,7 +229,7 @@ onMounted(async () => {
            PEDIDOS EN PROCESO
       =================================================== -->
       <section
-        v-if="pendingOrders.length"
+        v-if="activeTab === 'pending'"
         class="orders-group"
       >
 
@@ -170,134 +242,146 @@ onMounted(async () => {
           </div>
         </div>
 
+        <template v-if="pendingOrders.length > 0">
+          <div v-if="pendingOrders.length > 0" class="orders-list">
 
-        <div class="orders-list">
+            <article
+              v-for="order in pendingOrders"
+              :key="order.id"
+              class="order-card"
+            >
 
-          <article
-            v-for="order in pendingOrders"
-            :key="order.id"
-            class="order-card"
-          >
+              <!-- HEADER PEDIDO -->
+              <header class="order-card-header">
 
-            <!-- HEADER PEDIDO -->
-            <header class="order-card-header">
+                <div>
 
-              <div>
+                  <span class="order-label">
+                    Pedido
+                  </span>
 
-                <span class="order-label">
-                  Pedido
+                  <span class="order-number">
+                    #{{ order.orderNumber }}
+                  </span>
+
+                </div>
+
+
+                <span
+                  class="order-status"
+                  :class="`order-status-${order.status}`"
+                >
+
+                  <span class="status-dot"></span>
+
+                  {{ STATUS_LABELS[order.status] || order.status }}
+
                 </span>
 
-                <span class="order-number">
-                  #{{ order.orderNumber }}
-                </span>
-
-              </div>
+              </header>
 
 
-              <span
-                class="order-status"
-                :class="`order-status-${order.status}`"
-              >
+              <!-- PRODUCTOS -->
+              <div class="order-products">
 
-                <span class="status-dot"></span>
+                <div
+                  v-for="detail in order.details"
+                  :key="detail.id"
+                  class="order-detail"
+                >
 
-                {{ STATUS_LABELS[order.status] || order.status }}
+                  <!-- Imagen -->
+                  <div class="detail-image-wrapper">
 
-              </span>
+                    <img
+                      v-if="imageUrl(detail.product)"
+                      :src="imageUrl(detail.product)"
+                      :alt="
+                        detail.product?.name ||
+                        'Producto'
+                      "
+                      class="detail-image"
+                    />
 
-            </header>
-
-
-            <!-- PRODUCTOS -->
-            <div class="order-products">
-
-              <div
-                v-for="detail in order.details"
-                :key="detail.id"
-                class="order-detail"
-              >
-
-                <!-- Imagen -->
-                <div class="detail-image-wrapper">
-
-                  <img
-                    v-if="imageUrl(detail.product)"
-                    :src="imageUrl(detail.product)"
-                    :alt="
-                      detail.product?.name ||
-                      'Producto'
-                    "
-                    class="detail-image"
-                  />
-
-                  <div
-                    v-else
-                    class="detail-image-placeholder"
-                  >
-
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
+                    <div
+                      v-else
+                      class="detail-image-placeholder"
                     >
-                      <path
-                        d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h14V5H5Zm2 2h10v2H7V7Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z"
-                      />
-                    </svg>
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h14V5H5Zm2 2h10v2H7V7Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z"
+                        />
+                      </svg>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- Información -->
+                  <div class="detail-info">
+
+                    <strong class="detail-name">
+                      {{
+                        detail.product?.name ||
+                        'Producto eliminado'
+                      }}
+                    </strong>
+
+                    <span class="detail-quantity">
+                      {{ detail.quantity }} unidad(es)
+                    </span>
 
                   </div>
 
                 </div>
 
+              </div>
 
-                <!-- Información -->
-                <div class="detail-info">
 
-                  <strong class="detail-name">
+              <!-- FOOTER -->
+              <footer class="order-card-footer">
+
+                <div>
+
+                  <span class="footer-label">
+                    Total del pedido
+                  </span>
+
+                  <strong class="order-total">
+                    $
                     {{
-                      detail.product?.name ||
-                      'Producto eliminado'
+                      Number(order.total)
+                        .toLocaleString('es-AR')
                     }}
                   </strong>
 
-                  <span class="detail-quantity">
-                    {{ detail.quantity }} unidad(es)
-                  </span>
-
                 </div>
 
-              </div>
+                <div class="order-status-mobile">
+                  {{ STATUS_LABELS[order.status] || order.status }}
+                </div>
 
-            </div>
+              </footer>
 
+            </article>
 
-            <!-- FOOTER -->
-            <footer class="order-card-footer">
+          </div>
 
-              <div>
-
-                <span class="footer-label">
-                  Total del pedido
-                </span>
-
-                <strong class="order-total">
-                  $
-                  {{
-                    Number(order.total)
-                      .toLocaleString('es-AR')
-                  }}
-                </strong>
-
-              </div>
-
-              <div class="order-status-mobile">
-                {{ STATUS_LABELS[order.status] || order.status }}
-              </div>
-
-            </footer>
-
-          </article>
-
+          <Pagination
+            
+            :page="pendingPage"
+            :total-pages="pendingTotalPages"
+            @change-page="changePendingPage"
+          />
+        </template>
+        
+        <div v-else class="empty-section">
+          <p>No tenés pedidos en proceso.</p>
         </div>
 
       </section>
@@ -307,7 +391,7 @@ onMounted(async () => {
            PEDIDOS ENTREGADOS
       =================================================== -->
       <section
-        v-if="deliveredOrders.length"
+        v-if="activeTab === 'delivered'"
         class="orders-group delivered-group"
       >
 
@@ -322,145 +406,143 @@ onMounted(async () => {
 
         </div>
 
+        <template v-if="pendingOrders.length > 0">
 
-        <div class="orders-list">
+          <div v-if="deliveredOrders.length > 0" class="orders-list">
 
-          <article
-            v-for="order in deliveredOrders"
-            :key="order.id"
-            class="order-card delivered-card"
-          >
+            <article
+              v-for="order in deliveredOrders"
+              :key="order.id"
+              class="order-card delivered-card"
+            >
 
-            <!-- HEADER -->
-            <header class="order-card-header">
+              <!-- HEADER -->
+              <header class="order-card-header">
 
-              <div>
+                <div>
 
-                <span class="order-label">
-                  Pedido
+                  <span class="order-label">
+                    Pedido
+                  </span>
+
+                  <span class="order-number">
+                    #{{ order.orderNumber }}
+                  </span>
+
+                </div>
+
+
+                <span class="order-status order-status-delivered">
+
+                  <span class="status-dot"></span>
+
+                  Entregado
+
                 </span>
 
-                <span class="order-number">
-                  #{{ order.orderNumber }}
-                </span>
-
-              </div>
+              </header>
 
 
-              <span class="order-status order-status-delivered">
+              <!-- PRODUCTOS -->
+              <div class="order-products">
 
-                <span class="status-dot"></span>
+                <div
+                  v-for="detail in order.details"
+                  :key="detail.id"
+                  class="order-detail"
+                >
 
-                Entregado
+                  <div class="detail-image-wrapper">
 
-              </span>
+                    <img
+                      v-if="imageUrl(detail.product)"
+                      :src="imageUrl(detail.product)"
+                      :alt="
+                        detail.product?.name ||
+                        'Producto'
+                      "
+                      class="detail-image"
+                    />
 
-            </header>
-
-
-            <!-- PRODUCTOS -->
-            <div class="order-products">
-
-              <div
-                v-for="detail in order.details"
-                :key="detail.id"
-                class="order-detail"
-              >
-
-                <div class="detail-image-wrapper">
-
-                  <img
-                    v-if="imageUrl(detail.product)"
-                    :src="imageUrl(detail.product)"
-                    :alt="
-                      detail.product?.name ||
-                      'Producto'
-                    "
-                    class="detail-image"
-                  />
-
-                  <div
-                    v-else
-                    class="detail-image-placeholder"
-                  >
-
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
+                    <div
+                      v-else
+                      class="detail-image-placeholder"
                     >
-                      <path
-                        d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h14V5H5Zm2 2h10v2H7V7Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z"
-                      />
-                    </svg>
+
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h14V5H5Zm2 2h10v2H7V7Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z"
+                        />
+                      </svg>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="detail-info">
+
+                    <strong class="detail-name">
+                      {{
+                        detail.product?.name ||
+                        'Producto eliminado'
+                      }}
+                    </strong>
+
+                    <span class="detail-quantity">
+                      {{ detail.quantity }} unidad(es)
+                    </span>
 
                   </div>
 
                 </div>
 
+              </div>
 
-                <div class="detail-info">
 
-                  <strong class="detail-name">
+              <!-- FOOTER -->
+              <footer class="order-card-footer">
+
+                <div>
+
+                  <span class="footer-label">
+                    Total del pedido
+                  </span>
+
+                  <strong class="order-total">
+                    $
                     {{
-                      detail.product?.name ||
-                      'Producto eliminado'
+                      Number(order.total)
+                        .toLocaleString('es-AR')
                     }}
                   </strong>
 
-                  <span class="detail-quantity">
-                    {{ detail.quantity }} unidad(es)
-                  </span>
-
                 </div>
 
-              </div>
+              </footer>
 
-            </div>
+            </article>
 
+          </div>
 
-            <!-- FOOTER -->
-            <footer class="order-card-footer">
+          <Pagination
+            :page="deliveredPage"
+            :total-pages="deliveredTotalPages"
+            @change-page="changeDeliveredPage"
+          />
+        </template>
 
-              <div>
-
-                <span class="footer-label">
-                  Total del pedido
-                </span>
-
-                <strong class="order-total">
-                  $
-                  {{
-                    Number(order.total)
-                      .toLocaleString('es-AR')
-                  }}
-                </strong>
-
-              </div>
-
-            </footer>
-
-          </article>
-
+        <div v-else class="empty-section">
+            <p>No tenés pedidos entregados.</p>
         </div>
 
       </section>
 
     </div>
 
-
-    <!-- ================= PAGINACIÓN ================= -->
-    <div
-      v-if="orders.length"
-      class="pagination-wrapper"
-    >
-
-      <Pagination
-        :page="page"
-        :total-pages="totalPages"
-        @change-page="changePage"
-      />
-
-    </div>
 
   </div>
 </template>
@@ -534,6 +616,58 @@ onMounted(async () => {
   flex-direction: column;
 
   gap: 38px;
+}
+
+.orders-tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.orders-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: var(--space-2) var(--space-1) var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.orders-tab:hover {
+  color: var(--color-ink);
+}
+
+.orders-tab-active {
+  color: var(--color-rust);
+  border-bottom-color: var(--color-rust);
+}
+
+.orders-tab-count {
+  background: var(--color-line);
+  color: var(--color-ink-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  
+}
+
+.orders-tab-active .orders-tab-count {
+  background: var(--color-rust);
+  color: #fff;
+}
+
+.orders-tab-empty {
+  color: var(--color-ink-soft);
+  padding: var(--space-4) 0;
+  text-align: center;
 }
 
 .orders-group {
@@ -1041,17 +1175,6 @@ onMounted(async () => {
 }
 
 
-/* =========================================================
-   PAGINACIÓN
-========================================================= */
-
-.pagination-wrapper {
-  display: flex;
-
-  justify-content: center;
-
-  margin-top: 35px;
-}
 
 /* ==============================
    MENSAJE DE ÉXITO
@@ -1144,7 +1267,7 @@ onMounted(async () => {
    RESPONSIVE
 ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
 
   .orders-view {
     padding: 40px 14px 60px;
@@ -1187,7 +1310,7 @@ onMounted(async () => {
 }
 
 
-@media (max-width: 450px) {
+@media (max-width: 600px) {
 
   .orders-group {
     padding: 15px;

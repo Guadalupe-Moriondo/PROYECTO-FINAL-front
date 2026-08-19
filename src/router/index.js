@@ -123,7 +123,7 @@ const router = createRouter({
       path: '/admin/orders/history',
       name: 'admin-order-history',
       component: AdminStatisticsView,
-      meta: { requiresAdmin: true }
+      meta: { requiresAuth: true, requiresAdmin: true }
     },
 
     {

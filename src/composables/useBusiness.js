@@ -26,6 +26,6 @@ function ensureLoaded() {
 
 export function useBusiness() {
   ensureLoaded();
-  return { business, loading };
+  return { business, loading, loadBusiness: ensureLoaded };
 }
 

@@ -482,7 +482,7 @@ async function submit() {
    RESPONSIVE
 ============================== */
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
 
   .register-page {
     grid-template-columns: 1fr;

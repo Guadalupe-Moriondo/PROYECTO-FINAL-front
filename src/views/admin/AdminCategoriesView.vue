@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import categoriesService from '../../services/categories.service';
+import Pagination from '@/components/Pagination.vue';
 
 const categories = ref([]);
 const loading = ref(true);
-
+const page = ref(1);
+const totalPages = ref(1);
 const newName = ref('');
 const newDescription = ref('');
-
-
 const editingId = ref(null);
 
 const editForm = ref({
@@ -37,8 +37,10 @@ async function load() {
   loading.value = true;
 
   try {
-    const response = await categoriesService.list();
-    categories.value = response.data;
+    const response = await categoriesService.list(page.value, 10);
+
+    categories.value = response.data.data;
+    totalPages.value = response.data.totalPages;
   } catch (e) {
     error.value = 'No se pudieron cargar las categorías';
   } finally {
@@ -111,6 +113,11 @@ async function remove(category) {
       e.response?.data?.message ||
       'No se pudo dar de baja la categoría';
   }
+}
+
+function changePage(newPage) {
+  page.value = newPage;
+  load();
 }
 
 
@@ -289,26 +296,6 @@ onMounted(load);
 
                 <td>
 
-                  <select v-model="editForm.machineType">
-
-                    <option value="sembradoras">
-                      Sembradoras
-                    </option>
-
-                    <option value="cosechadoras">
-                      Cosechadoras
-                    </option>
-
-                    <option value="otros">
-                      Otros
-                    </option>
-
-                  </select>
-
-                </td>
-
-                <td>
-
                   <input
                     v-model="editForm.description"
                     type="text"
@@ -414,7 +401,14 @@ onMounted(load);
 
     </section>
 
+    <Pagination
+      :page="page"
+      :total-pages="totalPages"
+      @change-page="changePage"
+    />
+
   </div>
+
 </template>
 
 <style scoped>
@@ -482,9 +476,15 @@ onMounted(load);
 
 .category-form {
   display: grid;
-  grid-template-columns: repeat(3,1fr) auto;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.2rem;
   align-items: end;
+  
+}
+
+.category-form button[type="submit"] {
+  grid-column: 1 / -1;   /* ocupa toda la fila, empujándolo a la línea de abajo */
+  justify-self: center;   /* y lo pega a la izquierda dentro de esa fila */
 }
 
 .field {
@@ -697,7 +697,7 @@ onMounted(load);
 
 /* ================= RESPONSIVE ================= */
 
-@media (max-width:1100px){
+@media (max-width:1200px){
 
   .category-form{
     grid-template-columns:1fr 1fr;
@@ -705,7 +705,7 @@ onMounted(load);
 
 }
 
-@media (max-width:700px){
+@media (max-width:900px){
 
   .category-form{
     grid-template-columns:1fr;

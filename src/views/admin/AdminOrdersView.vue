@@ -671,7 +671,7 @@ onMounted(async () => {
 
 
     <!-- ================= PAGINACIÓN ================= -->
-    <div class="pagination-wrapper">
+    
 
       <Pagination
         :page="page"
@@ -679,7 +679,7 @@ onMounted(async () => {
         @change-page="changePage"
       />
 
-    </div>
+    
 
   </div>
 </template>
@@ -1297,17 +1297,7 @@ onMounted(async () => {
 }
 
 
-/* =========================================================
-   PAGINACIÓN
-========================================================= */
 
-.pagination-wrapper {
-  display: flex;
-
-  justify-content: center;
-
-  margin-top: 35px;
-}
 
 
 /* =========================================================
@@ -1531,7 +1521,7 @@ onMounted(async () => {
    RESPONSIVE
 ============================== */
 
-@media (max-width:768px){
+@media (max-width:900px){
 
   .order-actions{
     flex-direction:column;

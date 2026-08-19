@@ -313,7 +313,7 @@ onMounted(async () => {
 
 
     <!-- ================= PAGINACIÓN ================= -->
-    <div class="pagination-wrapper">
+    
 
       <Pagination
         :page="page"
@@ -321,7 +321,7 @@ onMounted(async () => {
         @change-page="changePage"
       />
 
-    </div>
+    
 
   </div>
 </template>
@@ -837,17 +837,7 @@ onMounted(async () => {
 }
 
 
-/* =========================================================
-   PAGINACIÓN
-========================================================= */
 
-.pagination-wrapper {
-  display: flex;
-
-  justify-content: center;
-
-  margin-top: 35px;
-}
 
 
 /* =========================================================

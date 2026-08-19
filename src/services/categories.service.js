@@ -1,8 +1,10 @@
 import api from './api';
 
 export default {
-  list() {
-    return api.get('/categories');
+  list(page = 1, limit = 10) {
+    return api.get('/categories', {
+      params: { page, limit }
+    });
   },
   getById(id) {
     return api.get(`/categories/${id}`);
