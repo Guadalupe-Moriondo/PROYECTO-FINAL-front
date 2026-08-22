@@ -335,9 +335,15 @@ onMounted(async () => {
                     <span class="detail-quantity">
                       {{ detail.quantity }} unidad(es)
                     </span>
-
                   </div>
-
+                  <span class="detail-price">
+                      $
+                      {{
+                        Number(detail.unitPrice)
+                          .toLocaleString('es-AR')
+                      }}
+                      
+                    </span>
                 </div>
 
               </div>
@@ -346,7 +352,7 @@ onMounted(async () => {
               <!-- FOOTER -->
               <footer class="order-card-footer">
 
-                <div>
+                <div class="order-total-block">
 
                   <span class="footer-label">
                     Total del pedido
@@ -495,8 +501,15 @@ onMounted(async () => {
                     <span class="detail-quantity">
                       {{ detail.quantity }} unidad(es)
                     </span>
-
                   </div>
+                  <span class="detail-price">
+                     $
+                    {{
+                      Number(detail.unitPrice)
+                        .toLocaleString('es-AR')
+                    }}
+                    
+                  </span>
 
                 </div>
 
@@ -506,7 +519,7 @@ onMounted(async () => {
               <!-- FOOTER -->
               <footer class="order-card-footer">
 
-                <div>
+                <div class="order-total-block">
 
                   <span class="footer-label">
                     Total del pedido
@@ -1033,6 +1046,14 @@ onMounted(async () => {
   font-size: 0.77rem;
 }
 
+.detail-price {
+  color: black;
+  font-size: 0.80rem;
+  flex-shrink: 0;
+  margin-left: auto;   /* empuja el precio al extremo derecho de la fila */
+  padding-left: 12px;
+}
+
 
 /* =========================================================
    FOOTER DEL PEDIDO
@@ -1077,6 +1098,11 @@ onMounted(async () => {
   font-size: 1rem;
 
   font-weight: 600;
+}
+
+.order-total-block {
+  margin-left: auto;   /* empuja el bloque completo (etiqueta + total) a la derecha */
+  text-align: right;   /* alinea el texto adentro también a la derecha */
 }
 
 .order-status-mobile {

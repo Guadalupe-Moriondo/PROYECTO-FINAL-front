@@ -1,7 +1,7 @@
 import api from './api';
 
 export default {
-  list(page = 1, limit = 10) {
+  list(page = 1, limit = 100) {
     return api.get('/categories', {
       params: { page, limit }
     });

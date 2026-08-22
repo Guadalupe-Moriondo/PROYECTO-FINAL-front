@@ -47,7 +47,7 @@ async function loadProducts() {
 
 async function loadCategories() {
   const response = await categoriesService.list();
-  categories.value = response.data;
+  categories.value = response.data.data;
 }
 
 function applyFilters() {

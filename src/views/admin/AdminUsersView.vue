@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import usersService from '../../services/users.service';
+import Pagination from '../../components/Pagination.vue';
 
 
 // ==============================
@@ -488,31 +489,11 @@ onMounted(() => {
     </div>
 
     <!-- Paginación -->
-
-    <div
-      v-if="totalPages>1"
-      class="pagination"
-    >
-
-      <button
-        @click="changePage(page-1)"
-        :disabled="page===1"
-      >
-        ←
-      </button>
-
-      <span>
-        Página {{ page }} de {{ totalPages }}
-      </span>
-
-      <button
-        @click="changePage(page+1)"
-        :disabled="page===totalPages"
-      >
-        →
-      </button>
-
-    </div>
+    <Pagination
+      :page="page"
+      :total-pages="totalPages"
+      @change-page="changePage"
+    />
 
   </div>
 
@@ -818,34 +799,6 @@ onMounted(() => {
     text-align:center;
 
     color:var(--color-ink-soft);
-
-}
-
-.pagination{
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    gap:1rem;
-
-    margin-top:2rem;
-
-}
-
-.pagination button{
-
-    width:40px;
-
-    height:40px;
-
-    border-radius:50%;
-
-    border:1px solid var(--color-line);
-
-    cursor:pointer;
 
 }
 

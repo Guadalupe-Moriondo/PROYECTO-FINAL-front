@@ -32,7 +32,7 @@ const imageInput = ref(null);
 
 async function loadCategories() {
   const response = await categoriesService.list();
-  categories.value = response.data;
+  categories.value = response.data.data;
 }
 
 
@@ -87,7 +87,8 @@ async function save() {
     router.push({
       name: 'admin-products',
       query: {
-        success: successMessage
+        success: successMessage,
+        page: route.query.page || undefined,
       }
     });
 
@@ -379,6 +380,7 @@ onMounted(() => {
 
         <RouterLink
           :to="{ name: 'admin-products' }"
+          query: { page: route.query.page || undefined }
           class="button button-secondary"
         >
           Cancelar

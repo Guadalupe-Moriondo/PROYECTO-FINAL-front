@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import productsService from '../../services/products.service';
 import stockService from '../../services/stock.service';
 import InventoryTag from '../../components/InventoryTag.vue';
+import Pagination from '../../components/Pagination.vue';
 
 const alerts = ref([]);
 const loadingAlerts = ref(true);
@@ -12,7 +13,8 @@ const products = ref([]);
 const message = ref('');
 const error = ref('');
 let messageTimeout = null;
-
+const page = ref(1);
+const totalPages = ref(1);
 
 function showMessage(text) {
   message.value = text;
@@ -28,9 +30,15 @@ function showMessage(text) {
 
 async function loadAlerts() {
   loadingAlerts.value = true;
-  const response = await stockService.alerts();
-  alerts.value = response.data;
+  const response = await stockService.alerts(page.value, 10);
+  alerts.value = response.data.data;
+  totalPages.value = response.data.totalPages;
   loadingAlerts.value = false;
+}
+
+function changePage(newPage) {
+  page.value = newPage;
+  loadAlerts();
 }
 
 async function loadProducts() {
@@ -295,6 +303,12 @@ onMounted(() => {
         </table>
 
       </div>
+      
+      <Pagination
+        :page="page"
+        :total-pages="totalPages"
+        @change-page="changePage"
+      />
 
     </section>
 

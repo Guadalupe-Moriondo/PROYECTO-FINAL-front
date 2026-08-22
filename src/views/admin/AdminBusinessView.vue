@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import businessService from '../../services/business.service';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const form = ref({
   name: '',
@@ -166,6 +169,10 @@ async function save() {
 
 
     showMessage('Datos actualizados correctamente');
+
+    setTimeout(() => {
+      router.push({ name: 'admin-home' });
+    }, 1200);
 
 
   } catch (error) {

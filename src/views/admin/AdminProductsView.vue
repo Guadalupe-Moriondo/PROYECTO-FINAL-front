@@ -13,8 +13,7 @@ const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
-const showSuccessMessage = ref(false);
-const successMessage = ref('');
+
 
 async function load() {
   loading.value = true;
@@ -42,6 +41,10 @@ function imageUrl(product) {
 }
 
 onMounted(async () => {
+  const queryPage = Number(route.query.page);
+  if (queryPage > 0) {
+    page.value = queryPage;
+  }
   await load();
 
   if (route.query.success === 'created') {
@@ -269,8 +272,8 @@ onMounted(async () => {
                 <RouterLink
                   :to="{
                     name: 'admin-product-edit',
-                    params: {id: product.id
-                    }
+                    params: {id: product.id},
+                    query: { page }
                   }"
                   class="icon-button edit-button"
                   title="Editar producto"

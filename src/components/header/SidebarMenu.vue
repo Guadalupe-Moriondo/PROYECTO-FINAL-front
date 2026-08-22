@@ -24,7 +24,7 @@ const categoriesExpanded = ref(false);
 async function loadCategories() {
   try {
     const response = await categoriesService.list();
-    categories.value = response.data;
+    categories.value = response.data.data;
   } catch (e) {
     categories.value = [];
   }
