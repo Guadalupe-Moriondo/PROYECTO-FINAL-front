@@ -192,7 +192,7 @@ onMounted(load);
             id="name"
             v-model="newName"
             type="text"
-            placeholder="Ej. Apache"
+            placeholder="Ej: Apache"
             required
           />
 

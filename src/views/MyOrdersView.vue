@@ -412,7 +412,7 @@ onMounted(async () => {
 
         </div>
 
-        <template v-if="pendingOrders.length > 0">
+        <template v-if="deliveredOrders.length > 0">
 
           <div v-if="deliveredOrders.length > 0" class="orders-list">
 

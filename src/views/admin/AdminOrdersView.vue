@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import ordersService from '../../services/orders.service';
 import { useBusiness } from '../../composables/useBusiness';
 import Pagination from '../../components/Pagination.vue';
-
+import { useOrderNotificationsStore } from '../../stores/orderNotifications';
 
 const orders = ref([]);
 const loading = ref(true);
@@ -28,6 +28,8 @@ const PAYMENT_LABELS = {
   transfer: 'Transferencia ',
   card: 'Tarjeta',
 };
+
+const orderNotificationsStore = useOrderNotificationsStore();
 
 function canNotify(order) {
   return order.status === 'withdraw';
@@ -243,6 +245,7 @@ function imageUrl(product) {
 onMounted(async () => {
   await load();
   await loadBusiness();
+  orderNotificationsStore.markAsSeen();
 });
 </script>
 
@@ -909,54 +912,9 @@ onMounted(async () => {
   font-size: 0.78rem;
 }
 
-
 /* =========================================================
-   TOTAL
+   FECHA
 ========================================================= */
-
-.order-total {
-  color: var(--color-ink);
-
-  font-family: var(--font-display);
-
-  font-size: 0.9rem;
-
-  font-weight: 600;
-
-  background-color: #c6e6d0;
-
-  border:6px solid #c6e6d0;
-
-  border-radius: 50px;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   PAGO
-========================================================= */
-
-.payment-badge {
-  display: inline-flex;
-
-  align-items: center;
-
-  padding: 6px 10px;
-
-  border-radius: 999px;
-
-  background:
-    rgba(0, 0, 0, 0.04);
-
-  color: var(--color-ink-soft);
-
-  font-size: 0.75rem;
-
-  font-weight: 600;
-
-  white-space: nowrap;
-}
 
 .date-cell {
   vertical-align: middle;
@@ -981,6 +939,57 @@ onMounted(async () => {
   font-size: 0.75rem;
   color: #9ca3af;
 }
+
+
+/* =========================================================
+   TOTAL
+========================================================= */
+
+.order-total {
+  color: var(--color-ink);
+
+  font-family: var(--font-display);
+
+  font-size: 0.9rem;
+
+  font-weight: 600;
+
+  background-color: #c6e6d0;
+
+  border:6px solid #c6e6d0;
+
+  border-radius: 50px;
+
+  white-space: nowrap;
+}
+
+
+
+
+/* =========================================================
+   PAGO
+========================================================= */
+
+.payment-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(0, 0, 0, 0.04);
+
+  color: var(--color-ink-soft);
+
+  font-size: 0.75rem;
+
+  white-space: nowrap;
+}
+
+
 /* =========================================================
    ESTADO
 ========================================================= */

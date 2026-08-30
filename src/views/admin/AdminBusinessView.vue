@@ -19,8 +19,8 @@ const form = ref({
   instagram: '',
   facebook: '',
 
-  mondayOpen: '',
-  mondayClose: '',
+  morningOpen: '',
+  morningClose: '',
 
   afternoonOpen: '',
   afternoonClose: '',
@@ -104,8 +104,8 @@ async function load() {
       facebook: response.data.facebook || '',
 
 
-      mondayOpen: response.data.mondayOpen || '',
-      mondayClose: response.data.mondayClose || '',
+      morningOpen: response.data.morningOpen || '',
+      morningClose: response.data.morningClose || '',
 
       afternoonOpen: response.data.afternoonOpen || '',
       afternoonClose: response.data.afternoonClose || '',
@@ -149,8 +149,8 @@ async function save() {
       facebook: form.value.facebook,
 
 
-      mondayOpen: form.value.mondayOpen,
-      mondayClose: form.value.mondayClose,
+      morningOpen: form.value.morningOpen,
+      morningClose: form.value.morningClose,
 
 
       afternoonOpen: form.value.afternoonOpen,
@@ -355,14 +355,14 @@ onMounted(load);
 
           <input
             type="time"
-            v-model="form.mondayOpen"
+            v-model="form.morningOpen"
           >
 
           <span>a</span>
 
           <input
             type="time"
-            v-model="form.mondayClose"
+            v-model="form.morningClose"
           >
 
         </div>
@@ -434,6 +434,7 @@ onMounted(load);
         <input
           v-model="form.instagram"
           type="text"
+          placeholder="https://www.instagram.com/..."
         >
 
       </div>
@@ -445,6 +446,7 @@ onMounted(load);
         <input
           v-model="form.facebook"
           type="text"
+          placeholder="https://www.facebook.com/..."
         >
 
       </div>

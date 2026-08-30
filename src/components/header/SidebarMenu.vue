@@ -4,6 +4,8 @@ import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useCartStore } from '../../stores/cart';
 import categoriesService from '../../services/categories.service';
+import { useOrderNotificationsStore } from '../../stores/orderNotifications';
+
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -16,7 +18,7 @@ const router = useRouter();
 
 const categories = ref([]);
 const categoriesExpanded = ref(false);
-
+const orderNotificationsStore = useOrderNotificationsStore();
 
 
 
@@ -153,7 +155,7 @@ watch(
               class="sidebar-link sidebar-link-admin"
               @click="$emit('close')"
             >
-               Panel admin
+              Panel admin
             </RouterLink>
 
             <RouterLink
@@ -161,7 +163,15 @@ watch(
               class="sidebar-link"
               @click="$emit('close')"
             >
-              Pedidos
+              <span>Pedidos</span>
+
+              <span
+                v-if="orderNotificationsStore.hasNewOrders" 
+                class="notification-dot" 
+                :title="`${orderNotificationsStore.newOrdersCount} nuevo(s) pedido(s)`" 
+              >
+                {{ orderNotificationsStore.newOrdersCount }}
+              </span>
             </RouterLink>
 
           </template>
@@ -384,5 +394,38 @@ watch(
 .sidebar-group-items {
   padding-left: 14px;
   padding-bottom: 6px;
+}
+
+.notification-dot {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--color-rust);
+  color: white;
+
+  border-radius: 50%;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  animation: notification-pulse 1.5s infinite;
+}
+
+@keyframes notification-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

@@ -1,12 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { RouterLink } from 'vue-router';
+import { ref, onMounted, watch } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import productsService from '../../services/products.service';
 import Pagination from '../../components/Pagination.vue';
 import InventoryTag from '../../components/InventoryTag.vue';
-import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 
 const products = ref([]);
 const loading = ref(true);
@@ -14,13 +14,35 @@ const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
 
+const search = ref('');
+
+let searchTimeout = null;
 
 async function load() {
   loading.value = true;
-  const response = await productsService.list(page.value, 10);
-  products.value = response.data.data;
-  totalPages.value = response.data.totalPages;
-  loading.value = false;
+
+  try {
+    let response;
+
+    if (search.value.trim()) {
+      response = await productsService.search({
+        name: search.value.trim(),
+        page: page.value,
+        limit: 10,
+      });
+    } else {
+      response = await productsService.list(page.value, 10);
+    }
+
+    products.value = response.data.data;
+    totalPages.value = response.data.totalPages;
+  } catch (error) {
+    console.error('Error cargando productos:', error);
+    products.value = [];
+    totalPages.value = 1;
+  } finally {
+    loading.value = false;
+  }
 }
 
 function changePage(newPage) {
@@ -28,23 +50,41 @@ function changePage(newPage) {
   load();
 }
 
+function handleSearch() {
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    load();
+  }, 400);
+}
+
+function clearSearch() {
+  search.value = '';
+  page.value = 1;
+  load();
+}
+
 async function remove(product) {
   if (!confirm(`¿Dar de baja "${product.name}"?`)) return;
+
   await productsService.remove(product.id);
   load();
 }
 
-
 function imageUrl(product) {
   if (!product.imageUrl) return null;
+
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 
 onMounted(async () => {
   const queryPage = Number(route.query.page);
+
   if (queryPage > 0) {
     page.value = queryPage;
   }
+
   await load();
 
   if (route.query.success === 'created') {
@@ -71,33 +111,72 @@ onMounted(async () => {
     <!-- ================= HEADER ================= -->
     <header class="products-page-header">
 
-      <div>
-        <h1>
-          Productos
-        </h1>
+      <!-- TÍTULO -->
+      <div class="products-title-section">
+        <h1>Productos</h1>
       </div>
 
+      <!-- BUSCADOR + BOTÓN -->
+      <div class="products-tools">
 
-      <RouterLink
-        :to="{ name: 'admin-product-new' }"
-        class="new-product-button"
-      >
+        <div class="products-search">
+          <div class="search-input-wrapper">
 
-        <svg
-          viewBox="0 0 24 24"
-          fill="currentColor"
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+              ></circle>
+
+              <path d="m20 20-4-4"></path>
+            </svg>
+
+            <input
+              v-model="search"
+              type="text"
+              placeholder="Buscar por nombre, código, descripción o marca..."
+              @input="handleSearch"
+            />
+
+            <button
+              v-if="search"
+              type="button"
+              class="search-clear"
+              title="Limpiar búsqueda"
+              @click="clearSearch"
+            >
+              ✕
+            </button>
+
+          </div>
+        </div>
+
+        <RouterLink
+          :to="{ name: 'admin-product-new' }"
+          class="new-product-button"
         >
-          <path
-            d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"
-          />
-        </svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"
+            />
+          </svg>
 
-        Nuevo producto
+          Nuevo producto
+        </RouterLink>
 
-      </RouterLink>
+      </div>
 
     </header>
-
 
     <!-- ================= MENSAJE ================= -->
     <Transition name="success-toast">
@@ -346,48 +425,116 @@ onMounted(async () => {
 
 .products-page-header {
   display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 25px;
-
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
   margin-bottom: 30px;
 }
 
-.products-eyebrow {
-  margin: 0 0 7px;
-
-  color: var(--color-rust);
-
-  font-family: var(--font-mono);
-
-  font-size: 0.72rem;
-  font-weight: 700;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.14em;
+.products-title-section {
+  width: 100%;
 }
 
 .products-page-header h1 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: clamp(2.1rem, 4vw, 2.8rem);
-
   line-height: 1.05;
 }
 
-.products-description {
-  margin: 10px 0 0;
+
+/* =========================================================
+   BUSCADOR + NUEVO PRODUCTO
+========================================================= */
+
+.products-tools {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.products-search {
+  width: 100%;
+  max-width: 700px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  height: 50px;
+  padding: 0 45px;
+
+  border: 1px solid var(--color-line);
+  border-radius: 50px;
+
+  background: var(--color-surface);
+  color: var(--color-ink);
+
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+
+  outline: none;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.search-input-wrapper input::placeholder {
+  color: var(--color-ink-soft);
+}
+
+.search-input-wrapper input:focus {
+  border-color: var(--color-rust);
+
+  box-shadow:
+    0 0 0 3px rgba(183, 53, 45, 0.08);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+
+  width: 19px;
+  height: 19px;
 
   color: var(--color-ink-soft);
 
-  font-size: 0.95rem;
+  pointer-events: none;
+}
 
-  line-height: 1.6;
+.search-clear {
+  position: absolute;
+  right: 12px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: var(--color-ink-soft);
+
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.search-clear:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-rust);
 }
 
 
@@ -397,24 +544,21 @@ onMounted(async () => {
 
 .new-product-button {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 8px;
 
-  padding: 13px 18px;
+  height: 48px;
+  padding: 0 18px;
 
   border-radius: 10px;
 
   background: var(--color-rust);
-
   color: #fff;
 
   text-decoration: none;
 
   font-size: 0.85rem;
-
   font-weight: 700;
 
   white-space: nowrap;
@@ -438,7 +582,6 @@ onMounted(async () => {
   box-shadow:
     0 8px 20px rgba(183, 53, 45, 0.20);
 }
-
 
 /* ==============================
    MENSAJE DE ÉXITO
@@ -854,6 +997,18 @@ onMounted(async () => {
 
     flex-direction: column;
   }
+
+  .products-tools {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .products-search {
+    width: 100%;
+    transform: none;
+  }
+
 
   .new-product-button {
     width: 100%;

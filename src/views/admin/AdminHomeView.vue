@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router';
+import { useOrderNotificationsStore } from '../../stores/orderNotifications';
 
 const sections = [
   { to: 'admin-categories', title: 'Categorías', description: 'Organizar el catálogo por marca.' },
@@ -10,6 +11,8 @@ const sections = [
   { to: 'admin-order-history',title: 'Historial de pedidos',description: 'Estadísticas de ventas.'},
   { to:'admin-users',title:'Usuarios',description:'Administrar clientes y administradores.'}
 ];
+
+const orderNotificationsStore = useOrderNotificationsStore();
 </script>
 
 <template>
@@ -17,8 +20,22 @@ const sections = [
     <h1>Panel de administración</h1>
     <div class="admin-grid">
       <RouterLink v-for="s in sections" :key="s.to" :to="{ name: s.to }" class="admin-card">
-        <h2>{{ s.title }}</h2>
+        <div class="admin-card-header">
+          <h2>{{ s.title }}</h2>
+          <span 
+            v-if="s.to === 'admin-orders' && orderNotificationsStore.hasNewOrders" 
+            class="admin-notification"
+          >
+            {{ orderNotificationsStore.newOrdersCount }}
+          </span>
+        </div>
         <p>{{ s.description }}</p>
+        <span
+          v-if="s.to === 'admin-orders' && orderNotificationsStore.hasNewOrders" 
+          class="new-order-message"
+        >
+          Nuevos pedidos 
+        </span>
       </RouterLink>
     </div>
   </div>
@@ -45,4 +62,52 @@ const sections = [
 .admin-card:hover { border-color: var(--color-rust); }
 .admin-card h2 { margin-bottom: var(--space-1); font-size: 1.15rem; }
 .admin-card p { margin: 0; color: var(--color-ink-soft); font-size: 0.9rem; }
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-notification {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: var(--color-rust);
+  color: white;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  animation: notification-pulse 1.5s infinite;
+}
+
+.new-order-message {
+  display: block;
+  margin-top: 12px;
+
+  color: var(--color-rust);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@keyframes notification-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
 </style>

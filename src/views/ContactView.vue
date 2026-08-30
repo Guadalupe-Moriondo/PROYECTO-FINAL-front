@@ -1,6 +1,10 @@
 <script setup>
+
 import { computed, onMounted, ref } from 'vue';
+
 import businessService from '../services/business.service';
+
+import ubicacionImg from '../assets/local.jpg';
 
 const business = ref(null);
 
@@ -14,6 +18,7 @@ async function loadBusiness() {
 }
 
 const whatsappLink = computed(() => {
+
   if (!business.value?.whatsapp) return null;
 
   const number = business.value.whatsapp.replace(/\D/g, '');
@@ -26,20 +31,26 @@ const whatsappLink = computed(() => {
 });
 
 const mailLink = computed(() => {
+
   if (!business.value?.email) return null;
 
-  const subject = encodeURIComponent('Consulta desde la web');
+  const subject = encodeURIComponent(
+    'Consulta desde la web'
+  );
 
-  const body = encodeURIComponent(`Hola,
+  const body = encodeURIComponent(
+    `Hola,
 
 Quisiera realizar una consulta.
 
-Muchas gracias.`);
+Muchas gracias.`
+  );
 
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${business.value.email}&su=${subject}&body=${body}`;
 });
 
 const mapsUrl = computed(() => {
+
   if (!business.value) return '';
 
   const address = [
@@ -55,6 +66,7 @@ const mapsUrl = computed(() => {
 });
 
 onMounted(loadBusiness);
+
 </script>
 
 <template>
@@ -152,38 +164,41 @@ onMounted(loadBusiness);
 
         <div class="contact-layout">
 
-
-          <!-- ================= MAPA ================= -->
-          <div class="map-card">
+          <!-- ================= UBICACIÓN ================= -->
+          <div class="location-card">
 
             <div class="map-header">
+              <p class="section-kicker">
+                Encontranos
+              </p>
 
-              <div>
-
-                <p class="section-kicker">
-                  Encontranos
-                </p>
-
-                <h2>
-                  Nuestra ubicación
-                </h2>
-
-              </div>
-
+              <h2>
+                Nuestra ubicación
+              </h2>
             </div>
 
+            <div class="location-content">
 
-            <div class="map-container">
+              <!-- MAPA -->
+              <div class="map-container">
+                <iframe
+                  v-if="mapsUrl"
+                  :src="mapsUrl"
+                  width="100%"
+                  height="100%"
+                  style="border:0"
+                  allowfullscreen
+                  loading="lazy"
+                ></iframe>
+              </div>
 
-              <iframe
-                v-if="mapsUrl"
-                :src="mapsUrl"
-                width="100%"
-                height="100%"
-                style="border:0"
-                allowfullscreen
-                loading="lazy"
-              />
+              <!-- IMAGEN -->
+              <div class="location-image">
+                <img
+                  :src="ubicacionImg"
+                  alt="Ubicación del negocio"
+                />
+              </div>
 
             </div>
 
@@ -265,7 +280,7 @@ onMounted(loadBusiness);
             <!-- HORARIOS -->
             <div
               v-if="
-                business.mondayOpen ||
+                business.morningOpen ||
                 business.afternoonOpen ||
                 business.saturdayOpen
               "
@@ -291,8 +306,8 @@ onMounted(loadBusiness);
 
                 <div
                   v-if="
-                    business.mondayOpen ||
-                    business.mondayClose
+                    business.morningOpen ||
+                    business.morningClose
                   "
                   class="hours-row"
                 >
@@ -302,9 +317,9 @@ onMounted(loadBusiness);
                   </span>
 
                   <strong>
-                    {{ business.mondayOpen }}
+                    {{ business.morningOpen }}
                     -
-                    {{ business.mondayClose }}
+                    {{ business.morningClose }}
                   </strong>
 
                 </div>
@@ -612,43 +627,58 @@ onMounted(loadBusiness);
    MAPA
 ========================================================= */
 
-.map-card {
+/* =========================================================
+   UBICACIÓN - MAPA + IMAGEN
+========================================================= */
+
+.location-card {
   overflow: hidden;
-
   background: #fff;
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   box-shadow:
     0 8px 25px rgba(0, 0, 0, 0.05);
 }
 
 .map-header {
   padding: 24px 28px 20px;
-
   border-bottom: 1px solid var(--color-line);
 }
 
 .map-header h2 {
   margin: 0;
-
   font-size: 1.45rem;
+}
+
+.location-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 430px;
 }
 
 .map-container {
   width: 100%;
-  height: 430px;
+  height: 100%;
 }
 
 .map-container iframe {
   display: block;
-
   width: 100%;
   height: 100%;
-
   border: 0;
+}
+
+.location-image {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.location-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 
@@ -843,6 +873,19 @@ onMounted(loadBusiness);
 
   .contact-layout {
     grid-template-columns: 1fr;
+  }
+
+  .location-content {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .map-container {
+    height: 350px;
+  }
+
+  .location-image {
+    height: 300px;
   }
 
 }
