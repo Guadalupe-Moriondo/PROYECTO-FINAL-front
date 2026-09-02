@@ -368,9 +368,7 @@ onMounted(async () => {
 
                 </div>
 
-                <div class="order-status-mobile">
-                  {{ STATUS_LABELS[order.status] || order.status }}
-                </div>
+                
 
               </footer>
 
@@ -1105,9 +1103,7 @@ onMounted(async () => {
   text-align: right;   /* alinea el texto adentro también a la derecha */
 }
 
-.order-status-mobile {
-  display: none;
-}
+
 
 .delivered-label {
   color: #258148;
@@ -1122,39 +1118,7 @@ onMounted(async () => {
    ESTADOS VACÍOS
 ========================================================= */
 
-.loading-state {
-  padding: 65px 0;
 
-  text-align: center;
-
-  color: var(--color-ink-soft);
-
-  font-family: var(--font-mono);
-
-  font-size: 0.85rem;
-}
-
-.empty-state {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  min-height: 420px;
-
-  padding: 45px 20px;
-
-  text-align: center;
-
-  background: var(--color-surface);
-
-  border: 1px solid var(--color-line);
-
-  border-radius: 20px;
-}
 
 .empty-icon {
   width: 70px;
@@ -1323,15 +1287,7 @@ onMounted(async () => {
     display: none;
   }
 
-  .order-status-mobile {
-    display: block;
-
-    color: var(--color-ink-soft);
-
-    font-size: 0.75rem;
-
-    font-weight: 600;
-  }
+  
 
 }
 

@@ -3,7 +3,7 @@ import { onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useCartStore } from '../stores/cart';
 import { useAuthStore } from '../stores/auth';
-
+import AvailabilityTag from '@/components/AvailabilityTag.vue';
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
@@ -122,9 +122,10 @@ function imageUrl(product) {
                     {{ item.product.name }}
                   </h2>
 
-                  <p class="product-code">
-                    Código {{ item.product.code }}
-                  </p>
+                  <AvailabilityTag
+                    :code="item.product.code"
+                    :stock="item.product.stock"
+                  />
 
                 </div>
 
@@ -582,15 +583,7 @@ function imageUrl(product) {
   margin-bottom: 2rem;
 }
 
-.empty-card,
-.loading-state {
 
-  text-align: center;
-
-  padding: 3rem;
-
-  color: var(--color-ink-soft);
-}
 
 /* =========================
    Responsive
@@ -619,11 +612,11 @@ function imageUrl(product) {
 
   .cart-bottom {
 
-    flex-direction: column;
+    flex-direction: row;
 
-    align-items: flex-start;
+    justify-content: space-between;
 
-    gap: 1rem;
+    align-items: center;
   }
 
   .product-price {

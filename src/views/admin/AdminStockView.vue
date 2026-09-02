@@ -318,7 +318,7 @@ onMounted(() => {
 <style scoped>
 
 .admin-stock-view{
-    padding:2.5rem 0 4rem;
+  padding: 2.5rem var(--space-4) 4rem;
 }
 
 /*================ HEADER ================*/
@@ -630,16 +630,7 @@ onMounted(() => {
 
 /*================ ESTADOS ================*/
 
-.loading-state,
-.empty-state{
 
-    text-align:center;
-
-    padding:3rem;
-
-    color:var(--color-ink-soft);
-
-}
 
 button.button-primary{
 
@@ -690,5 +681,6 @@ button.button-primary{
     }
 
 }
+
 
 </style>

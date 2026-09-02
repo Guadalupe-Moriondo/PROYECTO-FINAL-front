@@ -415,7 +415,7 @@ onMounted(async () => {
 ========================================================= */
 
 .admin-products-view {
-  padding: 55px 0 80px;
+  padding: 2.5rem var(--space-4) 4rem;
 }
 
 
@@ -966,24 +966,6 @@ onMounted(async () => {
 
 
 
-/* =========================================================
-   LOADING
-========================================================= */
-
-.loading-state {
-  padding: 60px 0;
-
-  text-align: center;
-
-  color: var(--color-ink-soft);
-
-  font-family: var(--font-mono);
-
-  font-size: .85rem;
-}
-
-
-
 
 
 /* =========================================================
@@ -1012,6 +994,7 @@ onMounted(async () => {
 
   .new-product-button {
     width: 100%;
+    
   }
 
 }

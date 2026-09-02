@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   // authStore.isAdmin.
   const isLoggedIn = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.role === 'admin');
-
+  const isOwner = computed(() => user.value?.owner === true);
   // ---- ACTIONS ----
 
   // Called ONCE when the app starts (see main.js), to "rehydrate" the
@@ -51,5 +51,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user');
   }
 
-  return { token, user, isLoggedIn, isAdmin, restoreSession, login, logout };
+  return { token, user, isLoggedIn, isAdmin, isOwner, restoreSession, login, logout };
 });

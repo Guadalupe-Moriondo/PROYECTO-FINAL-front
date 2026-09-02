@@ -12,7 +12,8 @@ const name = ref('');
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
-const phone = ref('');
+const phoneArea = ref('');
+const phoneNumber = ref('');
 const error = ref('');
 const submitting = ref(false);
 
@@ -25,7 +26,7 @@ async function submit() {
       name: name.value,
       email: email.value,
       password: password.value,
-      phone: phone.value || undefined,
+      phone: `${phoneArea.value}${phoneNumber.value}`,
     });
 
     await authStore.login(email.value, password.value);
@@ -142,14 +143,27 @@ async function submit() {
 
             <div class="field">
               <label for="phone">
-                Teléfono (opcional)
+                Teléfono
               </label>
 
-              <input
-                id="phone"
-                v-model="phone"
-                type="tel"
-              />
+              <div class="phone-fields">
+                <input
+                  id="phoneArea"
+                  v-model="phoneArea"
+                  type="tel"
+                  placeholder="Código"
+                  maxlength="4"
+                  required
+                />
+                <input
+                  id="phoneNumber"
+                  v-model="phoneNumber"
+                  type="tel"
+                  placeholder="Número"
+                  maxlength="6"
+                  required
+                />
+              </div>
             </div>
 
 
@@ -409,6 +423,19 @@ async function submit() {
   background: transparent;
 }
 
+
+.phone-fields {
+  display: flex;
+  gap: 8px;
+}
+
+.phone-fields input:first-child {
+  flex: 0 0 35%;
+}
+
+.phone-fields input:last-child {
+  flex: 1;
+}
 
 /* ==============================
    BOTÓN

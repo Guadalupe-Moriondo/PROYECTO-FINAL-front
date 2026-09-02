@@ -786,15 +786,6 @@ onMounted(load);
 }
 
 
-/*==============================
-  LOADING
-==============================*/
-
-.loading-state {
-  text-align: center;
-  padding: 3rem;
-  color: var(--color-ink-soft);
-}
 
 /*==============================
   RESPONSIVE

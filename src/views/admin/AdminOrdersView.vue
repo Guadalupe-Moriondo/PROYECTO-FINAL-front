@@ -179,64 +179,6 @@ async function sendWhatsapp(order) {
 
 
 
-// ==============================
-// EMAIL
-// ==============================
-
-function emailUrl(order) {
-
-  if (!order.user?.email) {
-    return null;
-  }
-
-  const subject = encodeURIComponent(
-    `Pedido listo para retirar`
-  );
-
-  const body = encodeURIComponent(
-    `Hola ${order.user.name}!
-
-    Queremos avisarte que tu pedido #${order.orderNumber} ya se encuentra preparado y listo para retirar.
-
-    📍 Dirección: ${business.value.address || 'Consultar ubicación.'}
-
-    📞 Teléfono: ${business.value.phone}
-
-    🕒 Horarios de atención: ${business.value.hours || 'Consultar horarios.'}
-
-    Muchas gracias por confiar en DM Repuestos Agrícolas.
-
-    Saludos.`
-  );
-
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${order.user.email}&su=${subject}&body=${body}`;
-
-}
-
-
-async function sendEmail(order) {
-  const url = emailUrl(order);
-
-  if (!url) {
-    alert('Este cliente no tiene un correo electrónico.');
-    return;
-  }
-
-  window.open(
-    url,
-    '_blank'
-  );
-
-  await ordersService.notifyCustomer(
-    order.id,
-    'email'
-  );
-
-  order.customerNotified = true;
-  order.notificationMethod = 'email';
-  order.customerNotifiedAt = new Date();
-}
-
 function imageUrl(product) {
   if (!product?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
@@ -480,38 +422,17 @@ onMounted(async () => {
                        >
                          <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
                       </svg>
+                      
+                      <span>Notificar</span>
                     </button>
 
-                    <!-- Email -->
-                     <button
-                      class="notify-icon email"
-                      @click="sendEmail(order)"
-                      title="Avisar por Email"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.4 5.7a.6.6 0 0 0 .8 0L19.8 6H4.2ZM4 7.8V18h16V7.8l-7.4 5.7a2.1 2.1 0 0 1-2.6 0L4 7.8Z" />
-                      </svg>
-
-                    </button>
+                    
 
                   </div>
                   <div v-else class="notification-success">
                     <strong>
                       ✔ Cliente notificado
                     </strong>
-
-                    <small>
-
-                      {{
-                        order.notificationMethod === 'whatsapp'
-                          ? 'Por WhatsApp'
-                          : 'Por Email'
-                      }}
-
-                    </small>
 
                   </div>                   
                 </div>
@@ -997,6 +918,7 @@ onMounted(async () => {
 .status-control {
   position: relative;
   display: flex;
+  width: 130px;
   border-radius: 999px;
   padding: 2px;
   background: rgba(0, 0, 0, 0.05);
@@ -1309,22 +1231,6 @@ onMounted(async () => {
 
 
 
-/* =========================================================
-   LOADING
-========================================================= */
-
-.loading-state {
-  padding: 60px 0;
-
-  text-align: center;
-
-  color: var(--color-ink-soft);
-
-  font-family: var(--font-mono);
-
-  font-size: 0.85rem;
-}
-
 /* ==============================
    ACCIONES DEL PEDIDO
 ============================== */
@@ -1364,67 +1270,65 @@ onMounted(async () => {
   align-items: center;
   
 }
-
 .notify-icon {
-  width: 34px;
+  width: 100px;
   height: 34px;
-
   border: none;
-  border-radius: 50%;
+  border-radius: 50px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  flex-shrink: 0;
-
   cursor: pointer;
-  transition: .2s;
+  transition: .5s;
 
   color: white;
-
- 
+  box-sizing: border-box;
 }
 
+.notify-icon span {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+
+
 .notify-icon svg{
-    width:17px;
-    height:17px;
+  width:17px;
+  height:17px;
+    
 }
 
 .notify-icon.whatsapp{
-    background:#33ad60;
+  background:#33ad60;
     
 }
 
-
-.notify-icon.email{
-    background: var(--color-rust);
-    
-}
 
 .notify-icon:hover{
-    transform:translateY(-2px) scale(1.08);
+  transform:translateY(-2px) scale(1.08);
 }
 
 .notification-success{
 
-    margin-top:10px;
+  margin-top:10px;
 
-    padding:8px;
+  padding:8px;
 
-    border-radius:8px;
+  border-radius:8px;
 
-    background:#e8f7ec;
+  background:#e8f7ec;
 
-    border:1px solid #b8dfc4;
+  border:1px solid #b8dfc4;
 
-    color:#207a3c;
+  color:#207a3c;
 
-    display:flex;
+  display:flex;
 
-    flex-direction:column;
+  flex-direction:column;
 
-    gap:4px;
+  gap:4px;
     
 
 }

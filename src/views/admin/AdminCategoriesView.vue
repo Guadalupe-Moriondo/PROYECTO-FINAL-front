@@ -414,7 +414,7 @@ onMounted(load);
 <style scoped>
 
 .admin-categories-view {
-  padding: 2.5rem 0 4rem;
+  padding: 2.5rem var(--space-4) 4rem;
 }
 
 /* ================= HEADER ================= */
@@ -604,11 +604,7 @@ onMounted(load);
   color: #be123c;
 }
 
-.loading-state {
-  text-align: center;
-  padding: 3rem;
-  color: var(--color-ink-soft);
-}
+
 
 /* ================= TABLA ================= */
 
@@ -697,35 +693,48 @@ onMounted(load);
 
 /* ================= RESPONSIVE ================= */
 
-@media (max-width:1200px){
+@media (max-width: 1200px) {
 
-  .category-form{
-    grid-template-columns:1fr 1fr;
+  .category-form {
+    grid-template-columns: 1fr 1fr;
   }
 
 }
 
-@media (max-width:900px){
+@media (max-width: 900px) {
 
-  .category-form{
-    grid-template-columns:1fr;
+  .category-card,
+  .table-card {
+    padding: 1.2rem;
   }
 
-  .table-header{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:1rem;
+  .table-card {
+    padding: 0;
   }
 
-  .table-actions{
-    flex-direction:column;
+  .category-form {
+    grid-template-columns: 1fr;
+  }
+
+  .category-form button[type="submit"] {
+    width: 100%;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .table-actions {
+    flex-direction: column;
   }
 
   .edit-button,
   .save-button,
   .cancel-button,
-  .delete-button{
-    width:100%;
+  .delete-button {
+    width: 100%;
   }
 
 }

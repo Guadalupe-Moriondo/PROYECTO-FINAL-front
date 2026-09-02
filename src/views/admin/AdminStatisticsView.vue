@@ -142,10 +142,6 @@ onMounted(load);
   font-size: 0.95rem;
 }
 
-.loading-state {
-  color: var(--color-ink-soft);
-  padding: var(--space-4) 0;
-}
 
 /* Tarjetas de estadisticas */
 .statistics-grid {

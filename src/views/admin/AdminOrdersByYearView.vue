@@ -212,16 +212,6 @@ onMounted(load);
 
 
 
-/* Loading */
-.loading-state {
-
-  text-align:center;
-
-  padding:2rem;
-
-  color:var(--color-ink-soft);
-
-}
 
 
 
@@ -609,32 +599,12 @@ onMounted(load);
 
 
 
-/* Sin resultados */
-.empty-state {
 
-  text-align:center;
-
-  padding:3rem;
-
-  color:var(--color-ink-soft);
-
-  font-style:italic;
-
-}
 
 
 
 /* Responsive */
 @media(max-width:900px){
-
-  .year-search {
-
-    flex-direction:column;
-
-    align-items:flex-start;
-
-  }
-
 
   .table-wrapper {
 

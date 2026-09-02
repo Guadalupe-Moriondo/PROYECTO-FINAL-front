@@ -787,15 +787,7 @@ onMounted(() => {
 
 }
 
-.loading-state{
 
-  text-align:center;
-
-  padding:4rem;
-
-  color:var(--color-ink-soft);
-
-}
 
 /* ================= HIDDEN ================= */
 

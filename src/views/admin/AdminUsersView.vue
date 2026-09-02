@@ -2,20 +2,18 @@
 import { ref, computed, onMounted } from 'vue';
 import usersService from '../../services/users.service';
 import Pagination from '../../components/Pagination.vue';
-
+import { useAuthStore } from '../../stores/auth.js';
 
 // ==============================
 // ESTADO
 // ==============================
 
 const users = ref([]);
-
 const loading = ref(true);
 const saving = ref(false);
-
 const message = ref('');
 const error = ref('');
-
+const authStore = useAuthStore();
 
 // ==============================
 // BUSQUEDA Y PAGINACION
@@ -160,7 +158,23 @@ const totalPages = computed(() => {
 // CAMBIAR ROL
 // ==============================
 
-async function changeRole(user) {
+async function changeRole(user, newRole) {
+
+  const newRoleLabel =
+    newRole === 'admin'
+      ? 'Administrador'
+      : 'Cliente';
+
+  const confirmed = window.confirm(
+    `¿Querés cambiar el rol de ${user.name} a ${newRoleLabel}?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const previousRole = user.role;
+    
 
   saving.value = true;
 
@@ -172,12 +186,15 @@ async function changeRole(user) {
 
     await usersService.updateRole(
       user.id,
-      user.role
+      newRole
     );
 
 
+    // Recién ahora actualizamos visualmente el usuario
+    user.role = newRole;
+
     message.value =
-      'Rol actualizado correctamente.';
+      'Se ha actualizado el rol correctamente.';
 
 
     setTimeout(() => {
@@ -194,6 +211,9 @@ async function changeRole(user) {
       'Error cambiando rol:',
       err
     );
+
+    // Restauramos visualmente el rol anterior
+    user.role = previousRole;
 
 
     error.value =
@@ -314,19 +334,58 @@ onMounted(() => {
 
     </div>
 
-    <p
-      v-if="message"
-      class="success-message"
-    >
-      {{ message }}
-    </p>
+    <Transition name="success-toast">
+      <div
+        v-if="message"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
 
-    <p
-      v-if="error"
-      class="error-message"
-    >
-      {{ error }}
-    </p>
+        <div class="success-toast-content">
+          <strong>¡Rol actualizado correctamente!</strong>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <div class="error-toast-content">
+          <strong>Error</strong>
+          <span>{{ error }}</span>
+        </div>
+      </div>
+    </Transition>
 
     <p
       v-if="loading"
@@ -454,11 +513,19 @@ onMounted(() => {
 
         <div class="user-actions">
 
-          <template v-if="!user.owner">
-
-            <select
-              v-model="user.role"
-              @change="changeRole(user)"
+          <template v-if="authStore.isOwner">
+            <!-- El propietario principal no puede modificarse -->
+            <span
+              v-if="user.owner"
+              class="owner-text"
+            >
+              Este usuario es el propietario principal.
+              No se puede cambiar su rol.
+            </span>
+            <select v-else
+              :value="user.role"
+              @change="changeRole(user,$event.target.value)"
+              :disable="saving"
             >
               <option value="customer">Cliente</option>
               <option value="admin">Administrador</option>
@@ -467,7 +534,7 @@ onMounted(() => {
           </template>
 
           <span
-            v-else
+            v-else-if="user.owner"
             class="owner-text"
           >
             Este usuario es el propietario principal. No se puede cambiar su rol.
@@ -762,45 +829,175 @@ onMounted(() => {
     width: 100%;
 }
 
-.success-message{
 
-    padding:1rem;
+/* ==============================
+   MENSAJE DE ÉXITO
+============================== */
 
-    border-radius:12px;
+.success-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
 
-    background:#e8f7ec;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
-    color:#24773c;
+  min-width: 300px;
+  max-width: 380px;
 
-    margin-bottom:1rem;
+  padding: 14px 18px;
 
+  background: #ffffff;
+  border: 1px solid #b8dfc4;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #207a3c;
 }
 
-.error-message{
+.success-toast-icon {
+  width: 36px;
+  height: 36px;
 
-    padding:1rem;
+  flex-shrink: 0;
 
-    border-radius:12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    background:#ffeaea;
+  border-radius: 50%;
 
-    color:#b42318;
-
-    margin-bottom:1rem;
-
+  background: #e8f7ec;
 }
 
-.loading-state,
-
-.empty-state{
-
-    padding:3rem;
-
-    text-align:center;
-
-    color:var(--color-ink-soft);
-
+.success-toast-icon svg {
+  width: 20px;
+  height: 20px;
 }
+
+.success-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.success-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.success-toast-content span {
+  color: #4d6655;
+  font-size: 0.78rem;
+}
+
+
+/* ==============================
+   ANIMACIÓN ÉXITO
+============================== */
+
+.success-toast-enter-active,
+.success-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.success-toast-enter-from,
+.success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+
+/* ==============================
+   MENSAJE DE ERROR
+============================== */
+
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #f3bcbc;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #c0392b;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ffe8e8;
+}
+
+.error-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #7a4d4d;
+  font-size: 0.78rem;
+}
+
+
+/* ==============================
+   ANIMACIÓN ERROR
+============================== */
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+
 
 
 .user-info-item{
@@ -870,5 +1067,18 @@ onMounted(() => {
 
 }
 
+@media (max-width: 600px) {
+
+  .success-toast,
+  .error-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
+  }
+
+}
 }
 </style>

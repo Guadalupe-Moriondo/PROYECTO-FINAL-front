@@ -1,17 +1,19 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import productsService from '../services/products.service';
 import categoriesService from '../services/categories.service';
 import ProductCard from '../components/ProductCard.vue';
 import Pagination from '../components/Pagination.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const products = ref([]);
 const categories = ref([]);
 const loading = ref(true);
 const error = ref('');
+
 
 // Filter state. Everything starts empty: the backend ignores
 // any filter that arrives as undefined/empty.
@@ -21,7 +23,7 @@ const filters = ref({
   available: route.query.available === 'true',
 });
 
-const page = ref(1);
+const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(1);
 const limit = 12;
 
@@ -52,11 +54,13 @@ async function loadCategories() {
 
 function applyFilters() {
   page.value = 1;
+  router.replace({ query: { ...route.query, page: 1 } });
   loadProducts();
 }
 
 function changePage(newPage) {
   page.value = newPage;
+  router.replace({ query: { ...route.query, page: newPage } });
   loadProducts();
 }
 
@@ -603,26 +607,6 @@ watch(
    ESTADOS
 ========================================================= */
 
-.loading-state,
-.empty-state {
-  min-height: 300px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  justify-content: center;
-
-  align-items: center;
-
-  text-align: center;
-
-  color: var(--color-ink-soft);
-}
-
-.empty-state {
-  padding: 50px 20px;
-}
 
 .empty-state h3 {
   margin: 0 0 8px;

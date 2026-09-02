@@ -620,7 +620,7 @@ onMounted(loadProfile);
 ========================================================= */
 
 .profile-view {
-  padding: 55px 0 80px;
+  padding: 2.5rem var(--space-4) 4rem;
 
   min-height: 100vh;
 }
