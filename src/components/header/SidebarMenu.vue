@@ -1,26 +1,24 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useCartStore } from '../../stores/cart';
 import categoriesService from '../../services/categories.service';
 import { useOrderNotificationsStore } from '../../stores/orderNotifications';
 
-
 const props = defineProps({
   open: { type: Boolean, default: false },
 });
+
 const emit = defineEmits(['close']);
+
+const router = useRouter();
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-const router = useRouter();
-
 const categories = ref([]);
 const categoriesExpanded = ref(false);
 const orderNotificationsStore = useOrderNotificationsStore();
-
-
 
 
 async function loadCategories() {
@@ -44,10 +42,7 @@ function logout() {
   router.push({ name: 'home' });
 }
 
-
-
 onMounted(loadCategories);
-
 // Mientras el panel está abierto, evitamos que el fondo scrollee.
 watch(
   () => props.open,
@@ -88,7 +83,6 @@ watch(
               @click="categoriesExpanded = !categoriesExpanded"
             >
               Categorías
-
               <span
                 class="sidebar-chevron"
                 :class="{ 'sidebar-chevron-open': categoriesExpanded }"
@@ -183,7 +177,6 @@ watch(
             Salir
           </button>
         </template>
-
         </nav>
       </aside>
     </Transition>
@@ -197,6 +190,7 @@ watch(
   background: rgba(15, 17, 16, 0.55);
   z-index: 50;
 }
+
 .sidebar-panel {
   position: fixed;
   top: 0;
@@ -211,6 +205,7 @@ watch(
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
   overflow-y: auto;
 }
+
 .sidebar-head {
   display: flex;
   align-items: center;
@@ -218,12 +213,14 @@ watch(
   padding: var(--space-4);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .sidebar-head-title {
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #fff;
 }
+
 .sidebar-close {
   background: transparent;
   border: none;
@@ -232,15 +229,18 @@ watch(
   cursor: pointer;
   padding: 4px 8px;
 }
+
 .sidebar-close:hover {
   color: var(--color-rust);
 }
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   padding: var(--space-3);
   gap: 2px;
 }
+
 .sidebar-link {
   display: flex;
   align-items: center;
@@ -258,33 +258,41 @@ watch(
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
+
 .sidebar-link:hover,
 .sidebar-link.router-link-active {
   background: rgba(255, 255, 255, 0.06);
   color: var(--color-rust);
 }
+
 .sidebar-link-admin {
   color: var(--color-safety);
 }
+
 .sidebar-logout {
   color: #e39898;
 }
+
 .sidebar-group-toggle {
   width: 100%;
 }
+
 .sidebar-chevron {
   transition: transform 0.15s ease;
   display: inline-block;
 }
+
 .sidebar-chevron-open {
   transform: rotate(90deg);
 }
+
 .sidebar-subitems {
   display: flex;
   flex-direction: column;
   padding: 4px 0 8px 14px;
   gap: 2px;
 }
+
 .sidebar-sublink {
   text-align: left;
   background: transparent;
@@ -296,16 +304,19 @@ watch(
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
+
 .sidebar-sublink:hover {
   background: rgba(255, 255, 255, 0.06);
   color: var(--color-rust);
 }
+
 .sidebar-subempty {
   color: #9aa19d;
   font-size: 0.8rem;
   padding: 8px 10px;
   margin: 0;
 }
+
 .sidebar-divider {
   margin: var(--space-2) var(--space-3);
   height: 1px;
@@ -317,14 +328,17 @@ watch(
 .sidebar-overlay-fade-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .sidebar-overlay-fade-enter-from,
 .sidebar-overlay-fade-leave-to {
   opacity: 0;
 }
+
 .sidebar-slide-enter-active,
 .sidebar-slide-leave-active {
   transition: transform 0.25s ease;
 }
+
 .sidebar-slide-enter-from,
 .sidebar-slide-leave-to {
   transform: translateX(-100%);
@@ -356,6 +370,7 @@ watch(
 .sidebar-category-group .sidebar-subempty {
   padding-left: 10px;
 }
+
 .sidebar-category-toggle {
   width: 100%;
   display: flex;

@@ -46,11 +46,9 @@ onMounted(load);
       <h1>Historial de pedidos</h1>
     </div>
 
-
     <p v-if="loading" class="loading-state">
       Cargando...
     </p>
-
 
     <template v-else>
 
@@ -73,7 +71,6 @@ onMounted(load);
           </span>
         </router-link>
 
-
         <div class="stat-card stat-card--accent">
 
           <span class="stat-label">
@@ -86,13 +83,10 @@ onMounted(load);
 
         </div>
 
-
-
         <router-link 
           :to="{ name: 'admin-order-history-year' }" 
           class="stat-card stat-card--clickable"
         >
-
           <span class="stat-label">
             Pedidos del año
 
@@ -107,8 +101,6 @@ onMounted(load);
 
         </router-link>
 
-
-
         <div class="stat-card stat-card--accent">
 
           <span class="stat-label">
@@ -120,30 +112,23 @@ onMounted(load);
           </span>
 
         </div>
-
       </div>
-
     </template>
-
   </div>
 </template>
+
 
 <style scoped>
 .admin-history-view {
   padding: var(--space-5) var(--space-4);
 }
 
-.page-header {
-  margin-bottom: var(--space-5);
-}
 .page-subtitle {
   margin: 0;
   color: var(--color-ink-soft);
   font-size: 0.95rem;
 }
 
-
-/* Tarjetas de estadisticas */
 .statistics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -162,10 +147,12 @@ onMounted(load);
   gap: var(--space-1);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
+
 .stat-card--accent {
   border-left-color: var(--color-rust);
 }
@@ -177,12 +164,14 @@ onMounted(load);
   letter-spacing: 0.05em;
   color: var(--color-ink-soft);
 }
+
 .stat-value {
   font-family: var(--font-display);
   font-size: 1.8rem;
   font-weight: 600;
   color: var(--color-ink);
 }
+
 .stat-card--accent .stat-value {
   color: var(--color-rust);
 }
@@ -191,17 +180,18 @@ onMounted(load);
   margin-top: var(--space-2);
 }
 
-/* Tabla de historial */
 .table-wrapper {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   overflow-x: auto;
 }
+
 .history-table {
   width: 100%;
   border-collapse: collapse;
 }
+
 .history-table th {
   text-align: left;
   font-family: var(--font-display);
@@ -213,19 +203,24 @@ onMounted(load);
   border-bottom: 2px solid var(--color-line);
   white-space: nowrap;
 }
+
 .history-table td {
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--color-line);
 }
+
 .history-table tbody tr:hover {
   background: var(--color-bg);
 }
+
 .history-table tbody tr:last-child td {
   border-bottom: none;
 }
+
 .table-mono {
   font-family: var(--font-mono);
 }
+
 .table-subtext {
   display: block;
   font-size: 0.78rem;
@@ -264,14 +259,17 @@ onMounted(load);
   padding: 4px 10px;
   cursor: pointer;
 }
+
 .detail-toggle:hover {
   background: var(--color-rust);
   color: #fff;
 }
+
 .detail-row td {
   background: var(--color-bg);
   padding: var(--space-3);
 }
+
 .detail-list {
   list-style: none;
   margin: 0;
@@ -280,20 +278,24 @@ onMounted(load);
   flex-direction: column;
   gap: var(--space-1);
 }
+
 .detail-list li {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
   font-size: 0.9rem;
 }
+
 .detail-qty {
   font-family: var(--font-mono);
   color: var(--color-rust-dark);
   font-weight: 600;
 }
+
 .detail-name {
   color: var(--color-ink);
 }
+
 .detail-subtotal {
   margin-left: auto;
   font-family: var(--font-mono);
@@ -303,21 +305,25 @@ onMounted(load);
 .stat-card--clickable {
   cursor: pointer;
 }
+
 .stat-card--clickable:hover {
   border-left-color: var(--color-rust);
 }
+
 .stat-label {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-2);
 }
+
 .stat-toggle-hint {
   font-size: 0.68rem;
   color: var(--color-rust);
   text-transform: none;
   letter-spacing: normal;
 }
+
 .breakdown-panel {
   margin-bottom: var(--space-5);
 }
@@ -327,6 +333,7 @@ onMounted(load);
   max-height: 320px;
   overflow-y: auto;
 }
+
 .breakdown-panel .history-table thead,
 .breakdown-panel .history-table tbody tr {
   display: table;

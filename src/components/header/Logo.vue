@@ -19,6 +19,7 @@ import { RouterLink } from 'vue-router';
   line-height: 1;
   flex-shrink: 0;
 }
+
 .logo-mark {
   font-family: var(--font-display);
   font-size: 1.7rem;
@@ -26,6 +27,7 @@ import { RouterLink } from 'vue-router';
   color: var(--color-rust);
   letter-spacing: 0.02em;
 }
+
 .logo-text {
   font-family: var(--font-mono);
   font-size: 0.62rem;

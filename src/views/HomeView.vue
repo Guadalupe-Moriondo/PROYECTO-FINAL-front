@@ -1,6 +1,5 @@
 <script setup>
-import { ref, computed, onMounted ,onUnmounted } from 'vue';
-import { useBusiness } from '../composables/useBusiness';
+import { ref, onMounted ,onUnmounted } from 'vue';
 import productsService from '../services/products.service';
 import ProductCard from '../components/ProductCard.vue';
 
@@ -18,8 +17,6 @@ import TossoliniLogo from '../assets/Brands/Tossolini.png';
 import AgrometalLogo from '../assets/Brands/Agrometal.png';
 import IngersollLogo from '../assets/Brands/Ingersoll.png';
 
-const { business } = useBusiness();
-
 const brands = [
   { name: 'Apache', image: ApacheLogo },
   { name: 'Buco', image: BucoLogo },
@@ -32,22 +29,6 @@ const brands = [
   { name: 'Tossolini', image: TossoliniLogo },
   { name: 'Ingersoll', image: IngersollLogo },
 ];
-
-const whatsappUrl = computed(() => {
-  if (!business.value?.whatsapp) {
-    return '#';
-  }
-
-  const digits = business.value.whatsapp.replace(/\D/g, '');
-
-  const text = encodeURIComponent(
-    'Hola, quisiera consultar por un repuesto agrícola.'
-  );
-
-  return `https://wa.me/${digits}?text=${text}`;
-
-  
-});
 
 const heroImages = [
  Hero1,
@@ -95,8 +76,6 @@ onUnmounted(() => {
 
 <template>
   <div class="home-view">
-
-    <!-- ================= HERO ================= -->
     <section class="hero">
 
       <div class="hero-image">
@@ -142,19 +121,12 @@ onUnmounted(() => {
           </RouterLink>
 
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- ================= BENEFICIOS ================= -->
     <section class="benefits-section">
-
       <div class="container">
-
         <div class="benefits-card">
-
           <article class="benefit-item">
 
             <div class="benefit-icon">
@@ -173,9 +145,7 @@ onUnmounted(() => {
                 del mercado agrícola.
               </p>
             </div>
-
           </article>
-
 
           <article class="benefit-item">
 
@@ -195,9 +165,7 @@ onUnmounted(() => {
                 en cada temporada.
               </p>
             </div>
-
           </article>
-
 
           <article class="benefit-item">
 
@@ -217,9 +185,7 @@ onUnmounted(() => {
                 en el campo.
               </p>
             </div>
-
           </article>
-
 
           <article class="benefit-item">
 
@@ -239,21 +205,13 @@ onUnmounted(() => {
                 siempre que lo necesites.
               </p>
             </div>
-
           </article>
-
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- ================= PRODUCTOS ================= -->
     <section class="products-scroll-section">
-
       <div class="products-background"></div>
-
       <div class="container products-container">
 
         <div class="products-section-header">
@@ -267,34 +225,27 @@ onUnmounted(() => {
           </h2>
         </div>
 
-
         <div
           v-if="productsLoading"
           class="products-scroll"
         >
-
           <div
             v-for="n in 5"
             :key="n"
             class="product-skeleton"
           ></div>
-
         </div>
-
 
         <div
           v-else-if="products.length"
           class="products-scroll"
         >
-
           <ProductCard
             v-for="product in products"
             :key="product.id"
             :product="product"
           />
-
         </div>
-
 
         <p
           v-else
@@ -302,7 +253,6 @@ onUnmounted(() => {
         >
           No hay productos disponibles.
         </p>
-
 
         <div class="products-button-wrapper">
 
@@ -314,15 +264,10 @@ onUnmounted(() => {
           </RouterLink>
 
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- ================= MARCAS ================= -->
     <section class="brands-section">
-
       <div class="container">
 
         <div class="brands-header">
@@ -337,7 +282,6 @@ onUnmounted(() => {
 
         </div>
 
-
         <div class="brands-grid">
 
           <div
@@ -345,30 +289,20 @@ onUnmounted(() => {
             :key="brand.name"
             class="brand-item"
           >
-
             <img
               :src="brand.image"
               :alt="brand.name"
               class="brand-logo"
             />
-
           </div>
-
         </div>
-
       </div>
-
     </section>
-
   </div>
 </template>
 
 
 <style scoped>
-
-/* =========================================================
-   GENERAL
-========================================================= */
 
 .home-view {
   background: var(--color-bg);
@@ -379,20 +313,12 @@ onUnmounted(() => {
   margin: 0 auto;
 }
 
-
-/* =========================================================
-   HERO
-========================================================= */
-
 .hero {
   position: relative;
   min-height: 78vh;
-
   display: flex;
   align-items: center;
-
   overflow: hidden;
-
   background: var(--color-steel);
 }
 
@@ -404,21 +330,17 @@ onUnmounted(() => {
 .hero-image-img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .hero-image-fallback {
   position: absolute;
   inset: 0;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   gap: var(--space-2);
-
   background:
     linear-gradient(
       135deg,
@@ -427,9 +349,7 @@ onUnmounted(() => {
     );
 
   color: #cfcfcf;
-
   text-align: center;
-
   padding: var(--space-4);
 }
 
@@ -440,7 +360,6 @@ onUnmounted(() => {
 
 .hero-image-fallback code {
   color: var(--color-rust);
-
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
@@ -448,7 +367,6 @@ onUnmounted(() => {
 .hero-scrim {
   position: absolute;
   inset: 0;
-
   background:
     linear-gradient(
       90deg,
@@ -461,47 +379,34 @@ onUnmounted(() => {
 .hero-content {
   position: relative;
   z-index: 2;
-
   padding-top: 70px;
   padding-bottom: 70px;
 }
 
 .hero-kicker {
   margin: 0 0 12px;
-
   color: #fff;
-
   font-family: var(--font-mono);
   font-size: 0.78rem;
   font-weight: 700;
-
   text-transform: uppercase;
   letter-spacing: 0.12em;
-
   opacity: 0.9;
 }
 
 .hero-title {
   max-width: 700px;
-
   margin: 0 0 18px;
-
   color: #fff;
-
   font-size: clamp(3rem, 6vw, 5rem);
-
   line-height: 1;
-
   letter-spacing: -0.02em;
 }
 
 .hero-description {
   max-width: 560px;
-
   margin: 0 0 32px;
-
   color: rgba(255, 255, 255, 0.92);
-
   font-size: 1.1rem;
   line-height: 1.65;
 }
@@ -509,33 +414,22 @@ onUnmounted(() => {
 .hero-actions {
   display: flex;
   align-items: center;
-
   gap: var(--space-3);
 }
 
 .button-hero-primary {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 18px;
-
   padding: 15px 24px;
-
   border-radius: 8px;
-
   background: var(--color-rust);
-
   color: #fff;
-
   font-family: var(--font-display);
-
   font-size: 0.95rem;
   font-weight: 700;
-
   text-decoration: none;
-
   transition:
     transform .2s ease,
     background .2s ease;
@@ -543,7 +437,6 @@ onUnmounted(() => {
 
 .button-hero-primary:hover {
   background: var(--color-rust-dark);
-
   transform: translateY(-2px);
 }
 
@@ -552,31 +445,19 @@ onUnmounted(() => {
   line-height: 1;
 }
 
-
-/* =========================================================
-   BENEFICIOS
-========================================================= */
-
 .benefits-section {
   position: relative;
   z-index: 5;
-
   margin-top: -55px;
-
   padding: 0 0 45px;
 }
 
 .benefits-card {
   display: grid;
-
   grid-template-columns: repeat(4, 1fr);
-
   background: rgba(255, 255, 255, 0.97);
-
   border: 1px solid rgba(0, 0, 0, 0.06);
-
   border-radius: 22px;
-
   box-shadow:
     0 18px 45px rgba(0, 0, 0, 0.11);
 
@@ -585,13 +466,9 @@ onUnmounted(() => {
 
 .benefit-item {
   display: flex;
-
   align-items: center;
-
   gap: 18px;
-
   padding: 28px 25px;
-
   min-height: 125px;
 }
 
@@ -602,19 +479,13 @@ onUnmounted(() => {
 .benefit-icon {
   width: 52px;
   height: 52px;
-
   flex: 0 0 52px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 15px;
-
   background: rgba(183, 53, 45, 0.08);
-
   color: var(--color-rust);
-
   font-size: 1.5rem;
 }
 
@@ -626,40 +497,27 @@ onUnmounted(() => {
 
 .benefit-item h3 {
   margin: 0 0 6px;
-
   font-size: 0.95rem;
 }
 
 .benefit-item p {
   margin: 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.84rem;
   line-height: 1.5;
 }
 
-
-/* =========================================================
-   PRODUCTOS
-========================================================= */
-
 .products-scroll-section {
   position: relative;
-
   margin: 10px 0 70px;
-
   overflow: hidden;
-
   background: var(--color-rust);
-
   border-radius: 28px;
 }
 
 .products-background {
   position: absolute;
   inset: 0;
-
   background:
     linear-gradient(
       135deg,
@@ -669,94 +527,67 @@ onUnmounted(() => {
     url("../assets/Hero 2.jpg") center / cover no-repeat;
 
   filter: saturate(0.9);
-
   transform: scale(1.08);
 }
 
 .products-container {
   position: relative;
   z-index: 2;
-
   padding-top: 55px;
   padding-bottom: 48px;
 }
 
 .products-section-header {
   max-width: 720px;
-
   margin: 0 auto 30px;
-
   text-align: center;
 }
 
 .products-section-header .section-kicker {
   margin: 0 0 8px;
-
   color: #fff;
-
   font-family: var(--font-mono);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.18em;
 }
 
 .products-section-header h2 {
   margin: 0;
-
   color: #fff;
-
   font-size: clamp(2rem, 4vw, 3rem);
-
   line-height: 1.05;
 }
 
-
-
-
 .products-scroll {
   display: flex;
-
   gap: 18px;
-
   overflow-x: auto;
   overflow-y: hidden;
-
   scroll-behavior: smooth;
-
   padding: 8px 8px 18px;
-
   scrollbar-width: thin;
-
   scrollbar-color:
     rgba(255, 255, 255, 0.7)
     transparent;
 }
 
-
-/* TARJETAS MÁS CHICAS */
 .products-scroll > * {
   flex: 0 0 220px;
 }
 
-
-/* scrollbar */
 .products-scroll::-webkit-scrollbar {
   height: 7px;
 }
 
 .products-scroll::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.16);
-
   border-radius: 999px;
 }
 
 .products-scroll::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.7);
-
   border-radius: 999px;
 }
 
@@ -764,23 +595,16 @@ onUnmounted(() => {
   background: #fff;
 }
 
-
 .products-empty {
   margin: 30px 0;
-
   text-align: center;
-
   color: #fff;
 }
 
-
 .product-skeleton {
   flex: 0 0 220px;
-
   height: 300px;
-
   border-radius: 18px;
-
   background:
     linear-gradient(
       90deg,
@@ -793,38 +617,25 @@ onUnmounted(() => {
 }
 
 
-/* BOTÓN */
 .products-button-wrapper {
   display: flex;
-
   justify-content: center;
-
   margin-top: 28px;
 }
 
 .products-button {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 16px;
-
   padding: 13px 24px;
-
   border: 1px solid rgba(255, 255, 255, 0.85);
-
   border-radius: 8px;
-
   background: rgba(255, 255, 255, 0.04);
-
   color: #fff;
-
   font-size: 0.9rem;
   font-weight: 700;
-
   text-decoration: none;
-
   transition:
     background .2s ease,
     transform .2s ease;
@@ -840,80 +651,54 @@ onUnmounted(() => {
   transform: translateY(-2px);
 }
 
-
-/* =========================================================
-   MARCAS
-========================================================= */
-
 .brands-section {
   padding: 30px 0 75px;
-
   background: #fff;
 }
 
 .brands-header {
   max-width: 750px;
-
   margin: 0 auto 35px;
-
   text-align: center;
 }
 
 .brands-header .section-kicker {
   margin: 0 0 8px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.75rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.15em;
 }
 
 .brands-header h2 {
   margin: 0;
-
   font-size: clamp(2rem, 4vw, 2.8rem);
-
   line-height: 1.1;
 }
 
 .brands-grid {
   display: grid;
-
   grid-template-columns: repeat(5, 1fr);
-
   gap: 22px 30px;
-
   align-items: center;
 }
 
 .brand-item {
-
-    height: 90px;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    padding:20px;
-
+  height: 90px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
 }
 
 .brand-logo {
   max-width:100%;
   max-height:1000%;
-
   object-fit: contain;
-
   opacity: 0.82;
-
   filter: grayscale(20%);
-
   transition:
     transform .2s ease,
     opacity .2s ease,
@@ -922,16 +707,9 @@ onUnmounted(() => {
 
 .brand-item:hover .brand-logo {
   transform: scale(1.06);
-
   opacity: 1;
-
   filter: grayscale(0);
 }
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 1050px) {
 
@@ -941,7 +719,6 @@ onUnmounted(() => {
 
   .benefit-item:nth-child(3) {
     border-left: none;
-
     border-top: 1px solid var(--color-line);
   }
 
@@ -954,7 +731,6 @@ onUnmounted(() => {
   }
 
 }
-
 
 @media (max-width: 900px) {
 
@@ -984,7 +760,6 @@ onUnmounted(() => {
 
   .benefit-item + .benefit-item {
     border-left: none;
-
     border-top: 1px solid var(--color-line);
   }
 
@@ -1006,7 +781,6 @@ onUnmounted(() => {
 
   .brands-grid {
     grid-template-columns: repeat(2, 1fr);
-
     gap: 15px;
   }
 

@@ -4,14 +4,10 @@ import { useRoute, useRouter } from 'vue-router';
 import productsService from '../../services/products.service';
 import categoriesService from '../../services/categories.service';
 
-
 const route = useRoute();
 const router = useRouter();
 
-// If the route has an :id, we're editing; otherwise we're creating.
-// It's the same component for both cases, to avoid duplicating the form.
 const isEditing = computed(() => !!route.params.id);
-
 const categories = ref([]);
 const form = ref({
   code: '',
@@ -34,8 +30,6 @@ async function loadCategories() {
   const response = await categoriesService.list();
   categories.value = response.data.data;
 }
-
-
 
 async function loadProduct() {
   const response = await productsService.getById(route.params.id);
@@ -112,7 +106,6 @@ function onImageSelected(event) {
   imagePreview.value = URL.createObjectURL(file);
 }
 
-
 onMounted(() => {
   loadCategories();
   if (isEditing.value) loadProduct();
@@ -122,15 +115,12 @@ onMounted(() => {
 <template>
   <div class="container admin-form-view">
 
-    <!-- HEADER -->
     <header class="page-header">
-
       <div>
         <h1>
           {{ isEditing ? 'Editar producto' : 'Nuevo producto' }}
         </h1>
       </div>
-
     </header>
 
     <p v-if="loading" class="loading-state">
@@ -142,9 +132,6 @@ onMounted(() => {
       class="product-form"
       @submit.prevent="save"
     >
-
-      <!-- ================= INFORMACIÓN ================= -->
-
       <section class="form-section">
 
         <h2 class="section-title">
@@ -173,8 +160,6 @@ onMounted(() => {
             />
           </div>
 
-       
-
           <div class="field">
             <label for="categoryId">
               Categoría
@@ -198,7 +183,6 @@ onMounted(() => {
               </option>
 
             </select>
-
           </div>
 
           <div class="field">
@@ -214,7 +198,6 @@ onMounted(() => {
               min="0"
               required
             />
-
           </div>
 
           <div class="field">
@@ -237,7 +220,6 @@ onMounted(() => {
             >
               El stock se administra desde la sección Stock.
             </small>
-
           </div>
 
           <div class="field">
@@ -252,14 +234,9 @@ onMounted(() => {
               type="number"
               min="0"
             />
-
           </div>
-
         </div>
-
       </section>
-
-      <!-- ================= DESCRIPCIÓN ================= -->
 
       <section class="form-section">
 
@@ -278,12 +255,8 @@ onMounted(() => {
             rows="5"
             v-model="form.description"
           />
-
         </div>
-
       </section>
-
-      <!-- ================= COMPATIBILIDAD ================= -->
 
       <section class="form-section">
 
@@ -302,12 +275,8 @@ onMounted(() => {
             rows="5"
             v-model="form.machineryCompatibility"
           />
-
         </div>
-
       </section>
-
-      <!-- ================= IMAGEN ================= -->
 
       <section class="form-section">
 
@@ -327,7 +296,6 @@ onMounted(() => {
             v-else
             class="image-placeholder"
           >
-
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14ZM8.5 11A1.5 1.5 0 1 0 7 9.5 1.5 1.5 0 0 0 8.5 11Zm-3 6 3.5-4.5 2.5 3L15 11l4 6Z"/>
             </svg>
@@ -352,7 +320,6 @@ onMounted(() => {
             class="upload-button"
             @click="imageInput.click()"
           >
-
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 16a1 1 0 0 1-1-1V8.41L8.7 10.7a1 1 0 0 1-1.4-1.4l4-4a1 1 0 0 1 1.4 0l4 4a1 1 0 1 1-1.4 1.4L13 8.41V15a1 1 0 0 1-1 1Zm7 3a1 1 0 0 0 1-1v-2a1 1 0 1 0-2 0v1H6v-1a1 1 0 1 0-2 0v2a1 1 0 0 0 1 1Z"/>
             </svg>
@@ -362,9 +329,7 @@ onMounted(() => {
             </span>
 
           </button>
-
         </div>
-
       </section>
 
       <p
@@ -373,8 +338,6 @@ onMounted(() => {
       >
         {{ error }}
       </p>
-
-      <!-- ================= BOTONES ================= -->
 
       <div class="form-actions">
 
@@ -395,19 +358,15 @@ onMounted(() => {
         </button>
 
       </div>
-
     </form>
-
   </div>
 </template>
 
-<style scoped>
 
+<style scoped>
 .admin-form-view{
   padding:4rem 1rem 5rem;
 }
-
-/* ================= HEADER ================= */
 
 .page-header{
   margin-bottom:2.5rem;
@@ -435,411 +394,233 @@ onMounted(() => {
   line-height:1.7;
 }
 
-/* ================= FORMULARIO ================= */
-
 .product-form{
-
   max-width:900px;
-
   margin:auto;
-
   background:white;
-
   border:1px solid var(--color-line);
-
   border-radius:24px;
-
   overflow:hidden;
-
   box-shadow:
   0 18px 45px rgba(15,23,42,.08);
-
 }
 
-/* ================= SECCIONES ================= */
-
 .form-section{
-
   padding:2rem;
-
 }
 
 .form-section + .form-section{
-
   border-top:1px solid var(--color-line);
-
 }
 
 .section-title{
-
   margin:0 0 1.5rem;
-
   font-size:1.25rem;
-
   color:var(--color-steel);
-
 }
-
-/* ================= GRID ================= */
 
 .form-grid{
-
   display:grid;
-
   grid-template-columns:repeat(2,1fr);
-
   gap:1.4rem;
-
 }
 
-/* ================= CAMPOS ================= */
-
 .field{
-
   display:flex;
-
   flex-direction:column;
-
 }
 
 .field label{
-
   margin-bottom:.6rem;
-
   font-size:.9rem;
-
   font-weight:700;
-
   color:var(--color-steel);
-
 }
 
 .field input,
 .field select{
-
   height:52px;
-
   padding:0 16px;
-
   border:1px solid #d8dee8;
-
   border-radius:12px;
-
   font-size:.95rem;
-
   transition:.25s;
-
   background:white;
-
 }
 
 .field textarea{
-
   min-height:140px;
-
   padding:14px 16px;
-
   border:1px solid #d8dee8;
-
   border-radius:12px;
-
   resize:vertical;
-
   font-size:.95rem;
-
   transition:.25s;
-
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus{
-
   outline:none;
-
   border-color:#b71c1c;
-
   box-shadow:0 0 0 4px rgba(183,28,28,.12);
-
 }
-
-/* ================= HELP ================= */
 
 .field-help{
-
   margin-top:.5rem;
-
   color:#7a7a7a;
-
   font-size:.82rem;
-
 }
 
-/* ================= IMAGEN ================= */
-
 .image-upload-card{
-
   display:flex;
-
   flex-direction:column;
-
   align-items:center;
-
   gap:1.5rem;
-
   padding:2rem;
-
   background:#fafafa;
-
   border:2px dashed #d9dee6;
-
   border-radius:18px;
-
 }
 
 .preview-image{
-
   width:220px;
-
   height:220px;
-
   object-fit:cover;
-
   border-radius:18px;
-
   border:1px solid var(--color-line);
-
   box-shadow:0 12px 28px rgba(0,0,0,.08);
-
 }
 
 .image-placeholder{
-
   width:220px;
-
   height:220px;
-
   border-radius:18px;
-
   background:white;
-
   border:1px solid var(--color-line);
-
   display:flex;
-
   flex-direction:column;
-
   align-items:center;
-
   justify-content:center;
-
   gap:1rem;
-
 }
 
 .image-placeholder svg{
-
   width:60px;
-
   height:60px;
-
   color:#c2c8d1;
-
 }
 
 .image-placeholder span{
-
   color:#7b8794;
-
 }
 
 .upload-button{
-
   display:flex;
-
   align-items:center;
-
   gap:.8rem;
-
   border:none;
-
   background:#b71c1c;
-
   color:white;
-
   padding:.9rem 1.4rem;
-
   border-radius:12px;
-
   cursor:pointer;
-
   font-weight:600;
-
   transition:.25s;
-
 }
 
 .upload-button:hover{
-
   background:#991b1b;
-
   transform:translateY(-2px);
-
 }
 
 .upload-button svg{
-
   width:20px;
-
   height:20px;
-
 }
 
-/* ================= BOTONES ================= */
-
 .form-actions{
-
   display:flex;
-
   justify-content:flex-end;
-
   gap:1rem;
-
   padding:2rem;
-
   border-top:1px solid var(--color-line);
-
   background:#fafafa;
-
 }
 
 .button{
-
   height:48px;
-
   display:flex;
-
   align-items:center;
-
   justify-content:center;
-
   padding:0 1.6rem;
-
   border-radius:12px;
-
   font-weight:600;
-
   text-decoration:none;
-
   transition:.25s;
-
 }
 
 .button-primary{
-
   border:none;
-
   background:#b71c1c;
-
   color:white;
-
 }
 
 .button-primary:hover{
-
   background:#991b1b;
-
   transform:translateY(-2px);
-
 }
 
 .button-secondary{
-
   background:white;
-
   color:#555;
-
   border:1px solid var(--color-line);
-
 }
 
 .button-secondary:hover{
-
   background:#f5f5f5;
-
 }
-
-/* ================= MENSAJES ================= */
 
 .error-message{
-
   margin:0 2rem 2rem;
-
   padding:1rem;
-
   background:#fdecec;
-
   color:#b42318;
-
   border-radius:12px;
-
   border:1px solid #f5c2c7;
-
 }
-
-
-
-/* ================= HIDDEN ================= */
 
 .visually-hidden{
-
   display:none;
-
 }
-
-/* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
 
   .page-header h1{
-
     font-size:2rem;
-
   }
 
   .form-grid{
-
     grid-template-columns:1fr;
-
   }
 
   .form-section{
-
     padding:1.5rem;
-
   }
 
   .preview-image,
   .image-placeholder{
-
     width:170px;
-
     height:170px;
-
   }
 
   .form-actions{
-
     flex-direction:column-reverse;
-
   }
 
   .button{
-
     width:100%;
-
   }
 
 }
-
 </style>

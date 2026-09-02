@@ -14,9 +14,6 @@ const categories = ref([]);
 const loading = ref(true);
 const error = ref('');
 
-
-// Filter state. Everything starts empty: the backend ignores
-// any filter that arrives as undefined/empty.
 const filters = ref({
   name: route.query.search || '',
   categoryId: route.query.categoryId || '',
@@ -99,8 +96,6 @@ watch(
 
 <template>
   <div class="catalog-view">
-
-    <!-- ================= HEADER ================= -->
     <section class="catalog-header">
       <div class="container catalog-header-inner">
 
@@ -114,13 +109,8 @@ watch(
       </div>
     </section>
 
-
-    <!-- ================= CONTENIDO ================= -->
     <div class="container catalog-body">
-
       <div class="catalog-layout">
-
-        <!-- ================= FILTROS ================= -->
         <aside class="filters-sidebar">
 
           <div class="filters-header">
@@ -130,14 +120,11 @@ watch(
 
           </div>
 
-
           <form
             class="filters"
             @submit.prevent="applyFilters"
           >
-
-            <!-- Buscar -->
-            <div class="field">
+            <div class="field field--search">
 
               <label for="search">
                 Buscar
@@ -149,11 +136,8 @@ watch(
                 type="text"
                 placeholder="Nombre o código..."
               />
-
             </div>
 
-
-            <!-- Categoría -->
             <div class="field">
 
               <label for="category">
@@ -164,7 +148,6 @@ watch(
                 id="category"
                 v-model="filters.categoryId"
               >
-
                 <option value="">
                   Todas las categorías
                 </option>
@@ -178,11 +161,8 @@ watch(
                 </option>
 
               </select>
-
             </div>
 
-
-            <!-- Disponibilidad -->
             <label class="filter-checkbox">
 
               <input
@@ -196,8 +176,6 @@ watch(
 
             </label>
 
-
-            <!-- Aplicar -->
             <button
               type="submit"
               class="button filter-button"
@@ -206,20 +184,16 @@ watch(
             </button>
 
           </form>
-
         </aside>
 
-
-        <!-- ================= PRODUCTOS ================= -->
         <main class="catalog-products">
 
           <p
             v-if="error"
-            class="error-message"
+            class="error-message error-message--catalog"
           >
             {{ error }}
           </p>
-
 
           <p
             v-if="loading"
@@ -227,7 +201,6 @@ watch(
           >
             Cargando catálogo...
           </p>
-
 
           <template v-else>
 
@@ -244,12 +217,10 @@ watch(
               </p>
             </div>
 
-
             <div
               v-else
               class="product-grid"
             >
-
               <ProductCard
                 v-for="product in products"
                 :key="product.id"
@@ -258,7 +229,6 @@ watch(
 
             </div>
 
-
             <div class="pagination-wrapper">
 
               <Pagination
@@ -266,26 +236,17 @@ watch(
                 :total-pages="totalPages"
                 @change-page="changePage"
               />
-
             </div>
 
           </template>
-
         </main>
-
       </div>
-
     </div>
-
   </div>
 </template>
 
+
 <style scoped>
-
-/* =========================================================
-   GENERAL
-========================================================= */
-
 .catalog-view {
   background: var(--color-bg);
   min-height: 100vh;
@@ -295,11 +256,6 @@ watch(
   width: min(1200px, calc(100% - 40px));
   margin: 0 auto;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .catalog-header {
   background:
@@ -318,45 +274,28 @@ watch(
 
 .section-eyebrow {
   margin: 0 0 8px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.75rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.15em;
 }
 
 .catalog-title {
   margin: 0;
-
   color: #fff;
-
   font-size: clamp(2.5rem, 5vw, 4rem);
-
   line-height: 1;
 }
 
 .catalog-description {
   max-width: 620px;
-
   margin: 16px 0 0;
-
   color: rgba(255, 255, 255, 0.8);
-
   font-size: 1rem;
-
   line-height: 1.6;
 }
-
-
-/* =========================================================
-   CUERPO
-========================================================= */
 
 .catalog-body {
   padding: 55px 0 80px;
@@ -364,172 +303,76 @@ watch(
 
 .catalog-layout {
   display: grid;
-
   grid-template-columns: 270px minmax(0, 1fr);
-
   gap: 40px;
-
   align-items: start;
 }
 
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
-
 .filters-sidebar {
   position: sticky;
-
   top: 25px;
-
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   padding: 25px;
-
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .filters-header {
   margin-bottom: 24px;
-
   padding-bottom: 18px;
-
   border-bottom: 1px solid var(--color-line);
 }
 
 .filters-eyebrow {
   margin: 0 0 6px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.7rem;
-
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.12em;
 }
 
 .filters-header h2 {
   margin: 0;
-
   font-size: 1.25rem;
-
   line-height: 1.25;
 }
 
-
-/* =========================================================
-   FORMULARIO
-========================================================= */
-
 .filters {
   display: flex;
-
   flex-direction: column;
-
   gap: 20px;
-}
-
-.field {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 8px;
-}
-
-.field label {
-  font-size: 0.84rem;
-
-  font-weight: 700;
-
-  color: var(--color-ink);
-}
-
-.field input,
-.field select {
-  width: 100%;
-
-  box-sizing: border-box;
-
-  padding: 12px 13px;
-
-  border: 1px solid var(--color-line);
-
-  border-radius: 10px;
-
-  background: #fff;
-
-  color: var(--color-ink);
-
-  font: inherit;
-
-  outline: none;
-
-  transition:
-    border-color .2s ease,
-    box-shadow .2s ease;
-}
-
-.field input:focus,
-.field select:focus {
-  border-color: var(--color-rust);
-
-  box-shadow:
-    0 0 0 3px rgba(183, 53, 45, 0.1);
 }
 
 .filter-checkbox {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
   cursor: pointer;
-
   color: var(--color-ink-soft);
-
   font-size: 0.9rem;
 }
 
 .filter-checkbox input {
   width: 17px;
   height: 17px;
-
   accent-color: var(--color-rust);
-
   cursor: pointer;
 }
 
 .filter-button {
   width: 100%;
-
   padding: 13px 18px;
-
   border: none;
-
   border-radius: 10px;
-
   background: var(--color-rust);
-
   color: #fff;
-
   font-family: var(--font-display);
-
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background .2s ease,
     transform .2s ease;
@@ -537,14 +380,8 @@ watch(
 
 .filter-button:hover {
   background: var(--color-rust-dark);
-
   transform: translateY(-1px);
 }
-
-
-/* =========================================================
-   PRODUCTOS
-========================================================= */
 
 .catalog-products {
   min-width: 0;
@@ -552,113 +389,58 @@ watch(
 
 .products-topbar {
   display: flex;
-
   justify-content: space-between;
-
   align-items: end;
-
   margin-bottom: 25px;
-
   padding-bottom: 18px;
-
   border-bottom: 1px solid var(--color-line);
 }
 
 .products-eyebrow {
   margin: 0 0 5px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.72rem;
-
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.12em;
 }
 
 .products-topbar h2 {
   margin: 0;
-
   font-size: 1.8rem;
-
   line-height: 1.1;
 }
 
-
-/* =========================================================
-   GRILLA
-========================================================= */
-
 .product-grid {
   display: grid;
-
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
 
   gap: 24px;
 }
 
-
-/* =========================================================
-   ESTADOS
-========================================================= */
-
-
 .empty-state h3 {
   margin: 0 0 8px;
-
   color: var(--color-ink);
-
   font-size: 1.3rem;
 }
 
 .empty-state p {
   margin: 0;
-
   font-size: 0.95rem;
 }
 
-.error-message {
-  margin-bottom: 20px;
-
-  padding: 14px 16px;
-
-  border-radius: 10px;
-
-  background: rgba(183, 53, 45, 0.08);
-
-  color: var(--color-danger, #b7352d);
-
-  font-size: 0.9rem;
-}
-
-
-/* =========================================================
-   PAGINACIÓN
-========================================================= */
-
 .pagination-wrapper {
   display: flex;
-
   justify-content: center;
-
   margin-top: 45px;
 }
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 1200px) {
 
   .catalog-layout {
     grid-template-columns: 230px minmax(0, 1fr);
-
     gap: 25px;
   }
 
@@ -682,7 +464,6 @@ watch(
 
   .filters {
     display: grid;
-
     grid-template-columns: 1fr 1fr;
   }
 

@@ -4,44 +4,23 @@ import usersService from '../../services/users.service';
 import Pagination from '../../components/Pagination.vue';
 import { useAuthStore } from '../../stores/auth.js';
 
-// ==============================
-// ESTADO
-// ==============================
-
 const users = ref([]);
 const loading = ref(true);
 const saving = ref(false);
 const message = ref('');
 const error = ref('');
 const authStore = useAuthStore();
-
-// ==============================
-// BUSQUEDA Y PAGINACION
-// ==============================
-
 const search = ref('');
 const roleFilter = ref('all');
-
 const page = ref(1);
 const limit = 10;
-
 const total = ref(0);
-
-
-// ==============================
-// ESTADISTICAS
-// ==============================
 
 const statistics = ref({
   totalUsers: 0,
   totalAdmins: 0,
   totalCustomers: 0,
 });
-
-
-// ==============================
-// CARGAR USUARIOS
-// ==============================
 
 async function loadUsers() {
 
@@ -55,11 +34,9 @@ async function loadUsers() {
       roleFilter.value
     );
 
-
     users.value = response.data.items;
 
     total.value = response.data.total;
-
 
     statistics.value = {
     totalUsers:
@@ -71,7 +48,6 @@ async function loadUsers() {
     totalCustomers:
         response.data.statistics?.totalCustomers ?? 0,
     };
-
 
   } catch (err) {
 
@@ -89,14 +65,7 @@ async function loadUsers() {
     loading.value = false;
 
   }
-
 }
-
-
-
-// ==============================
-// BUSCADOR
-// ==============================
 
 function searchUsers() {
 
@@ -116,12 +85,6 @@ function filterByRole(role) {
 
 }
 
-
-
-// ==============================
-// CAMBIO DE PAGINA
-// ==============================
-
 function changePage(newPage) {
 
   if (
@@ -131,18 +94,11 @@ function changePage(newPage) {
     return;
   }
 
-
   page.value = newPage;
 
   loadUsers();
 
 }
-
-
-
-// ==============================
-// PAGINAS TOTALES
-// ==============================
 
 const totalPages = computed(() => {
 
@@ -151,12 +107,6 @@ const totalPages = computed(() => {
   );
 
 });
-
-
-
-// ==============================
-// CAMBIAR ROL
-// ==============================
 
 async function changeRole(user, newRole) {
 
@@ -175,12 +125,9 @@ async function changeRole(user, newRole) {
 
   const previousRole = user.role;
     
-
   saving.value = true;
-
   message.value = '';
   error.value = '';
-
 
   try {
 
@@ -189,21 +136,16 @@ async function changeRole(user, newRole) {
       newRole
     );
 
-
-    // Recién ahora actualizamos visualmente el usuario
     user.role = newRole;
 
     message.value =
       'Se ha actualizado el rol correctamente.';
-
 
     setTimeout(() => {
 
       message.value = '';
 
     }, 3000);
-
-
 
   } catch (err) {
 
@@ -212,50 +154,30 @@ async function changeRole(user, newRole) {
       err
     );
 
-    // Restauramos visualmente el rol anterior
     user.role = previousRole;
-
 
     error.value =
       err.response?.data?.message ||
       'No se pudo actualizar el rol.';
 
-
-    // si falla volvemos a cargar
     loadUsers();
-
 
   } finally {
 
     saving.value = false;
 
   }
-
 }
-
-
-
-// ==============================
-// FORMATEAR FECHA
-// ==============================
 
 function formatDate(date) {
 
   if (!date) return '-';
 
-
   return new Date(date)
     .toLocaleDateString(
       'es-AR'
     );
-
 }
-
-
-
-// ==============================
-// LABEL DEL ROL
-// ==============================
 
 function roleLabel(role) {
 
@@ -265,18 +187,9 @@ function roleLabel(role) {
 
 }
 
-
-
-// ==============================
-// INICIO
-// ==============================
-
 onMounted(() => {
-
   loadUsers();
-
 });
-
 </script>
 
 <template>
@@ -286,8 +199,6 @@ onMounted(() => {
     <div class="page-header">
       <h1>Usuarios</h1>
     </div>
-
-    <!-- Estadísticas -->
 
     <div class="statistics-grid">
 
@@ -313,8 +224,6 @@ onMounted(() => {
       </div>
 
     </div>
-
-    <!-- Buscador -->
 
     <div class="users-toolbar">
 
@@ -394,21 +303,15 @@ onMounted(() => {
       Cargando usuarios...
     </p>
 
-    <!-- Tarjetas -->
-
     <div
       v-else
       class="users-list"
     >
-
       <article
         v-for="user in users"
         :key="user.id"
         class="user-card"
       >
-
-        <!-- Avatar -->
-
         <div class="user-avatar">
 
           <svg
@@ -423,12 +326,8 @@ onMounted(() => {
 
         </div>
 
-        <!-- Información -->
-
         <div class="user-content">
-
           <div class="user-top">
-
             <div>
 
               <h2>{{ user.name }}</h2>
@@ -442,19 +341,12 @@ onMounted(() => {
                   {{ roleLabel(user.role) }}
                 </span>
 
-              
-
               </div>
-
             </div>
-
           </div>
 
           <div class="user-data">
-
             <div class="user-info-item">
-
-              <!-- Email -->
 
               <svg
                 viewBox="0 0 24 24"
@@ -469,11 +361,7 @@ onMounted(() => {
 
             </div>
 
-
-
             <div class="user-info-item">
-
-              <!-- Teléfono -->
 
               <svg
                 viewBox="0 0 24 24"
@@ -488,11 +376,7 @@ onMounted(() => {
 
             </div>
 
-
-
             <div class="user-info-item">
-
-              <!-- Fecha -->
 
               <svg
                 viewBox="0 0 24 24"
@@ -506,15 +390,13 @@ onMounted(() => {
               <span>{{ formatDate(user.createdAt) }}</span>
 
             </div>
-
           </div>
         </div>
-        <!-- Acciones -->
 
         <div class="user-actions">
 
           <template v-if="authStore.isOwner">
-            <!-- El propietario principal no puede modificarse -->
+
             <span
               v-if="user.owner"
               class="owner-text"
@@ -522,6 +404,7 @@ onMounted(() => {
               Este usuario es el propietario principal.
               No se puede cambiar su rol.
             </span>
+
             <select v-else
               :value="user.role"
               @change="changeRole(user,$event.target.value)"
@@ -541,12 +424,8 @@ onMounted(() => {
           </span>
 
         </div>
-
       </article>
-
     </div>
-
-    <!-- Sin resultados -->
 
     <div
       v-if="!loading && users.length===0"
@@ -555,175 +434,125 @@ onMounted(() => {
       No se encontraron usuarios.
     </div>
 
-    <!-- Paginación -->
-    <Pagination
-      :page="page"
-      :total-pages="totalPages"
-      @change-page="changePage"
-    />
+    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
 
   </div>
-
 </template>
 
-<style scoped>
 
+<style scoped>
 .admin-users-view{
-    padding:var(--space-5) var(--space-4);
+  padding:var(--space-5) var(--space-4);
 }
 
 .page-header{
-    margin-bottom:2rem;
+  margin-bottom:2rem;
 }
 
 .statistics-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:1rem;
-    margin-bottom:2rem;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1rem;
+  margin-bottom:2rem;
 }
 
 .stat-card{
-    background:var(--color-surface);
-    border:1px solid var(--color-line);
-    border-left:4px solid var(--color-rust);
-    border-radius:16px;
-    padding:1.3rem;
-    cursor:pointer;
-    transition:.25s;
+  background:var(--color-surface);
+  border:1px solid var(--color-line);
+  border-left:4px solid var(--color-rust);
+  border-radius:16px;
+  padding:1.3rem;
+  cursor:pointer;
+  transition:.25s;
 }
 
 .stat-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
 .stat-label{
-    display:block;
-    color:var(--color-ink-soft);
-    font-size:.8rem;
-    margin-bottom:.4rem;
+  display:block;
+  color:var(--color-ink-soft);
+  font-size:.8rem;
+  margin-bottom:.4rem;
 }
 
 .stat-value{
-    font-size:2rem;
-    font-weight:700;
+  font-size:2rem;
+  font-weight:700;
 }
 
 .users-toolbar {
-
   display:flex;
-
-    gap:1rem;
-
-    margin-bottom:2rem;
-
-  }
-
-
-
-.users-toolbar input {
-
-  flex:1;
-
-    padding:.8rem 1rem;
-
-    border-radius:50px;
-
-    border:1px solid var(--color-line);
-
+  gap:1rem;
+  margin-bottom:2rem;
 }
 
+.users-toolbar input {
+  flex:1;
+  padding:.8rem 1rem;
+  border-radius:50px;
+  border:1px solid var(--color-line);
+}
 
 .users-toolbar input {
-
   outline:none;
-
   transition:.25s;
-
 }
 
 .users-list{
-    display:flex;
-    flex-direction:column;
-    gap:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
 }
 
 .user-card{
-
-    display:flex;
-    align-items:center;
-    gap:2rem;
-
-    background:var(--color-surface);
-
-    border:1px solid var(--color-line);
-
-    border-radius:18px;
-
-    padding:1.4rem 1.8rem;
-
-    transition:.25s;
-
+  display:flex;
+  align-items:center;
+  gap:2rem;
+  background:var(--color-surface);
+  border:1px solid var(--color-line);
+  border-radius:18px;
+  padding:1.4rem 1.8rem;
+  transition:.25s;
 }
 
 .user-card:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 12px 24px rgba(0,0,0,.08);
-
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(0,0,0,.08);
 }
 
 .user-card:hover .user-info-item svg{
-    transform:scale(1.15);
-    transition:.2s;
+  transform:scale(1.15);
+  transition:.2s;
 }
 
 .user-avatar{
-
-    width:72px;
-
-    height:72px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:var(--color-bg);
-
-    border:1px solid var(--color-line);
-
-    flex-shrink:0;
-
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--color-bg);
+  border:1px solid var(--color-line);
+  flex-shrink:0;
 }
 
 .user-avatar svg{
-
-    width:34px;
-
-    height:34px;
-
+  width:34px;
+  height:34px;
 }
 
 .user-content{
-
-    flex:1;
-
+  flex:1;
 }
 
 .user-top{
-
-    display:flex;
-
-    align-items:center;
-
-    margin-bottom:.8rem;
-
+  display:flex;
+  align-items:center;
+  margin-bottom:.8rem;
 }
 
 .user-top > div {
@@ -733,126 +562,80 @@ onMounted(() => {
 }
 
 .user-top h2{
-
-    margin:0;
-
-    font-size:1.2rem;
-
+  margin:0;
+  font-size:1.2rem;
 }
 
 .badges{
-
-    display:flex;
-
-    gap:.5rem;
-
-    align-items:center;
-
-    margin-top:0;
-
+  display:flex;
+  gap:.5rem;
+  align-items:center;
+  margin-top:0;
 }
 
 .role-badge{
-
-    padding:5px 12px;
-
-    border-radius:999px;
-
-    background: rgba(14, 116, 144, 0.12);
-
-    border:1px solid #acd1f5;
-
-    color: #3f7bb8;
-
-    font-size:.75rem;
-
-    font-weight:700;
-    
+  padding:5px 12px;
+  border-radius:999px;
+  background: rgba(14, 116, 144, 0.12);
+  border:1px solid #acd1f5;
+  color: #3f7bb8;
+  font-size:.75rem;
+  font-weight:700;
 }
 
 .role-admin{
-
-    background:rgba(183, 53, 45, 0.08);
-
-    color: var(--color-rust);
-
-    border:1px solid #d4a0a0;
-
-    
-
+  background:rgba(183, 53, 45, 0.08);
+  color: var(--color-rust);
+  border:1px solid #d4a0a0;
 }
 
-
-
 .user-data{
-
-    display:flex;
-
-    gap:2rem;
-
-    flex-wrap:wrap;
-
-    color:var(--color-ink-soft);
-
-    font-size:.9rem;
-
+  display:flex;
+  gap:2rem;
+  flex-wrap:wrap;
+  color:var(--color-ink-soft);
+  font-size:.9rem;
 }
 
 .user-actions {
-    width: 220px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
+  width: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .user-actions select{
-
-    width:200px;
-
-    padding:.5rem;
-
-    border-radius:50px;
-
-    border:1px solid var(--color-line);
-
-    background:white;
-
+  width:200px;
+  padding:.5rem;
+  border-radius:50px;
+  border:1px solid var(--color-line);
+  background:white;
 }
 
 .owner-text {
-    font-size: .8rem;
-    color: #535353;
-    text-align: center;
-    font-style: italic;
-    line-height: 1.5;
-    width: 100%;
+  font-size: .8rem;
+  color: #535353;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.5;
+  width: 100%;
 }
-
-
-/* ==============================
-   MENSAJE DE ÉXITO
-============================== */
 
 .success-toast {
   position: fixed;
   top: 30px;
   right: 30px;
   z-index: 9999;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
   border: 1px solid #b8dfc4;
   border-radius: 14px;
-
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.12);
 
@@ -862,15 +645,11 @@ onMounted(() => {
 .success-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e8f7ec;
 }
 
@@ -895,11 +674,6 @@ onMounted(() => {
   font-size: 0.78rem;
 }
 
-
-/* ==============================
-   ANIMACIÓN ÉXITO
-============================== */
-
 .success-toast-enter-active,
 .success-toast-leave-active {
   transition:
@@ -913,30 +687,20 @@ onMounted(() => {
   transform: translateY(-10px);
 }
 
-
-/* ==============================
-   MENSAJE DE ERROR
-============================== */
-
 .error-toast {
   position: fixed;
   top: 30px;
   right: 30px;
   z-index: 9999;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
   border: 1px solid #f3bcbc;
   border-radius: 14px;
-
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.12);
 
@@ -946,15 +710,11 @@ onMounted(() => {
 .error-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #ffe8e8;
 }
 
@@ -979,11 +739,6 @@ onMounted(() => {
   font-size: 0.78rem;
 }
 
-
-/* ==============================
-   ANIMACIÓN ERROR
-============================== */
-
 .error-toast-enter-active,
 .error-toast-leave-active {
   transition:
@@ -997,74 +752,47 @@ onMounted(() => {
   transform: translateY(-10px);
 }
 
-
-
-
 .user-info-item{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:.5rem;
-
-    color: rgb(59, 59, 59);
-
-    font-size:.9rem;
-
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  color: rgb(59, 59, 59);
+  font-size:.9rem;
 }
 
 .user-info-item svg{
-
-    width:18px;
-    height:18px;
-
-    color: rgb(59, 59, 59);
-
+  width:18px;
+  height:18px;
+  color: rgb(59, 59, 59);
 }
 
 @media(max-width:900px){
-
-.user-card{
-
+  .user-card{
     flex-direction:column;
-
     align-items:flex-start;
+  }
 
-}
-
-.user-actions{
-
+  .user-actions{
     width:100%;
-
     justify-content:center;
+  }
 
-}
-
-.user-actions select{
-
+  .user-actions select{
     width:100%;
+  }
 
-}
-
-.user-data{
-
+  .user-data{
     flex-direction:column;
-
     gap:.4rem;
+  }
 
-}
-
-.statistics-grid{
-
+  .statistics-grid{
     grid-template-columns:1fr;
+  }
 
-}
-
-.users-toolbar{
-
+  .users-toolbar{
     flex-direction:column;
-
+  }
 }
 
 @media (max-width: 600px) {
@@ -1074,11 +802,9 @@ onMounted(() => {
     top: 20px;
     right: 15px;
     left: 15px;
-
     min-width: auto;
     max-width: none;
   }
 
-}
 }
 </style>

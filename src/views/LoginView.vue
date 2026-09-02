@@ -7,9 +7,9 @@ import localLogo from '../assets/local.jpg';
 
 const route = useRoute();
 const router = useRouter();
+
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
@@ -44,7 +44,6 @@ async function submit() {
 <template>
   <div class="login-wrapper">
 
-    <!-- Logo -->
     <RouterLink
       :to="{ name: 'home' }"
       class="auth-logo"
@@ -56,15 +55,9 @@ async function submit() {
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
       </span>
-
-      
     </RouterLink>
 
-
-    <!-- Login -->
     <div class="login-page">
-
-      <!-- Panel izquierdo -->
       <div class="login-panel">
 
         <div class="auth-card">
@@ -73,7 +66,7 @@ async function submit() {
 
           <form @submit.prevent="submit">
 
-            <div class="field">
+            <div class="field field--auth">
               <label for="email">Email</label>
 
               <input
@@ -85,8 +78,7 @@ async function submit() {
               />
             </div>
 
-
-            <div class="field">
+            <div class="field field--auth">
               <label for="password">Contraseña</label>
 
               <div class="password-box">
@@ -124,10 +116,8 @@ async function submit() {
                     />
                   </svg>
                 </button>
-
               </div>
             </div>
-
 
             <p
               v-if="error"
@@ -136,7 +126,6 @@ async function submit() {
               {{ error }}
             </p>
 
-
             <button
               type="submit"
               class="button button-primary button-full"
@@ -144,9 +133,7 @@ async function submit() {
             >
               {{ submitting ? 'Ingresando...' : 'Ingresar' }}
             </button>
-
           </form>
-
 
           <p class="auth-card-footer">
             ¿No tenés cuenta?
@@ -156,11 +143,8 @@ async function submit() {
           </p>
 
         </div>
-
       </div>
 
-
-      <!-- Imagen derecha -->
       <div class="login-image">
 
         <img
@@ -171,7 +155,6 @@ async function submit() {
       </div>
 
     </div>
-
   </div>
 </template>
 
@@ -183,167 +166,76 @@ async function submit() {
   min-height: 100vh;
 }
 
-
-/* ==============================
-   LOGO
-============================== */
-
 .auth-logo {
   position: absolute;
-
   top: 24px;
   left: 32px;
-
   z-index: 10;
-
   display: flex;
   align-items: center;
   gap: var(--space-2);
-
   text-decoration: none;
-
   line-height: 1;
 }
 
 .auth-logo .logo-mark {
-  
+
   font-size: 2rem;
   font-weight:900;
   color: var(--color-rust);
   letter-spacing: 0.02em;
 }
 
-
-
-
-/* ==============================
-   LOGIN
-============================== */
-
 .login-page {
   width: 100%;
   min-height: 100vh;
-
   display: grid;
   grid-template-columns: 1fr 1fr;
-
   background: var(--color-bg);
 }
 
-
-/* ==============================
-   PANEL IZQUIERDO
-============================== */
-
 .login-panel {
   min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: var(--space-6);
 }
-
-
-/* ==============================
-   TARJETA
-============================== */
 
 .auth-card {
   width: 100%;
   max-width: 420px;
-
   background: #ffffff;
-
   border: 1px solid #e2e2e2;
   border-radius: 20px;
-
   padding: 40px;
-
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 .auth-card h1 {
   margin-bottom: 32px;
-
   font-size: 2.4rem;
 }
 
-
-/* ==============================
-   CAMPOS
-============================== */
-
-.field {
-  display: flex;
-  flex-direction: column;
-
-  gap: 7px;
-
-  margin-bottom: 20px;
-}
-
-.field label {
-  font-size: 0.85rem;
-  font-weight: 600;
-
-  color: var(--color-ink-soft);
-}
-
-.field input {
-  width: 100%;
-  height: 44px;
-
-  padding: 0 14px;
-
-  border: 1px solid var(--color-line);
-  border-radius: 12px;
-
-  background: var(--color-surface);
-  color: var(--color-ink);
-}
-
-.field input:focus {
-  outline: 2px solid var(--color-rust);
-  outline-offset: 1px;
-}
-
-/* ==============================
-   CONTRASEÑA
-============================== */
-
 .password-box {
   height: 46px;
-
   display: flex;
   align-items: center;
-
   gap: 8px;
-
   padding: 0 11px;
-
   border: 1px solid var(--color-line);
   border-radius: 11px;
-
   background: #fff;
 }
 
 .password-box input {
   flex: 1;
-
   min-width: 0;
-
   height: 100%;
-
   padding: 0;
-
   border: none;
-  
-
   background: transparent;
-
   color: var(--color-ink);
 }
 
@@ -359,21 +251,14 @@ async function submit() {
 .password-toggle {
   width: 30px;
   height: 30px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex: 0 0 30px;
-
   padding: 0;
-
   border: none;
-
   background: transparent;
-
   color: rgb(133, 133, 133);
-
   cursor: pointer;
 }
 
@@ -387,59 +272,31 @@ async function submit() {
   background: transparent;
 }
 
-/* ==============================
-   BOTÓN
-============================== */
-
 .button-full {
   width: 100%;
-
   margin-top: 8px;
 }
 
-
-/* ==============================
-   FOOTER DE LA TARJETA
-============================== */
-
 .auth-card-footer {
   text-align: center;
-
   margin-top: 24px;
-
   font-size: 0.9rem;
-
   color: var(--color-ink-soft);
 }
-
-
-
-
-/* ==============================
-   IMAGEN
-============================== */
 
 .login-image {
   width: 100%;
   height: 100vh;
-
   overflow: hidden;
 }
 
 .login-image img {
   width: 100%;
   height: 100%;
-
   display: block;
-
   object-fit: cover;
   object-position: center;
 }
-
-
-/* ==============================
-   RESPONSIVE
-============================== */
 
 @media (max-width: 900px) {
 
@@ -453,7 +310,6 @@ async function submit() {
 
   .login-panel {
     min-height: 100vh;
-
     padding: var(--space-4);
   }
 
@@ -472,5 +328,4 @@ async function submit() {
 
  
 }
-
 </style>

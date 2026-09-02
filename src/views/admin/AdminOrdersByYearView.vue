@@ -14,7 +14,6 @@ const orders = ref([]);
 const page = ref(1);
 const totalPages = ref(1);
 const yearStats = ref({ orders: 0, total: 0 });
-
 const expandedOrderId = ref(null);
 
 function toggleDetail(order) {
@@ -122,7 +121,6 @@ onMounted(load);
                   class="detail-toggle"
                   @click="toggleDetail(order)"
                 >
-
                   <svg
                     viewBox="0 0 24 24"
                     fill="currentColor"
@@ -164,348 +162,171 @@ onMounted(load);
 
       <p v-else class="empty-state">No hay pedidos entregados en {{ selectedYear }}.</p>
 
-      <Pagination 
-        :page="page" 
-        :total-pages="totalPages" 
-        @change-page="changePage" 
-      />
+      <Pagination :page="page" :total-pages="totalPages" @change-page="changePage" />
+
     </template>
   </div>
 </template>
 
-<style scoped>
 
+<style scoped>
 .admin-year-view {
   padding: var(--space-5) var(--space-4);
 }
 
-
-/* Header */
-.page-header {
-
-  margin-bottom:var(--space-5);
-
-}
-
-
 .page-header h1 {
-
   font-size:2rem;
-
   font-weight:700;
-
   margin:0 0 .5rem;
-
 }
-
-
 
 .page-subtitle {
-
   margin:0;
-
   color:var(--color-ink-soft);
-
   font-size:.95rem;
-
 }
 
-
-
-
-
-
-/* Buscador año */
 .year-search {
-
   display:flex;
-
   align-items:center;
-
   gap:1rem;
-
-
   margin-bottom:var(--space-5);
-
-
   background:var(--color-surface);
-
   border:1px solid var(--color-line);
-
   border-radius:16px;
-
   padding:1rem 1.2rem;
-
-
   box-shadow:0 8px 25px rgba(0,0,0,.08);
-
 }
-
-
 
 .year-search label {
-
   font-family:var(--font-display);
-
   text-transform:uppercase;
-
   font-size:.75rem;
-
   font-weight:600;
-
   color:var(--color-ink-soft);
-
 }
-
-
 
 .year-search input[type="number"] {
-
   width:120px;
-
   padding:.6rem 1rem;
-
   border-radius:10px;
-
   border:1px solid var(--color-line);
-
   font-family:var(--font-display);
-
 }
 
-
-
-/* Estadísticas */
 .statistics-grid {
-
   display:grid;
-
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
   gap:1rem;
-
   margin-bottom:var(--space-5);
-
 }
-
-
 
 .stat-card {
-
   background:var(--color-surface);
-
   border:1px solid var(--color-line);
-
   border-radius:16px;
-
   padding:1.5rem;
-
-
   display:flex;
-
   flex-direction:column;
-
   gap:.4rem;
-
-
   box-shadow:0 8px 25px rgba(0,0,0,.08);
-
-
   border-left:5px solid var(--color-steel);
-
 }
-
-
 
 .stat-card--accent {
-
   border-left-color:var(--color-rust);
-
 }
-
-
 
 .stat-label {
-
   font-family:var(--font-display);
-
   text-transform:uppercase;
-
   font-size:.75rem;
-
   letter-spacing:.05em;
-
   color:var(--color-ink-soft);
-
 }
-
-
 
 .stat-value {
-
   font-family:var(--font-display);
-
   font-size:1.8rem;
-
   font-weight:700;
-
   color:var(--color-ink);
-
 }
-
-
 
 .stat-card--accent .stat-value {
-
   color:var(--color-rust);
-
 }
 
-
-
-/* Tabla */
 .table-wrapper {
-
   background:var(--color-surface);
-
   border:1px solid var(--color-line);
-
   border-radius:16px;
-
   overflow:hidden;
-
   box-shadow:0 8px 25px rgba(0,0,0,.08);
-
 }
-
-
 
 .history-table {
-
   width:100%;
-
   border-collapse:separate;
-
   border-spacing:0;
-
 }
-
-
 
 .history-table th {
-
   text-align:left;
-
   padding:1rem 1.2rem;
-
-
   background:rgba(0,0,0,.03);
-
-
   font-family:var(--font-display);
-
   text-transform:uppercase;
-
   font-size:.75rem;
-
   color:var(--color-ink-soft);
-
-
   white-space:nowrap;
-
 }
-
-
 
 .history-table td {
-
   padding:1rem 1.2rem;
-
   border-top:1px solid var(--color-line);
-
 }
-
-
 
 .history-table tbody tr {
-
   transition:.2s;
-
 }
-
-
 
 .history-table tbody tr:hover {
-
   background:rgba(0,0,0,.025);
-
 }
 
-
-
-/* Textos */
 .table-mono {
-
   font-family:var(--font-display);
-
   font-weight: 600;
-
-  
-
 }
 
 .table-mono-ord {
-
   font-family:var(--font-mono);
-
   font-weight: 600;
 }
 
-
-
-
 .table-subtext {
-
   display:block;
-
   margin-top:.25rem;
-
   font-size:.85rem;
-
   color:var(--color-ink-soft);
-
 }
 
-
-
-/* Botón detalle */
 .detail-column {
   text-align: right;
 }
 
 .detail-toggle {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 7px;
-
   padding: 8px 12px;
-
   border: 1px solid var(--color-line);
-
   border-radius: 9px;
-
   background: var(--color-surface);
-
   color: var(--color-ink);
-
   font-size: 0.78rem;
- 
-
   cursor: pointer;
-
   transition:
     background .2s ease,
     border-color .2s ease,
@@ -530,80 +351,38 @@ onMounted(load);
   transform: translateY(-1px);
 }
 
-
-
 .detail-list {
-
   list-style:none;
-
   margin:0;
-
   padding:0;
-
-
   display:flex;
-
   flex-direction:column;
-
   gap:.8rem;
-
 }
-
-
 
 .detail-list li {
-
   display:flex;
-
   align-items:center;
-
   gap:1rem;
-
   font-size:.9rem;
-
 }
-
-
 
 .detail-qty {
-
   font-family:var(--font-mono);
-
   color:var(--color-steel);
-
- 
-
 }
-
-
 
 .detail-name {
-
   color:var(--color-ink);
-
 }
-
-
 
 .detail-subtotal {
-
   margin-left:auto;
-
   font-family:var(--font-display);
-
   color:var(--color-ink-soft);
-
   font-weight:600;
-
 }
 
-
-
-
-
-
-
-/* Responsive */
 @media(max-width:900px){
 
   .table-wrapper {
@@ -613,5 +392,4 @@ onMounted(load);
   }
 
 }
-
 </style>

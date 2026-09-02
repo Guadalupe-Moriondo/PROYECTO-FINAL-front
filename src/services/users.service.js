@@ -20,7 +20,6 @@ export default {
     });
   },
   updateRole(id, role) {
-    // role: 'admin' | 'customer'
     return api.put(`/users/${id}/role`, { role });
   },
   remove(id) {

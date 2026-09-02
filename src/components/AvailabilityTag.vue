@@ -1,4 +1,5 @@
 <script setup>
+
 defineProps({
   code: {
     type: String,
@@ -9,6 +10,7 @@ defineProps({
     required: true,
   },
 });
+
 </script>
 
 <template>
@@ -29,10 +31,6 @@ defineProps({
 </template>
 
 <style scoped>
-/* Simulates a hanging inventory tag: dashed border, and a circular
-   "hole" on the top left, as if it were tied with string to the real
-   part. This is the visual signature element of the project: repeated
-   on the catalog card and on the detail view. */
 .tag {
   position: relative;
   display: inline-flex;

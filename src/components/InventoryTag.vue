@@ -1,9 +1,11 @@
 <script setup>
+
 defineProps({
   code: { type: String, required: true },
   stock: { type: Number, required: true },
   minStock: { type: Number, default: 5 },
 });
+
 </script>
 
 <template>
@@ -18,10 +20,6 @@ defineProps({
 </template>
 
 <style scoped>
-/* Simulates a hanging inventory tag: dashed border, and a circular
-   "hole" on the top left, as if it were tied with string to the real
-   part. This is the visual signature element of the project: repeated
-   on the catalog card and on the detail view. */
 .tag {
   position: relative;
   display: inline-flex;
@@ -35,6 +33,7 @@ defineProps({
   font-size: 0.78rem;
   color: var(--color-ink-soft);
 }
+
 .tag-hole {
   position: absolute;
   left: 8px;
@@ -46,19 +45,23 @@ defineProps({
   border: 1.5px solid var(--color-line);
   background: var(--color-bg);
 }
+
 .tag-code {
   font-weight: 600;
   color: var(--color-ink);
 }
+
 .tag-stock {
   color: var(--color-ink-soft);
   border-left: 1px dashed var(--color-line);
   padding-left: var(--space-2);
 }
+
 .tag-low-stock .tag-stock {
   color: rgb(223, 156, 69);
   font-weight: 600;
 }
+
 .tag-out-of-stock .tag-stock {
   color: var(--color-danger);
   font-weight: 600;

@@ -27,6 +27,7 @@ import AdminStatisticsView from '../views/admin/AdminStatisticsView.vue';
 import AdminOrdersByMonthView from '../views/admin/AdminOrdersByMonthView.vue';
 import AdminOrdersByYearView from '../views/admin/AdminOrdersByYearView.vue';
 import AdminUsersView from '../views/admin/AdminUsersView.vue';
+
 const router = createRouter({
   history: createWebHistory(),
   scrollBehavior() {

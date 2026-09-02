@@ -1,9 +1,6 @@
 <script setup>
-
 import { computed, onMounted, ref } from 'vue';
-
 import businessService from '../services/business.service';
-
 import ubicacionImg from '../assets/local.jpg';
 
 const business = ref(null);
@@ -41,9 +38,9 @@ const mailLink = computed(() => {
   const body = encodeURIComponent(
     `Hola,
 
-Quisiera realizar una consulta.
+    Quisiera realizar una consulta.
 
-Muchas gracias.`
+    Muchas gracias.`
   );
 
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${business.value.email}&su=${subject}&body=${body}`;
@@ -72,9 +69,7 @@ onMounted(loadBusiness);
 <template>
   <div class="contact-view">
 
-    <!-- ================= HEADER ================= -->
     <section class="contact-header">
-
       <div class="container contact-header-inner">
 
         <p class="section-eyebrow">
@@ -86,20 +81,14 @@ onMounted(loadBusiness);
         </h1>
 
       </div>
-
     </section>
 
-
-    <!-- ================= CTA ================= -->
     <section
       v-if="business"
       class="contact-cta-section"
     >
-
       <div class="container">
-
         <div class="contact-cta-card">
-
           <div class="contact-cta-content">
 
             <h2>
@@ -113,7 +102,6 @@ onMounted(loadBusiness);
 
           </div>
 
-
           <div class="contact-buttons">
 
             <a
@@ -126,10 +114,8 @@ onMounted(loadBusiness);
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z" />
               </svg>
-
               WhatsApp
             </a>
-
 
             <a
               v-if="mailLink"
@@ -141,33 +127,23 @@ onMounted(loadBusiness);
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.4 5.7a.6.6 0 0 0 .8 0L19.8 6H4.2ZM4 7.8V18h16V7.8l-7.4 5.7a2.1 2.1 0 0 1-2.6 0L4 7.8Z" />
               </svg>
-
               E-Mail
             </a>
 
           </div>
-
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- ================= INFORMACIÓN ================= -->
     <section
       v-if="business"
       class="contact-info-section"
     >
-
       <div class="container">
-
         <div class="contact-layout">
-
-          <!-- ================= UBICACIÓN ================= -->
           <div class="location-card">
-
             <div class="map-header">
+
               <p class="section-kicker">
                 Encontranos
               </p>
@@ -178,9 +154,8 @@ onMounted(loadBusiness);
             </div>
 
             <div class="location-content">
-
-              <!-- MAPA -->
               <div class="map-container">
+
                 <iframe
                   v-if="mapsUrl"
                   :src="mapsUrl"
@@ -190,9 +165,9 @@ onMounted(loadBusiness);
                   allowfullscreen
                   loading="lazy"
                 ></iframe>
+
               </div>
 
-              <!-- IMAGEN -->
               <div class="location-image">
                 <img
                   :src="ubicacionImg"
@@ -201,11 +176,8 @@ onMounted(loadBusiness);
               </div>
 
             </div>
-
           </div>
 
-
-          <!-- ================= DATOS ================= -->
           <div class="business-card">
 
             <p class="section-kicker">
@@ -216,8 +188,6 @@ onMounted(loadBusiness);
               {{ business.name }}
             </h2>
 
-
-            <!-- DIRECCIÓN -->
             <div class="info-item">
 
               <div class="info-icon">
@@ -249,13 +219,10 @@ onMounted(loadBusiness);
 
             </div>
 
-
-            <!-- TELÉFONO -->
             <div
               v-if="business.phone"
               class="info-item"
             >
-
               <div class="info-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M6.6 2.5h2.2c.5 0 .9.3 1 .8l1 3.7c.1.4 0 .8-.3 1.1L9 9.6a15 15 0 0 0 5.4 5.4l1.5-1.5c.3-.3.7-.4 1.1-.3l3.7 1c.5.1.8.5.8 1v2.2c0 .6-.4 1.1-1 1.1C11.9 18.5 5.5 12.1 5.5 4c0-.6.5-1 1.1-1Z"/>
@@ -276,8 +243,6 @@ onMounted(loadBusiness);
 
             </div>
 
-
-            <!-- HORARIOS -->
             <div
               v-if="
                 business.morningOpen ||
@@ -286,7 +251,6 @@ onMounted(loadBusiness);
               "
               class="business-hours"
             >
-
               <div class="hours-header">
 
                 <div class="info-icon">
@@ -301,7 +265,6 @@ onMounted(loadBusiness);
 
               </div>
 
-
               <div class="hours-list">
 
                 <div
@@ -311,7 +274,6 @@ onMounted(loadBusiness);
                   "
                   class="hours-row"
                 >
-
                   <span>
                     Lunes a Viernes
                   </span>
@@ -324,7 +286,6 @@ onMounted(loadBusiness);
 
                 </div>
 
-
                 <div
                   v-if="
                     business.afternoonOpen ||
@@ -332,7 +293,6 @@ onMounted(loadBusiness);
                   "
                   class="hours-row"
                 >
-
                   <span>
                     Tarde
                   </span>
@@ -345,7 +305,6 @@ onMounted(loadBusiness);
 
                 </div>
 
-
                 <div
                   v-if="
                     business.saturdayOpen ||
@@ -353,7 +312,6 @@ onMounted(loadBusiness);
                   "
                   class="hours-row"
                 >
-
                   <span>
                     Sábados
                   </span>
@@ -365,27 +323,17 @@ onMounted(loadBusiness);
                   </strong>
 
                 </div>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </section>
-
   </div>
 </template>
 
-<style scoped>
 
-/* =========================================================
-   GENERAL
-========================================================= */
+<style scoped>
 
 .contact-view {
   min-height: 100vh;
@@ -397,16 +345,9 @@ onMounted(loadBusiness);
   margin: 0 auto;
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
-
 .contact-header {
   position: relative;
-
   overflow: hidden;
-
   background:
     linear-gradient(
       135deg,
@@ -423,72 +364,45 @@ onMounted(loadBusiness);
 
 .section-eyebrow {
   margin: 0 0 8px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.75rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.16em;
 }
 
 .contact-title {
   margin: 0;
-
   color: #fff;
-
   font-size: clamp(2.8rem, 5vw, 4.2rem);
-
   line-height: 1;
 }
 
 .contact-description {
   max-width: 620px;
-
   margin: 18px 0 0;
-
   color: rgba(255, 255, 255, 0.82);
-
   font-size: 1rem;
-
   line-height: 1.65;
 }
 
-
-/* =========================================================
-   CTA
-========================================================= */
-
 .contact-cta-section {
   position: relative;
-
   z-index: 2;
-
   margin-top: -35px;
-
   padding-bottom: 45px;
 }
 
 .contact-cta-card {
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
   gap: 35px;
-
   padding: 32px 38px;
-
   background: #fff;
-
   border: 1px solid rgba(0, 0, 0, 0.06);
-
   border-radius: 20px;
-
   box-shadow:
     0 18px 45px rgba(0, 0, 0, 0.10);
 }
@@ -499,71 +413,44 @@ onMounted(loadBusiness);
 
 .section-kicker {
   margin: 0 0 7px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.14em;
 }
 
 .contact-cta-content h2 {
   margin: 0 0 8px;
-
   color: var(--color-ink);
-
   font-size: 1.65rem;
-
   line-height: 1.2;
 }
 
 .contact-cta-content p:last-child {
   margin: 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.95rem;
-
   line-height: 1.6;
 }
 
-
-/* =========================================================
-   BOTONES
-========================================================= */
-
 .contact-buttons {
   display: flex;
-
   gap: 12px;
-
   flex-shrink: 0;
 }
 
 .contact-button {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 10px;
-
   min-width: 145px;
-
   padding: 13px 20px;
-
   border-radius: 50px;
-
   text-decoration: none;
-
   font-size: 0.9rem;
-
-
   transition:
     transform .2s ease,
     box-shadow .2s ease,
@@ -572,14 +459,12 @@ onMounted(loadBusiness);
 
 .contact-button:hover {
   transform: translateY(-2px);
-
   box-shadow:
     0 10px 22px rgba(0, 0, 0, 0.10);
 }
 
 .contact-button.whatsapp {
   background: #33ad60;
-
   color: #fff;
 }
 
@@ -589,7 +474,6 @@ onMounted(loadBusiness);
 
 .contact-button.email {
   background: var(--color-rust);
-
   color: #fff;
 }
 
@@ -601,35 +485,19 @@ onMounted(loadBusiness);
   font-size: 1rem;
 }
 
-
-/* =========================================================
-   INFORMACIÓN
-========================================================= */
-
 .contact-info-section {
   padding: 10px 0 85px;
 }
 
 .contact-layout {
   display: grid;
-
   grid-template-columns:
     minmax(0, 1.35fr)
     minmax(340px, 0.65fr);
 
   gap: 28px;
-
   align-items: stretch;
 }
-
-
-/* =========================================================
-   MAPA
-========================================================= */
-
-/* =========================================================
-   UBICACIÓN - MAPA + IMAGEN
-========================================================= */
 
 .location-card {
   overflow: hidden;
@@ -681,67 +549,40 @@ onMounted(loadBusiness);
   object-fit: cover;
 }
 
-
-/* =========================================================
-   NEGOCIO
-========================================================= */
-
 .business-card {
   padding: 30px;
-
   background: #fff;
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   box-shadow:
     0 8px 25px rgba(0, 0, 0, 0.05);
 }
 
 .business-name {
   margin: 0 0 28px;
-
   color: var(--color-ink);
-
   font-size: 1.75rem;
-
   line-height: 1.15;
 }
 
-
-/* =========================================================
-   INFO ITEMS
-========================================================= */
-
 .info-item {
   display: flex;
-
   align-items: flex-start;
-
   gap: 15px;
-
   padding: 18px 0;
-
   border-bottom: 1px solid var(--color-line);
 }
 
 .info-icon {
   width: 42px;
   height: 42px;
-
   flex: 0 0 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 12px;
-
   background: rgba(183, 53, 45, 0.08);
-
   color: var(--color-rust);
-
   font-size: 1rem;
 }
 
@@ -757,30 +598,18 @@ onMounted(loadBusiness);
 
 .info-label {
   display: block;
-
   margin-bottom: 4px;
-
   color: var(--color-ink);
-
   font-size: 0.82rem;
-
   font-weight: 700;
 }
 
 .info-item p {
   margin: 2px 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.9rem;
-
   line-height: 1.5;
 }
-
-
-/* =========================================================
-   HORARIOS
-========================================================= */
 
 .business-hours {
   padding-top: 24px;
@@ -788,11 +617,8 @@ onMounted(loadBusiness);
 
 .hours-header {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   margin-bottom: 18px;
 }
 
@@ -802,64 +628,45 @@ onMounted(loadBusiness);
 
 .hours-header h3 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: 1rem;
 }
 
 .hours-list {
   display: flex;
-
   flex-direction: column;
-
   gap: 11px;
 }
 
 .hours-row {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
   gap: 15px;
-
   padding-bottom: 11px;
-
   border-bottom: 1px solid #eeeeee;
 }
 
 .hours-row:last-child {
   padding-bottom: 0;
-
   border-bottom: none;
 }
 
 .hours-row span {
   color: var(--color-ink-soft);
-
   font-size: 0.86rem;
 }
 
 .hours-row strong {
   color: var(--color-ink);
-
   font-size: 0.86rem;
-
   white-space: nowrap;
 }
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 900px) {
 
   .contact-cta-card {
     flex-direction: column;
-
     align-items: flex-start;
   }
 
@@ -889,7 +696,6 @@ onMounted(loadBusiness);
   }
 
 }
-
 
 @media (max-width: 600px) {
 
@@ -931,9 +737,7 @@ onMounted(loadBusiness);
 
   .hours-row {
     flex-direction: column;
-
     align-items: flex-start;
-
     gap: 4px;
   }
 

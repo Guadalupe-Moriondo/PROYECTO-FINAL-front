@@ -43,6 +43,7 @@ function submit() {
   </form>
 </template>
 
+
 <style scoped>
 .search-bar {
   display: flex;
@@ -55,16 +56,19 @@ function submit() {
   border-radius: var(--radius-sm);
   padding: 0 var(--space-2);
 }
+
 .search-bar:focus-within {
   border-color: var(--color-rust);
   background: rgba(255, 255, 255, 0.12);
 }
+
 .search-icon {
   width: 16px;
   height: 16px;
   color: #cfd3d1;
   flex-shrink: 0;
 }
+
 .search-input {
   flex: 1;
   min-width: 0;
@@ -74,12 +78,15 @@ function submit() {
   padding: 9px var(--space-2);
   font-size: 0.9rem;
 }
+
 .search-input::placeholder {
   color: #9aa19d;
 }
+
 .search-input:focus {
   outline: none;
 }
+
 @media (max-width: 900px) {
   .search-bar {
     max-width: none;

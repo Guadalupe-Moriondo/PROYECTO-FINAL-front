@@ -3,9 +3,9 @@ import { computed } from 'vue';
 import { useBusiness } from '../composables/useBusiness';
 import { useRoute } from 'vue-router';
 
-const { business } = useBusiness();
 const route = useRoute();
 
+const { business } = useBusiness();
 const showFloatingButtons = computed(() => route.name === 'home');
 
 const whatsappLink = computed(() => {
@@ -22,17 +22,14 @@ const mailLink = computed(() => {
   const subject = encodeURIComponent('Consulta desde la web');
 
   const body = encodeURIComponent(
-`Hola,
+  `Hola,
 
-Quisiera realizar una consulta sobre un producto.
+  Quisiera realizar una consulta sobre un producto.
 
-Muchas gracias.`
-  );
+  Muchas gracias.`);
 
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${business.value.email}&su=${subject}&body=${body}`;
 });
-
-
 </script>
 
 <template>
@@ -74,6 +71,7 @@ Muchas gracias.`
   gap: var(--space-3);
   z-index: 45;
 }
+
 .floating-btn {
   width: 52px;
   height: 52px;
@@ -85,16 +83,20 @@ Muchas gracias.`
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   transition: transform 0.15s ease;
 }
+
 .floating-btn:hover {
   transform: scale(1.08);
 }
+
 .floating-btn svg {
   width: 26px;
   height: 26px;
 }
+
 .floating-btn-whatsapp {
   background: #25d366;
 }
+
 .floating-btn-mail {
   background: var(--color-rust);
 }
@@ -104,6 +106,7 @@ Muchas gracias.`
     width: 46px;
     height: 46px;
   }
+  
   .floating-btn svg {
     width: 22px;
     height: 22px;

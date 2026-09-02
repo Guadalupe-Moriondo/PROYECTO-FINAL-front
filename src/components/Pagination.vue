@@ -1,8 +1,10 @@
 <script setup>
+
 const props = defineProps({
   page: { type: Number, required: true },
   totalPages: { type: Number, required: true },
 });
+
 const emit = defineEmits(['change-page']);
 
 function goTo(page) {
@@ -31,6 +33,7 @@ function goTo(page) {
   gap: var(--space-4);
   margin: var(--space-5) 0;
 }
+
 .pagination-button {
   background: transparent;
   border: 1px solid var(--color-steel);
@@ -42,14 +45,17 @@ function goTo(page) {
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
+
 .pagination-button:hover:not(:disabled) {
   background: var(--color-steel);
   color: #fff;
 }
+
 .pagination-button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
+
 .pagination-info {
   font-family: var(--font-mono);
   font-size: 0.85rem;

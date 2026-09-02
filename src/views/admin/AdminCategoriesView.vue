@@ -14,7 +14,6 @@ const editingId = ref(null);
 const editForm = ref({
   name: '',
   description: '',
-
 });
 
 const error = ref('');
@@ -120,29 +119,21 @@ function changePage(newPage) {
   load();
 }
 
-
 onMounted(load);
 </script>
 
-
 <template>
   <div class="container admin-categories-view">
-
     <!-- ================= HEADER ================= -->
-
     <header class="page-header">
 
       <div>
         <h1>
           Categorías
         </h1>
-
       </div>
-
     </header>
-
     <!-- ================= MENSAJE ÉXITO ================= -->
-
     <Transition name="success-toast">
       <div
         v-if="message"
@@ -167,10 +158,8 @@ onMounted(load);
           <span> Los cambios se guardaron correctamente. </span>
         </div>
       </div>
-
     </Transition>
     <!-- ================= NUEVA CATEGORÍA ================= -->
-
     <section class="category-card">
 
       <h2 class="section-title">
@@ -181,8 +170,7 @@ onMounted(load);
         class="category-form"
         @submit.prevent="create"
       >
-
-        <div class="field">
+        <div class="field field--categories">
 
           <label for="name">
             Marca
@@ -195,10 +183,9 @@ onMounted(load);
             placeholder="Ej: Apache"
             required
           />
-
         </div>
 
-        <div class="field">
+        <div class="field field--categories">
 
           <label for="description">
             Descripción
@@ -210,9 +197,7 @@ onMounted(load);
             type="text"
             placeholder="Descripción opcional"
           />
-
         </div>
-
 
         <button
           type="submit"
@@ -220,14 +205,12 @@ onMounted(load);
         >
           Agregar 
         </button>
-
       </form>
-
     </section>
 
     <p
       v-if="error"
-      class="error-message"
+      class="error-message error-message--admin"
     >
       {{ error }}
     </p>
@@ -238,28 +221,20 @@ onMounted(load);
     >
       Cargando categorías...
     </p>
-
     <!-- ================= TABLA ================= -->
-
     <section
       v-else
       class="table-card"
     >
-
       <div class="table-header">
-
         <h2>
           Categorías existentes
         </h2>
-
       </div>
 
       <div class="table-scroll">
-
         <table class="admin-table">
-
           <thead>
-
             <tr>
 
               <th>Marca</th>
@@ -271,46 +246,34 @@ onMounted(load);
               <th></th>
 
             </tr>
-
           </thead>
 
           <tbody>
-
             <tr
               v-for="cat in categories"
               :key="cat.id"
             >
-
               <!-- ================= EDICIÓN ================= -->
-
               <template v-if="editingId === cat.id">
-
                 <td>
-
                   <input
                     v-model="editForm.name"
                     type="text"
                   />
-
                 </td>
 
                 <td>
-
                   <input
                     v-model="editForm.description"
                     type="text"
                   />
-
                 </td>
 
                 <td>
-
                   {{ cat.productCount ?? "—" }}
-
                 </td>
 
                 <td class="table-actions">
-
                   <button
                     type="button"
                     class="icon-button success"
@@ -336,28 +299,21 @@ onMounted(load);
                       />
                     </svg>
                   </button>
-
                 </td>
-
               </template>
-
               <!-- ================= NORMAL ================= -->
-
               <template v-else>
 
                 <td class="table-name">
                   {{ cat.name }}
                 </td>
 
-
                 <td class="table-description">
                   {{ cat.description || "—" }}
                 </td>
 
                 <td>
-
                   {{ cat.productCount ?? "—" }}
-
                 </td>
 
                 <td class="table-actions">
@@ -386,38 +342,25 @@ onMounted(load);
                       <path d="M9 6V4h6v2"/>
                     </svg>
                   </button>
-
                 </td>
-
               </template>
-
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </section>
 
-    <Pagination
-      :page="page"
-      :total-pages="totalPages"
-      @change-page="changePage"
-    />
+    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
 
   </div>
-
 </template>
+
 
 <style scoped>
 
 .admin-categories-view {
   padding: 2.5rem var(--space-4) 4rem;
 }
-
-/* ================= HEADER ================= */
 
 .page-header {
   margin-bottom: 2rem;
@@ -445,8 +388,6 @@ onMounted(load);
   line-height: 1.7;
 }
 
-/* ================= CARDS ================= */
-
 .category-card,
 .table-card {
   background: #fff;
@@ -464,15 +405,11 @@ onMounted(load);
   overflow: hidden;
 }
 
-/* ================= TITLES ================= */
-
 .section-title {
   margin: 0 0 1.8rem;
   color: var(--color-steel);
   font-size: 1.35rem;
 }
-
-/* ================= FORM ================= */
 
 .category-form {
   display: grid;
@@ -483,25 +420,14 @@ onMounted(load);
 }
 
 .category-form button[type="submit"] {
-  grid-column: 1 / -1;   /* ocupa toda la fila, empujándolo a la línea de abajo */
-  justify-self: center;   /* y lo pega a la izquierda dentro de esa fila */
+  grid-column: 1 / -1;   
+  justify-self: center;   
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
+.admin-table input {
+  width: 100%;
 }
 
-.field label {
-  margin-bottom: .55rem;
-  font-size: .88rem;
-  font-weight: 600;
-  color: var(--color-ink-soft);
-}
-
-.field input,
-.field select,
-.admin-table input,
 .admin-table select {
   height: 48px;
   border-radius: 14px;
@@ -512,22 +438,12 @@ onMounted(load);
   transition: .2s;
 }
 
-.admin-table input {
-  width: 100%;
-}
-
-.field input:focus,
-.field select:focus,
 .admin-table input:focus,
 .admin-table select:focus {
   outline: none;
   border-color: var(--color-rust);
   box-shadow: 0 0 0 4px rgba(188,34,34,.12);
 }
-
-/* ================= BOTÓN AGREGAR ================= */
-
-/* ================= MENSAJE DE ÉXITO ================= */
 
 .success-toast { 
   position: fixed; 
@@ -559,8 +475,8 @@ onMounted(load);
   }
 
   .success-toast-icon svg {
-     width: 20px; 
-     height: 20px; 
+    width: 20px; 
+    height: 20px; 
   } 
 
   .success-toast-content { 
@@ -579,8 +495,6 @@ onMounted(load);
     font-size: 0.78rem; 
   }
 
-  /* ================= ANIMACIÓN ================= */
-
   .success-toast-enter-active, 
   .success-toast-leave-active {
      transition: 
@@ -593,20 +507,6 @@ onMounted(load);
     opacity: 0; 
     transform: translateY(-10px); 
   }
-
-/* ================= MENSAJES ================= */
-
-.error-message {
-  margin: 1rem 0;
-  padding: 1rem;
-  border-radius: 14px;
-  background: #fff1f2;
-  color: #be123c;
-}
-
-
-
-/* ================= TABLA ================= */
 
 .table-header {
   display: flex;
@@ -662,8 +562,6 @@ onMounted(load);
   background: #fafafa;
 }
 
-/* ================= CELDAS ================= */
-
 .table-name {
   font-weight: 700;
   color: var(--color-steel);
@@ -672,8 +570,6 @@ onMounted(load);
 .table-description {
   color: var(--color-ink-soft);
 }
-
-/* ================= TAG ================= */
 
 .machine-tag {
   display: inline-flex;
@@ -684,14 +580,6 @@ onMounted(load);
   font-size: .82rem;
   
 }
-
-/* ================= BOTONES ================= */
-
-
-
-
-
-/* ================= RESPONSIVE ================= */
 
 @media (max-width: 1200px) {
 
@@ -738,5 +626,4 @@ onMounted(load);
   }
 
 }
-
 </style>

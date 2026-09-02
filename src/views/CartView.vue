@@ -5,9 +5,11 @@ import { useCartStore } from '../stores/cart';
 import { useAuthStore } from '../stores/auth';
 import AvailabilityTag from '@/components/AvailabilityTag.vue';
 
+const router = useRouter();
+
 const cartStore = useCartStore();
 const authStore = useAuthStore();
-const router = useRouter();
+
 
 onMounted(() => {
   if (authStore.isLoggedIn) {
@@ -64,8 +66,6 @@ function imageUrl(product) {
         v-else-if="cartStore.items.length === 0"
         class="empty-cart"
       >
-        
-
         <h2>Tu carrito está vacío</h2>
 
         <p>
@@ -84,9 +84,6 @@ function imageUrl(product) {
         v-else
         class="cart-layout"
       >
-
-        <!-- Productos -->
-
         <section class="cart-products">
 
           <article
@@ -94,7 +91,6 @@ function imageUrl(product) {
             :key="item.id"
             class="cart-card"
           >
-
             <div class="cart-image">
 
               <img
@@ -106,9 +102,7 @@ function imageUrl(product) {
             </div>
 
             <div class="cart-content">
-
               <div class="cart-top">
-
                 <div>
 
                   <p
@@ -147,11 +141,9 @@ function imageUrl(product) {
                     <path d="M9 6V4h6v2"/>
                   </svg>
                 </button>
-
               </div>
 
               <div class="cart-bottom">
-
                 <div class="quantity-selector">
 
                   <button
@@ -179,14 +171,9 @@ function imageUrl(product) {
                 </div>
 
               </div>
-
             </div>
-
           </article>
-
         </section>
-
-        <!-- Resumen -->
 
         <aside class="cart-summary">
 
@@ -213,26 +200,15 @@ function imageUrl(product) {
           </button>
 
         </aside>
-
       </div>
-
     </template>
-
   </div>
 </template>
 
-<style scoped>
 
+<style scoped>
 .cart-view {
   padding: var(--space-6) var(--space-4);
-}
-
-/* =========================
-   Header
-========================= */
-
-.page-header {
-  margin-bottom: 2.5rem;
 }
 
 .page-kicker {
@@ -257,10 +233,6 @@ function imageUrl(product) {
   line-height: 1.7;
 }
 
-/* =========================
-   Layout
-========================= */
-
 .cart-layout {
   display: grid;
   grid-template-columns: minmax(0,1fr) 340px;
@@ -274,25 +246,15 @@ function imageUrl(product) {
   gap: 1.4rem;
 }
 
-/* =========================
-   Producto
-========================= */
-
 .cart-card {
 
   display: flex;
   gap: 1.5rem;
-
   padding: 1.5rem;
-
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 24px;
-
   box-shadow: 0 10px 30px rgba(0,0,0,.05);
-
   transition: .25s;
 }
 
@@ -301,293 +263,173 @@ function imageUrl(product) {
 }
 
 .cart-image {
-
   width: 120px;
   height: 120px;
-
   border-radius: 18px;
-
   overflow: hidden;
-
   flex-shrink: 0;
-
   background: #f7f7f7;
 }
 
 .cart-image img {
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .cart-content {
-
   flex: 1;
-
   display: flex;
-
   flex-direction: column;
-
   justify-content: space-between;
 }
 
 .cart-top {
-
   display: flex;
-
   justify-content: space-between;
-
   gap: 1rem;
 }
 
 .product-brand {
-
   margin: 0;
-
   color: var(--color-rust);
-
   font-size: .75rem;
-
   font-weight: 700;
-
   letter-spacing: .15em;
-
   text-transform: uppercase;
 }
 
 .product-name {
-
   margin: .4rem 0;
-
   font-size: 1.45rem;
-
   font-weight: 700;
 }
 
 .product-code {
-
   margin: 0;
-
   color: var(--color-ink-soft);
-
   font-family: var(--font-mono);
 }
 
-/* =========================
-   Cantidad
-========================= */
-
 .cart-bottom {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
   margin-top: 1.4rem;
 }
 
 .quantity-selector {
-
   display: flex;
-
   align-items: center;
-
   gap: .8rem;
 }
 
 .quantity-selector button {
-
   width: 42px;
   height: 42px;
-
   border: none;
-
   border-radius: 50%;
-
   background: var(--color-bg);
-
   cursor: pointer;
-
   font-size: 1.2rem;
-
   transition: .2s;
 }
 
 .quantity-selector button:hover {
-
   background: var(--color-rust);
-
   color: white;
 }
 
 .quantity-selector span {
-
   min-width: 36px;
-
   text-align: center;
-
   font-weight: 700;
-
   font-size: 1.1rem;
 }
 
-/* =========================
-   Precio
-========================= */
-
 .product-price {
-
   font-size: 1.7rem;
-
   font-weight: 700;
-
   color: var(--color-rust);
 }
 
-/* =========================
-   Eliminar
-========================= */
-
 .delete-button {
-
   width: 42px;
   height: 42px;
-
   border-radius: 50%;
-
   border: none;
-
   color: #666;
-
   cursor: pointer;
-
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
   transition: .2s;
 }
 
 .delete-button svg {
-
   width: 18px;
   height: 18px;
 }
 
-
-
-/* =========================
-   Resumen
-========================= */
-
 .cart-summary {
-
   position: sticky;
-
   top: 2rem;
-
   padding: 2rem;
-
   border-radius: 24px;
-
   background: white;
-
   border: 1px solid var(--color-line);
-
   box-shadow: 0 10px 30px rgba(0,0,0,.05);
 }
 
 .cart-summary h2 {
-
   margin-top: 0;
-
   margin-bottom: 1.6rem;
-
   font-size: 1.4rem;
 }
 
 .summary-row {
-
   display: flex;
-
   justify-content: space-between;
-
   margin-bottom: 1rem;
-
   color: var(--color-ink-soft);
 }
 
 .summary-row.total {
-
   margin-top: 1.5rem;
-
   padding-top: 1.5rem;
-
   border-top: 1px solid var(--color-line);
-
   color: var(--color-ink);
-
   font-size: 1.25rem;
-
   font-weight: 700;
 }
 
 .button-full {
-
   width: 100%;
-
   margin-top: 2rem;
 }
 
-/* =========================
-   Carrito vacío
-========================= */
-
 .empty-cart {
-
   text-align: center;
-
   background: white;
-
   border: 1px solid var(--color-line);
-
   border-radius: 24px;
-
   padding: 4rem 2rem;
-
   box-shadow: 0 10px 30px rgba(0,0,0,.05);
 }
 
 .empty-icon {
-
   font-size: 4rem;
-
   margin-bottom: 1rem;
 }
 
 .empty-cart h2 {
-
   margin-bottom: .8rem;
 }
 
 .empty-cart p {
-
   color: var(--color-ink-soft);
-
   margin-bottom: 2rem;
 }
-
-
-
-/* =========================
-   Responsive
-========================= */
 
 @media (max-width: 900px) {
 
@@ -600,30 +442,23 @@ function imageUrl(product) {
   }
 
   .cart-card {
-
     flex-direction: column;
   }
 
   .cart-image {
-
     width: 100%;
     height: 240px;
   }
 
   .cart-bottom {
-
     flex-direction: row;
-
     justify-content: space-between;
-
     align-items: center;
   }
 
   .product-price {
-
     font-size: 1.5rem;
   }
 
 }
-
 </style>

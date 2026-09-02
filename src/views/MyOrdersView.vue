@@ -4,12 +4,12 @@ import { useRoute } from 'vue-router';
 import ordersService from '../services/orders.service';
 import Pagination from '../components/Pagination.vue';
 
-
 const route = useRoute();
+
 const loading = ref(true);
 const showSuccessMessage = ref(false);
 
-const activeTab = ref('pending'); // 'pending' | 'delivered'
+const activeTab = ref('pending'); 
 
 const pendingOrders = ref([]);
 const pendingPage = ref(1);
@@ -26,7 +26,6 @@ const deliveredTotal = ref(0);
 const hasOrders = computed(() => {
   return pendingOrders.value.length > 0 || deliveredOrders.value.length > 0;
 });
-
 
 const STATUS_LABELS = {
   pending: 'Pendiente',
@@ -86,12 +85,10 @@ function changeDeliveredPage(newPage) {
   loadDelivered();
 }
 
-
 function imageUrl(product) {
   if (!product?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
-
 
 onMounted(async () => {
   await Promise.all([
@@ -112,7 +109,6 @@ onMounted(async () => {
 <template>
   <div class="container orders-view">
 
-    <!-- ================= HEADER ================= -->
     <div class="orders-header">
 
       <div>
@@ -145,8 +141,6 @@ onMounted(async () => {
       </button>
     </div>
 
-
-    <!-- ================= PEDIDO CONFIRMADO ================= -->
     <Transition name="success-toast">
       <div
         v-if="showSuccessMessage"
@@ -175,12 +169,8 @@ onMounted(async () => {
           </span>
         </div>
       </div>
-
     </Transition>
    
-
-
-    <!-- ================= LOADING ================= -->
     <p
       v-if="loading"
       class="loading-state"
@@ -188,13 +178,10 @@ onMounted(async () => {
       Cargando pedidos...
     </p>
 
-
-    <!-- ================= SIN PEDIDOS ================= -->
     <div
       v-else-if="!hasOrders"
       class="empty-state"
     >
-
       <div class="empty-icon">
 
         <svg
@@ -218,21 +205,14 @@ onMounted(async () => {
 
     </div>
 
-
-    <!-- ================= PEDIDOS ================= -->
     <div
       v-else
       class="orders-sections"
     >
-
-      <!-- ==================================================
-           PEDIDOS EN PROCESO
-      =================================================== -->
       <section
         v-if="activeTab === 'pending'"
         class="orders-group"
       >
-
         <div class="group-header">
 
           <div>
@@ -250,8 +230,6 @@ onMounted(async () => {
               :key="order.id"
               class="order-card"
             >
-
-              <!-- HEADER PEDIDO -->
               <header class="order-card-header">
 
                 <div>
@@ -266,12 +244,10 @@ onMounted(async () => {
 
                 </div>
 
-
                 <span
                   class="order-status"
                   :class="`order-status-${order.status}`"
                 >
-
                   <span class="status-dot"></span>
 
                   {{ STATUS_LABELS[order.status] || order.status }}
@@ -280,8 +256,6 @@ onMounted(async () => {
 
               </header>
 
-
-              <!-- PRODUCTOS -->
               <div class="order-products">
 
                 <div
@@ -289,8 +263,6 @@ onMounted(async () => {
                   :key="detail.id"
                   class="order-detail"
                 >
-
-                  <!-- Imagen -->
                   <div class="detail-image-wrapper">
 
                     <img
@@ -307,7 +279,6 @@ onMounted(async () => {
                       v-else
                       class="detail-image-placeholder"
                     >
-
                       <svg
                         viewBox="0 0 24 24"
                         fill="currentColor"
@@ -318,11 +289,8 @@ onMounted(async () => {
                       </svg>
 
                     </div>
-
                   </div>
 
-
-                  <!-- Información -->
                   <div class="detail-info">
 
                     <strong class="detail-name">
@@ -345,11 +313,8 @@ onMounted(async () => {
                       
                     </span>
                 </div>
-
               </div>
 
-
-              <!-- FOOTER -->
               <footer class="order-card-footer">
 
                 <div class="order-total-block">
@@ -367,21 +332,12 @@ onMounted(async () => {
                   </strong>
 
                 </div>
-
-                
-
               </footer>
-
             </article>
-
           </div>
 
-          <Pagination
-            
-            :page="pendingPage"
-            :total-pages="pendingTotalPages"
-            @change-page="changePendingPage"
-          />
+          <Pagination :page="pendingPage" :total-pages="pendingTotalPages" @change-page="changePendingPage"/>
+
         </template>
         
         <div v-else class="empty-section">
@@ -390,15 +346,10 @@ onMounted(async () => {
 
       </section>
 
-
-      <!-- ==================================================
-           PEDIDOS ENTREGADOS
-      =================================================== -->
       <section
         v-if="activeTab === 'delivered'"
         class="orders-group delivered-group"
       >
-
         <div class="group-header">
 
           <div>
@@ -419,8 +370,6 @@ onMounted(async () => {
               :key="order.id"
               class="order-card delivered-card"
             >
-
-              <!-- HEADER -->
               <header class="order-card-header">
 
                 <div>
@@ -435,7 +384,6 @@ onMounted(async () => {
 
                 </div>
 
-
                 <span class="order-status order-status-delivered">
 
                   <span class="status-dot"></span>
@@ -446,8 +394,6 @@ onMounted(async () => {
 
               </header>
 
-
-              <!-- PRODUCTOS -->
               <div class="order-products">
 
                 <div
@@ -455,7 +401,6 @@ onMounted(async () => {
                   :key="detail.id"
                   class="order-detail"
                 >
-
                   <div class="detail-image-wrapper">
 
                     <img
@@ -472,7 +417,6 @@ onMounted(async () => {
                       v-else
                       class="detail-image-placeholder"
                     >
-
                       <svg
                         viewBox="0 0 24 24"
                         fill="currentColor"
@@ -483,9 +427,7 @@ onMounted(async () => {
                       </svg>
 
                     </div>
-
                   </div>
-
 
                   <div class="detail-info">
 
@@ -510,11 +452,8 @@ onMounted(async () => {
                   </span>
 
                 </div>
-
               </div>
 
-
-              <!-- FOOTER -->
               <footer class="order-card-footer">
 
                 <div class="order-total-block">
@@ -532,41 +471,28 @@ onMounted(async () => {
                   </strong>
 
                 </div>
-
               </footer>
-
             </article>
-
           </div>
 
-          <Pagination
-            :page="deliveredPage"
-            :total-pages="deliveredTotalPages"
-            @change-page="changeDeliveredPage"
-          />
+          <Pagination :page="deliveredPage" :total-pages="deliveredTotalPages" @change-page="changeDeliveredPage"/>
+
         </template>
 
         <div v-else class="empty-section">
-            <p>No tenés pedidos entregados.</p>
+          <p>No tenés pedidos entregados.</p>
         </div>
 
       </section>
-
     </div>
-
-
   </div>
 </template>
 
-<style scoped>
 
-/* =========================================================
-   GENERAL
-========================================================= */
+<style scoped>
 
 .orders-view {
   padding: 55px 0 80px;
-
   min-height: 100vh;
 }
 
@@ -576,56 +502,32 @@ onMounted(async () => {
 
 .orders-eyebrow {
   margin: 0 0 7px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.14em;
 }
 
 .orders-header h1 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: clamp(2.1rem, 4vw, 2.8rem);
-
   line-height: 1.05;
 }
 
 .orders-description {
   max-width: 650px;
-
   margin: 10px 0 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.95rem;
-
   line-height: 1.6;
 }
 
-
-
-
-
-
-
-/* =========================================================
-   SECCIONES
-========================================================= */
-
 .orders-sections {
   display: flex;
-
   flex-direction: column;
-
   gap: 38px;
 }
 
@@ -683,13 +585,9 @@ onMounted(async () => {
 
 .orders-group {
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   padding: 28px;
-
   box-shadow:
     0 8px 25px rgba(0, 0, 0, 0.04);
 }
@@ -699,73 +597,47 @@ onMounted(async () => {
     rgba(0, 0, 0, 0.012);
 }
 
-
-/* =========================================================
-   HEADER SECCIÓN
-========================================================= */
-
 .group-header {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
-
   margin-bottom: 25px;
-
   padding-bottom: 18px;
-
   border-bottom: 1px solid var(--color-line);
 }
 
 .group-eyebrow {
   margin: 0 0 5px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.68rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.12em;
 }
 
 .group-header h2 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: 1.45rem;
-
   line-height: 1.1;
 }
 
 .group-count {
   min-width: 32px;
   height: 32px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 0 9px;
-
   border-radius: 999px;
-
   background:
     rgba(183, 53, 45, 0.09);
 
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.78rem;
-
   font-weight: 700;
 }
 
@@ -776,33 +648,17 @@ onMounted(async () => {
   color: #258148;
 }
 
-
-/* =========================================================
-   LISTA
-========================================================= */
-
 .orders-list {
   display: flex;
-
   flex-direction: column;
-
   gap: 14px;
 }
 
-
-/* =========================================================
-   PEDIDO
-========================================================= */
-
 .order-card {
   overflow: hidden;
-
   background: #fff;
-
   border: 1px solid var(--color-line);
-
   border-radius: 16px;
-
   transition:
     transform .2s ease,
     box-shadow .2s ease,
@@ -811,7 +667,6 @@ onMounted(async () => {
 
 .order-card:hover {
   transform: translateY(-2px);
-
   border-color:
     rgba(183, 53, 45, 0.18);
 
@@ -824,148 +679,85 @@ onMounted(async () => {
     rgba(45, 151, 84, 0.18);
 }
 
-
-/* =========================================================
-   HEADER PEDIDO
-========================================================= */
-
 .order-card-header {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
-
   padding: 18px 20px;
-
   border-bottom: 1px solid var(--color-line);
 }
 
 .order-label {
   display: block;
-
   margin-bottom: 3px;
-
   color: var(--color-ink-soft);
-
   font-size: 0.68rem;
-
   text-transform: uppercase;
-
   letter-spacing: 0.08em;
 }
 
 .order-number {
   color: var(--color-ink);
-
   font-family: var(--font-mono);
-
   font-size: 0.88rem;
-
   font-weight: 700;
 }
 
-
-/* =========================================================
-   ESTADOS
-========================================================= */
-
 .order-status {
   display: inline-flex;
-
   align-items: center;
-
   gap: 7px;
-
   padding: 7px 11px;
-
   border-radius: 999px;
-
   font-size: 0.72rem;
-
   font-weight: 700;
-
   white-space: nowrap;
 }
 
 .status-dot {
   width: 7px;
   height: 7px;
-
   border-radius: 50%;
-
   background: currentColor;
 }
 
-
-/* Pendiente */
-
 .order-status-pending {
   background: rgba(245, 158, 11, 0.12);
-
   color: #a16207;
 }
 
-
-/* Confirmado */
-
 .order-status-confirmed {
   background: rgba(37, 99, 235, 0.10);
-
   color: #1d4ed8;
 }
 
-
-/* Preparación */
-
 .order-status-in_preparation {
   background: rgba(124, 58, 237, 0.10);
-
   color: #6d28d9;
 }
 
-
-/* Enviado */
-
 .order-status-withdraw {
   background: rgba(14, 116, 144, 0.10);
-
   color: #0e7490;
 }
 
-
-/* Entregado */
-
 .order-status-delivered {
   background: rgba(45, 151, 84, 0.11);
-
   color: #258148;
 }
 
-
-/* =========================================================
-   PRODUCTOS
-========================================================= */
-
 .order-products {
   display: flex;
-
   flex-direction: column;
-
   padding: 6px 20px;
 }
 
 .order-detail {
   display: flex;
-
   align-items: center;
-
   gap: 15px;
-
   padding: 13px 0;
-
   border-bottom: 1px solid #eeeeee;
 }
 
@@ -973,39 +765,27 @@ onMounted(async () => {
   border-bottom: none;
 }
 
-
-/* Imagen */
-
 .detail-image-wrapper {
   width: 58px;
   height: 58px;
-
   flex: 0 0 58px;
 }
 
 .detail-image {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
   border-radius: 11px;
-
   border: 1px solid var(--color-line);
 }
 
 .detail-image-placeholder {
   width: 100%;
   height: 100%;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   border-radius: 11px;
-
   background:
     rgba(0, 0, 0, 0.035);
 
@@ -1017,30 +797,21 @@ onMounted(async () => {
   height: 22px;
 }
 
-
-/* Información */
-
 .detail-info {
   display: flex;
-
   flex-direction: column;
-
   gap: 4px;
-
   min-width: 0;
 }
 
 .detail-name {
   color: var(--color-ink);
-
   font-size: 0.88rem;
-
   line-height: 1.3;
 }
 
 .detail-quantity {
   color: var(--color-ink-soft);
-
   font-size: 0.77rem;
 }
 
@@ -1048,26 +819,16 @@ onMounted(async () => {
   color: black;
   font-size: 0.80rem;
   flex-shrink: 0;
-  margin-left: auto;   /* empuja el precio al extremo derecho de la fila */
+  margin-left: auto;   
   padding-left: 12px;
 }
 
-
-/* =========================================================
-   FOOTER DEL PEDIDO
-========================================================= */
-
 .order-card-footer {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
-
   padding: 17px 20px;
-
   background:
     rgba(0, 0, 0, 0.018);
 
@@ -1076,63 +837,39 @@ onMounted(async () => {
 
 .footer-label {
   display: block;
-
   margin-bottom: 4px;
-
   color: var(--color-ink-soft);
-
   font-size: 0.68rem;
-
   text-transform: uppercase;
-
   letter-spacing: 0.06em;
 }
 
 .order-total {
   color: var(--color-rust);
-
   font-family: var(--font-display);
-
   font-size: 1rem;
-
   font-weight: 600;
 }
 
 .order-total-block {
-  margin-left: auto;   /* empuja el bloque completo (etiqueta + total) a la derecha */
-  text-align: right;   /* alinea el texto adentro también a la derecha */
+  margin-left: auto;   
+  text-align: right;   
 }
-
-
 
 .delivered-label {
   color: #258148;
-
   font-size: 0.78rem;
-
   font-weight: 700;
 }
-
-
-/* =========================================================
-   ESTADOS VACÍOS
-========================================================= */
-
-
 
 .empty-icon {
   width: 70px;
   height: 70px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   margin-bottom: 20px;
-
   border-radius: 20px;
-
   background:
     rgba(183, 53, 45, 0.08);
 
@@ -1146,49 +883,32 @@ onMounted(async () => {
 
 .empty-state h2 {
   margin: 0 0 8px;
-
   color: var(--color-ink);
-
   font-size: 1.35rem;
 }
 
 .empty-state p {
   max-width: 420px;
-
   margin: 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.9rem;
-
   line-height: 1.6;
 }
-
-
-
-/* ==============================
-   MENSAJE DE ÉXITO
-============================== */
 
 .success-toast {
   position: fixed;
   top: 30px;
   right: 30px;
   z-index: 9999;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
   border: 1px solid #b8dfc4;
   border-radius: 14px;
-
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.12);
 
@@ -1198,15 +918,11 @@ onMounted(async () => {
 .success-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e8f7ec;
 }
 
@@ -1231,11 +947,6 @@ onMounted(async () => {
   font-size: 0.78rem;
 }
 
-
-/* ==============================
-   ANIMACIÓN
-============================== */
-
 .success-toast-enter-active,
 .success-toast-leave-active {
   transition:
@@ -1248,14 +959,6 @@ onMounted(async () => {
   opacity: 0;
   transform: translateY(-10px);
 }
-
-
-
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 900px) {
 
@@ -1273,13 +976,11 @@ onMounted(async () => {
 
   .order-card-header {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
   .order-card-footer {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -1287,10 +988,7 @@ onMounted(async () => {
     display: none;
   }
 
-  
-
 }
-
 
 @media (max-width: 600px) {
 
@@ -1309,7 +1007,6 @@ onMounted(async () => {
   .detail-image-wrapper {
     width: 50px;
     height: 50px;
-
     flex-basis: 50px;
   }
 
@@ -1317,13 +1014,6 @@ onMounted(async () => {
     font-size: 0.82rem;
   }
 
-}
-
-/* ==============================
-   RESPONSIVE mensaje exito
-============================== */
-
-@media (max-width: 600px) {
   .success-toast {
     top: 20px;
     right: 15px;
@@ -1332,5 +1022,6 @@ onMounted(async () => {
     min-width: auto;
     max-width: none;
   }
+
 }
 </style>

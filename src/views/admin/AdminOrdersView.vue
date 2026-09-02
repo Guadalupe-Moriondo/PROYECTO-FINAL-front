@@ -125,17 +125,11 @@ function formatTime(date) {
   });
 }
 
-
 function lineSubtotal(detail) {
   const unitPrice = detail.unitPrice ?? detail.product?.price;
   if (unitPrice == null) return null;
   return Number(unitPrice) * Number(detail.quantity);
 }
-
-// ==============================
-// CONTACTAR CLIENTE
-// ==============================
-
 
 async function sendWhatsapp(order) {
   if (!order.user?.phone) {
@@ -177,8 +171,6 @@ async function sendWhatsapp(order) {
   order.customerNotifiedAt = new Date();
 }
 
-
-
 function imageUrl(product) {
   if (!product?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
@@ -219,7 +211,6 @@ onMounted(async () => {
         </div>
       </div>
     </Transition>
-
     <!-- ================= HEADER ================= -->
     <div class="orders-header">
 
@@ -230,8 +221,6 @@ onMounted(async () => {
       </div>
 
     </div>
-
-
     <!-- ================= LOADING ================= -->
     <p
       v-if="loading"
@@ -239,14 +228,11 @@ onMounted(async () => {
     >
       Cargando pedidos...
     </p>
-
-
     <!-- ================= TABLA ================= -->
     <div
       v-else
       class="orders-table-wrapper"
     >
-
       <table class="admin-table">
 
         <thead>
@@ -284,17 +270,13 @@ onMounted(async () => {
           </tr>
         </thead>
 
-
         <tbody>
-
           <template
             v-for="order in orders"
             :key="order.id"
           >
-
             <!-- ================= PEDIDO ================= -->
             <tr class="order-row">
-
               <!-- Orden -->
               <td>
 
@@ -303,13 +285,9 @@ onMounted(async () => {
                 </span>
 
               </td>
-
-
               <!-- Cliente -->
               <td>
-
                 <div class="customer-cell">
-
                   <div class="customer-avatar">
                     <svg
                       viewBox="0 0 24 24 "
@@ -337,25 +315,22 @@ onMounted(async () => {
                     </span>
 
                   </div>
-
                 </div>
-
               </td>
-
               <!-- Fecha -->
-
               <td class="date-cell">
                 <div class="date-content">
+
                   <span class="date">
                   {{ formatDate(order.createdAt) }}
                   </span>
+
                   <span class="time">
                     {{ formatTime(order.createdAt) }}
                   </span>
+
                 </div>
               </td>
-
-
               <!-- Total -->
               <td>
 
@@ -364,8 +339,6 @@ onMounted(async () => {
                 </span>
 
               </td>
-
-
               <!-- Pago -->
               <td>
 
@@ -374,18 +347,12 @@ onMounted(async () => {
                 </span>
 
               </td>
-
-              
-
-
               <!-- Estado -->
               <td class="notification-cell">
-
                 <div
                   class="status-control"
                   :class="`status-${order.status}`"
                 >
-
                   <select
                     :value="order.status"
                     @change="
@@ -395,7 +362,6 @@ onMounted(async () => {
                       )
                     "
                   >
-
                     <option
                       v-for="status in STATUSES"
                       :key="status"
@@ -406,11 +372,11 @@ onMounted(async () => {
                     </option>
 
                   </select>
-
                 </div>
+
                 <div v-if="canNotify(order)" class="notification-actions">
                   <div v-if="!order.customerNotified" class="notify-buttons">
-                      <!-- WhatsApp -->
+
                     <button
                       class="notify-icon whatsapp"
                       @click="sendWhatsapp(order)"
@@ -422,35 +388,26 @@ onMounted(async () => {
                        >
                          <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
                       </svg>
-                      
                       <span>Notificar</span>
                     </button>
-
-                    
 
                   </div>
                   <div v-else class="notification-success">
                     <strong>
                       ✔ Cliente notificado
                     </strong>
-
                   </div>                   
                 </div>
               </td>
-
-
               <!-- Detalle -->
               <td class="detail-column">
-
                 <div class="actions-column">
-
                   <!-- Ver detalle -->
                   <button
                     type="button"
                     class="detail-toggle"
                     @click="toggleDetail(order)"
                   >
-
                     <svg
                       viewBox="0 0 24 24"
                       fill="currentColor"
@@ -468,38 +425,26 @@ onMounted(async () => {
                     </span>
 
                   </button>
-
-                  
-
                 </div>
-
               </td>
-
             </tr>
-
-
             <!-- ================= DETALLE ================= -->
             <tr
               v-if="expandedOrderId === order.id"
               class="detail-row"
             >
-
               <td colspan="7">
-
                 <div class="detail-container">
   
                   <ul
                     v-if="order.details?.length"
                     class="detail-list"
                   >
-
                     <li
                       v-for="detail in order.details"
                       :key="detail.id"
                       class="detail-item"
                     >
-
-                      <!-- Imagen -->
                       <div class="detail-image-wrapper">
 
                         <img
@@ -522,10 +467,7 @@ onMounted(async () => {
                             />
                           </svg>
                         </div>
-
                       </div>
-
-
                       <!-- Información -->
                       <div class="detail-product">
 
@@ -534,7 +476,6 @@ onMounted(async () => {
                         </span>
 
                         <div>
-
                           <strong class="detail-name">
                             {{
                               detail.product?.name ||
@@ -551,10 +492,7 @@ onMounted(async () => {
                           </span>
 
                         </div>
-
                       </div>
-
-
                       <!-- Subtotal -->
                       <div
                         v-if="lineSubtotal(detail) != null"
@@ -568,9 +506,7 @@ onMounted(async () => {
                       </div>
 
                     </li>
-
                   </ul>
-
 
                   <p
                     v-else
@@ -580,48 +516,23 @@ onMounted(async () => {
                   </p>
 
                 </div>
-
               </td>
-
             </tr>
-
           </template>
-
         </tbody>
-
       </table>
-
     </div>
 
-
-    <!-- ================= PAGINACIÓN ================= -->
-    
-
-      <Pagination
-        :page="page"
-        :total-pages="totalPages"
-        @change-page="changePage"
-      />
-
-    
-
+    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
+      
   </div>
 </template>
 
+
 <style scoped>
-
-/* =========================================================
-   GENERAL
-========================================================= */
-
 .admin-orders-view {
   padding: 55px 0 80px;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .orders-header {
   margin-bottom: 32px;
@@ -629,114 +540,69 @@ onMounted(async () => {
 
 .orders-eyebrow {
   margin: 0 0 7px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.14em;
 }
 
 .orders-header h1 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: clamp(2.1rem, 4vw, 2.8rem);
-
   line-height: 1.05;
 }
 
 .orders-description {
   margin: 10px 0 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.95rem;
-
   line-height: 1.6;
 }
 
-
-/* =========================================================
-   TABLA
-========================================================= */
-
 .orders-table-wrapper {
   width: 100%;
-
   overflow-x: auto;
-
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 .admin-table {
   width: 100%;
-
   min-width: 950px;
-
   border-collapse: separate;
-
   border-spacing: 0;
 }
 
-
-/* =========================================================
-   HEADER TABLA
-========================================================= */
-
 .admin-table th {
   padding: 16px 20px;
-
   text-align: left;
-
   background:
     rgba(0, 0, 0, 0.025);
 
   border-bottom: 1px solid var(--color-line);
-
   color: var(--color-ink-soft);
-
   font-family: var(--font-display);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.06em;
-
   white-space: nowrap;
 }
 
-
-/* =========================================================
-   FILAS
-========================================================= */
-
 .admin-table td {
   padding: 17px 20px;
-
   border-bottom: 1px solid var(--color-line);
-
   vertical-align: middle;
 }
 
 .order-row {
   background: var(--color-surface);
-
   transition:
     background .2s ease;
 }
@@ -750,92 +616,50 @@ onMounted(async () => {
   border-bottom: none;
 }
 
-
-/* =========================================================
-   ORDEN
-========================================================= */
-
 .order-number {
   display: inline-flex;
-
   padding: 6px 9px;
-
   border-radius: 8px;
-
- 
   color: black;
-
   font-family: var(--font-mono);
-
   font-size: 0.82rem;
-
 }
-
-
-/* =========================================================
-   CLIENTE
-========================================================= */
 
 .customer-cell {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
 }
 
 .customer-avatar {
-   width:38px;
-
-    height:38px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:var(--color-bg);
-
-    border:1px solid var(--color-line);
-
-    flex-shrink:0;
-
- 
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--color-bg);
+  border:1px solid var(--color-line);
+  flex-shrink:0;
 }
 
 .customer-avatar svg{
-
-    width:30px;
-
-    height:30px;
-
+  width:30px;
+  height:30px;
 }
-
 
 .customer-name {
   display: block;
-
   color: var(--color-ink);
-
   font-size: 0.9rem;
 }
 
 .table-subtext {
   display: block;
-
   margin-top: 3px;
-
   color: var(--color-ink-soft);
-
   font-size: 0.78rem;
 }
-
-/* =========================================================
-   FECHA
-========================================================= */
 
 .date-cell {
   vertical-align: middle;
@@ -861,59 +685,29 @@ onMounted(async () => {
   color: #9ca3af;
 }
 
-
-/* =========================================================
-   TOTAL
-========================================================= */
-
 .order-total {
   color: var(--color-ink);
-
   font-family: var(--font-display);
-
   font-size: 0.9rem;
-
   font-weight: 600;
-
   background-color: #c6e6d0;
-
   border:6px solid #c6e6d0;
-
   border-radius: 50px;
-
   white-space: nowrap;
 }
 
-
-
-
-/* =========================================================
-   PAGO
-========================================================= */
-
 .payment-badge {
   display: inline-flex;
-
   align-items: center;
-
   padding: 6px 10px;
-
   border-radius: 999px;
-
   background:
     rgba(0, 0, 0, 0.04);
 
   color: var(--color-ink-soft);
-
   font-size: 0.75rem;
-
   white-space: nowrap;
 }
-
-
-/* =========================================================
-   ESTADO
-========================================================= */
 
 .status-control {
   position: relative;
@@ -927,44 +721,26 @@ onMounted(async () => {
 
 .status-control select {
   appearance: none;
-
   border: none;
-
   outline: none;
-
   padding: 7px 30px 7px 11px;
-
   border-radius: 999px;
-
   background: transparent;
-
   color: var(--color-ink);
-
   font-size: 0.78rem;
-
   cursor: pointer;
 }
 
 .status-control::after {
   content: "⌄";
-
   position: absolute;
-
   right: 10px;
-
   top: 50%;
-
   transform: translateY(-55%);
-
   pointer-events: none;
-
   color: currentColor;
-
   font-size: 0.8rem;
 }
-
-
-/* Colores por estado */
 
 .status-pending {
   background: rgba(245, 158, 11, 0.14);
@@ -992,38 +768,22 @@ onMounted(async () => {
   color: #258148;
 }
 
-
-/* =========================================================
-   DETALLE
-========================================================= */
-
 .detail-column {
   text-align: right;
 }
 
 .detail-toggle {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 7px;
-
   padding: 8px 12px;
-
   border: 1px solid var(--color-line);
-
   border-radius: 9px;
-
   background: var(--color-surface);
-
   color: var(--color-ink);
-
   font-size: 0.78rem;
- 
-
   cursor: pointer;
-
   transition:
     background .2s ease,
     border-color .2s ease,
@@ -1048,14 +808,8 @@ onMounted(async () => {
   transform: translateY(-1px);
 }
 
-
-/* =========================================================
-   FILA DETALLE
-========================================================= */
-
 .detail-row td {
   padding: 0;
-
   background:
     rgba(0, 0, 0, 0.018);
 
@@ -1072,60 +826,37 @@ onMounted(async () => {
 
 .detail-eyebrow {
   margin: 0 0 5px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.68rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.12em;
 }
 
 .detail-header h3 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: 1.1rem;
 }
 
-
-/* =========================================================
-   LISTA PRODUCTOS
-========================================================= */
-
 .detail-list {
   display: flex;
-
   flex-direction: column;
-
   gap: 10px;
-
   margin: 0;
   padding: 0;
-
   list-style: none;
 }
 
 .detail-item {
   display: grid;
-
   grid-template-columns: 58px minmax(0, 1fr) auto;
-
   align-items: center;
-
   gap: 15px;
-
   padding: 12px;
-
   background: #fff;
-
   border: 1px solid var(--color-line);
-
   border-radius: 13px;
 }
 
@@ -1138,22 +869,18 @@ onMounted(async () => {
 .detail-image-placeholder {
   width: 100%;
   height: 100%;
-
   border-radius: 10px;
 }
 
 .detail-image {
   object-fit: cover;
-
   border: 1px solid var(--color-line);
 }
 
 .detail-image-placeholder {
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   background:
     rgba(0, 0, 0, 0.04);
 
@@ -1167,79 +894,52 @@ onMounted(async () => {
 
 .detail-product {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   min-width: 0;
 }
 
 .detail-qty {
   flex-shrink: 0;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.78rem;
-
   font-weight: 700;
 }
 
 .detail-name {
   display: block;
-
   color: var(--color-ink);
-
   font-size: 0.87rem;
 }
 
 .detail-code {
   display: block;
-
   margin-top: 3px;
-
   color: var(--color-ink-soft);
-
   font-size: 0.75rem;
-
   font-family: var(--font-mono);
 }
 
 .detail-price {
   color: var(--color-ink);
-
   font-family: var(--font-display);
-
   font-size: 0.85rem;
-
   font-weight: 700;
-
   white-space: nowrap;
 }
 
 .empty-detail {
   margin: 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.9rem;
 }
 
-
-
-
-
-/* ==============================
-   ACCIONES DEL PEDIDO
-============================== */
-
 .actions-column{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
 }
 .notification-cell {
   vertical-align: middle;
@@ -1251,7 +951,6 @@ onMounted(async () => {
   justify-content: center;
   margin-top: 8px;
 }
-
 
 .notify-buttons {
   display: flex;
@@ -1275,14 +974,11 @@ onMounted(async () => {
   height: 34px;
   border: none;
   border-radius: 50px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
   transition: .5s;
-
   color: white;
   box-sizing: border-box;
 }
@@ -1291,8 +987,6 @@ onMounted(async () => {
   font-size: 0.78rem;
   font-weight: 500;
 }
-
-
 
 .notify-icon svg{
   width:17px;
@@ -1305,71 +999,45 @@ onMounted(async () => {
     
 }
 
-
 .notify-icon:hover{
   transform:translateY(-2px) scale(1.08);
 }
 
 .notification-success{
-
   margin-top:10px;
-
   padding:8px;
-
   border-radius:8px;
-
   background:#e8f7ec;
-
   border:1px solid #b8dfc4;
-
   color:#207a3c;
-
   display:flex;
-
   flex-direction:column;
-
   gap:4px;
-    
-
 }
 
 .notification-success strong{
-
-    font-size:.8rem;
-
+  font-size:.8rem;
 }
 
 .notification-success small{
-
-    color:#4d6655;
-    font-size:.8rem;
-
-
+  color:#4d6655;
+  font-size:.8rem;
 }
-
-/* ==============================
-   MENSAJE DE ENTREGA
-============================== */
 
 .success-toast {
   position: fixed;
   top: 30px;
   right: 30px;
   z-index: 9999;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
   border: 1px solid #b8dfc4;
   border-radius: 14px;
-
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.12);
 
@@ -1379,15 +1047,11 @@ onMounted(async () => {
 .success-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e8f7ec;
 }
 
@@ -1412,9 +1076,6 @@ onMounted(async () => {
   font-size: 0.78rem;
 }
 
-
-/* Animación de entrada y salida */
-
 .success-toast-enter-active,
 .success-toast-leave-active {
   transition:
@@ -1428,12 +1089,6 @@ onMounted(async () => {
   transform: translateY(-10px);
 }
 
-
-
-/* ==============================
-   RESPONSIVE
-============================== */
-
 @media (max-width:900px){
 
   .order-actions{
@@ -1445,14 +1100,6 @@ onMounted(async () => {
     justify-content:center;
   }
 
-}
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 900px) {
-
   .admin-orders-view {
     padding: 40px 20px 60px;
   }
@@ -1462,6 +1109,7 @@ onMounted(async () => {
   }
 
 }
+
 
 @media (max-width: 600px) {
 
@@ -1498,12 +1146,6 @@ onMounted(async () => {
     grid-column: 2;
   }
 
-}
-
-
-/* Responsive mensaje exito*/
-
-@media (max-width: 600px) {
   .success-toast {
     top: 20px;
     right: 15px;
@@ -1512,5 +1154,6 @@ onMounted(async () => {
     min-width: auto;
     max-width: none;
   }
+
 }
 </style>

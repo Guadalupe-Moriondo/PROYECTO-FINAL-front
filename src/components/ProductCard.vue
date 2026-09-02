@@ -2,16 +2,12 @@
 import { RouterLink } from 'vue-router';
 import AvailabilityTag from './AvailabilityTag.vue';
 
-
 const props = defineProps({
   product: { type: Object, required: true },
 });
 
-// If the product doesn't have an uploaded image yet, we show a
-// placeholder instead of a broken <img>
 function imageUrl(product) {
   if (!product.imageUrl) return null;
-  // imageUrl comes as "/uploads/products/xxx.jpg" (relative backend path)
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 </script>
@@ -47,11 +43,13 @@ function imageUrl(product) {
   
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
+
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(30, 27, 22, 0.1);
   border-color: var(--color-rust);
 }
+
 .card-image {
   aspect-ratio: 4 / 3;
   background: var(--color-bg);
@@ -60,17 +58,20 @@ function imageUrl(product) {
   justify-content: center;
   
 }
+
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .card-image-placeholder {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--color-ink-soft);
   text-transform: uppercase;
 }
+
 .card-body {
   padding: var(--space-3);
   display: flex;
@@ -78,6 +79,7 @@ function imageUrl(product) {
   gap: var(--space-1);
   margin-top: auto;
 }
+
 .card-brand {
   margin: 0;
   font-family: var(--font-display);
@@ -86,12 +88,14 @@ function imageUrl(product) {
   text-transform: uppercase;
   color: var(--color-rust);
 }
+
 .card-name {
   margin: 0;
   font-size: 1.05rem;
   text-transform: none;
   letter-spacing: 0;
 }
+
 .card-price {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);

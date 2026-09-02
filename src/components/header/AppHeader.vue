@@ -9,8 +9,8 @@ import UserMenu from './UserMenu.vue';
 import CartButton from './CartButton.vue';
 import SidebarMenu from './SidebarMenu.vue';
 
-
 const route = useRoute();
+
 const authStore = useAuthStore();
 const isAuthPage = computed(() =>
   ['/login', '/register'].includes(route.path)
@@ -18,9 +18,11 @@ const isAuthPage = computed(() =>
 
 const sidebarOpen = ref(false);
 
+
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;
 }
+
 function closeSidebar() {
   sidebarOpen.value = false;
 }
@@ -44,7 +46,6 @@ function closeSidebar() {
         <UserMenu />
         <CartButton v-if="!isAuthPage && !authStore.isAdmin"/>
       </div>
-
     </div>
   </header>
 
@@ -55,6 +56,7 @@ function closeSidebar() {
   />
 </template>
 
+
 <style scoped>
 .app-header {
   background: var(--color-steel);
@@ -64,6 +66,7 @@ function closeSidebar() {
   z-index: 30;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
 }
+
 .app-header-inner {
   display: flex;
   align-items: center;
@@ -71,6 +74,7 @@ function closeSidebar() {
   padding-top: var(--space-3);
   padding-bottom: var(--space-3);
 }
+
 .app-header-actions {
   display: flex;
   align-items: center;
@@ -83,6 +87,7 @@ function closeSidebar() {
   .app-header-inner {
     flex-wrap: wrap;
   }
+
   .app-header-inner :deep(.hamburger-btn) {
     order: 1;
   }

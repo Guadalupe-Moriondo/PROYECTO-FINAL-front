@@ -4,16 +4,19 @@ import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useCartStore } from '../../stores/cart';
 
+const router = useRouter();
+
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-const router = useRouter();
 
 const open = ref(false);
 const root = ref(null);
 
+
 function toggle() {
   open.value = !open.value;
 }
+
 function close() {
   open.value = false;
 }
@@ -103,6 +106,7 @@ function logout() {
 .user-menu {
   position: relative;
 }
+
 .user-menu-btn {
   display: flex;
   align-items: center;
@@ -115,15 +119,18 @@ function logout() {
   color: #fff;
   cursor: pointer;
 }
+
 .user-menu-btn svg {
   width: 20px;
   height: 20px;
 }
+
 .user-menu-btn:hover,
 .user-menu-btn-open {
   border-color: var(--color-rust);
   color: var(--color-rust);
 }
+
 .user-menu-dropdown {
   position: absolute;
   top: calc(100% + 8px);
@@ -139,12 +146,14 @@ function logout() {
   flex-direction: column;
   gap: 2px;
 }
+
 .user-menu-greeting {
   margin: 4px 10px 6px;
   font-size: 0.8rem;
   color: var(--color-ink-soft);
   font-family: var(--font-mono);
 }
+
 .user-menu-item {
   text-align: left;
   text-decoration: none;
@@ -157,14 +166,17 @@ function logout() {
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
+
 .user-menu-item:hover {
   background: var(--color-bg);
   color: var(--color-rust);
 }
+
 .user-menu-item-admin {
   color: var(--color-safety);
   font-weight: 600;
 }
+
 .user-menu-logout {
   color: var(--color-danger);
 }

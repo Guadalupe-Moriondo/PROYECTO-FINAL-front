@@ -1,12 +1,11 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { RouterLink, useRoute } from 'vue-router';
 import productsService from '../../services/products.service';
 import Pagination from '../../components/Pagination.vue';
 import InventoryTag from '../../components/InventoryTag.vue';
 
 const route = useRoute();
-const router = useRouter();
 
 const products = ref([]);
 const loading = ref(true);
@@ -15,7 +14,6 @@ const totalPages = ref(1);
 const message = ref('');
 
 const search = ref('');
-
 let searchTimeout = null;
 
 async function load() {
@@ -107,18 +105,13 @@ onMounted(async () => {
 
 <template>
   <div class="container admin-products-view">
-
     <!-- ================= HEADER ================= -->
     <header class="products-page-header">
-
-      <!-- TÍTULO -->
       <div class="products-title-section">
         <h1>Productos</h1>
       </div>
-
       <!-- BUSCADOR + BOTÓN -->
       <div class="products-tools">
-
         <div class="products-search">
           <div class="search-input-wrapper">
 
@@ -154,7 +147,6 @@ onMounted(async () => {
             >
               ✕
             </button>
-
           </div>
         </div>
 
@@ -170,14 +162,10 @@ onMounted(async () => {
               d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"
             />
           </svg>
-
           Nuevo producto
         </RouterLink>
-
       </div>
-
     </header>
-
     <!-- ================= MENSAJE ================= -->
     <Transition name="success-toast">
       <div
@@ -208,8 +196,6 @@ onMounted(async () => {
         </div>
       </div>
     </Transition>
-
-
     <!-- ================= LOADING ================= -->
     <p
       v-if="loading"
@@ -217,18 +203,13 @@ onMounted(async () => {
     >
       Cargando productos...
     </p>
-
-
     <!-- ================= TABLA ================= -->
     <div
       v-else
       class="products-table-wrapper"
     >
-
       <table class="admin-table">
-
         <thead>
-
           <tr>
 
             <th>
@@ -246,23 +227,17 @@ onMounted(async () => {
             <th class="actions-column"></th>
 
           </tr>
-
         </thead>
 
-
         <tbody>
-
           <tr
             v-for="product in products"
             :key="product.id"
             class="product-row"
           >
-
-            <!-- ================= PRODUCTO ================= -->
             <td>
 
               <div class="product-info">
-
                 <div class="product-thumbnail">
 
                   <img
@@ -275,7 +250,6 @@ onMounted(async () => {
                     v-else
                     class="product-thumbnail-empty"
                   >
-
                     <svg
                       viewBox="0 0 24 24"
                       fill="currentColor"
@@ -284,11 +258,8 @@ onMounted(async () => {
                         d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h14V6H5Zm2 2h4v4H7V8Zm6 0h4v2h-4V8Zm0 4h4v2h-4v-2ZM7 14h4v2H7v-2Z"
                       />
                     </svg>
-
                   </div>
-
                 </div>
-
 
                 <div class="product-text">
 
@@ -308,24 +279,16 @@ onMounted(async () => {
                   </span>
 
                 </div>
-
               </div>
-
             </td>
-
-
             <!-- ================= STOCK ================= -->
             <td>
-
               <InventoryTag
                 :code="product.code"
                 :stock="product.stock"
                 :min-stock="product.minStock"
               />
-
             </td>
-
-
             <!-- ================= PRECIO ================= -->
             <td>
 
@@ -338,14 +301,8 @@ onMounted(async () => {
               </span>
 
             </td>
-
-
-            
-
-
             <!-- ================= ACCIONES ================= -->
             <td>
-
               <div class="table-actions">
 
                 <RouterLink
@@ -364,7 +321,6 @@ onMounted(async () => {
                   </svg>
                 </RouterLink>
 
-
                 <button
                   type="button"
                   class="icon-button delete-button"
@@ -380,48 +336,23 @@ onMounted(async () => {
                   </svg>
 
                 </button>
-
               </div>
-
             </td>
-
           </tr>
-
         </tbody>
-
       </table>
-
     </div>
-
-
-    <!-- ================= PAGINACIÓN ================= -->
     
-
-      <Pagination
-        :page="page"
-        :total-pages="totalPages"
-        @change-page="changePage"
-      />
-
-    
+    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
 
   </div>
 </template>
 
+
 <style scoped>
-
-/* =========================================================
-   GENERAL
-========================================================= */
-
 .admin-products-view {
   padding: 2.5rem var(--space-4) 4rem;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .products-page-header {
   display: flex;
@@ -441,11 +372,6 @@ onMounted(async () => {
   font-size: clamp(2.1rem, 4vw, 2.8rem);
   line-height: 1.05;
 }
-
-
-/* =========================================================
-   BUSCADOR + NUEVO PRODUCTO
-========================================================= */
 
 .products-tools {
   width: 100%;
@@ -471,18 +397,13 @@ onMounted(async () => {
   width: 100%;
   height: 50px;
   padding: 0 45px;
-
   border: 1px solid var(--color-line);
   border-radius: 50px;
-
   background: var(--color-surface);
   color: var(--color-ink);
-
   font-family: var(--font-body);
   font-size: 0.9rem;
-
   outline: none;
-
   transition:
     border-color .2s ease,
     box-shadow .2s ease;
@@ -494,7 +415,6 @@ onMounted(async () => {
 
 .search-input-wrapper input:focus {
   border-color: var(--color-rust);
-
   box-shadow:
     0 0 0 3px rgba(183, 53, 45, 0.08);
 }
@@ -502,32 +422,24 @@ onMounted(async () => {
 .search-icon {
   position: absolute;
   left: 16px;
-
   width: 19px;
   height: 19px;
-
   color: var(--color-ink-soft);
-
   pointer-events: none;
 }
 
 .search-clear {
   position: absolute;
   right: 12px;
-
   width: 28px;
   height: 28px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   border-radius: 50%;
-
   background: transparent;
   color: var(--color-ink-soft);
-
   cursor: pointer;
   font-size: 0.8rem;
 }
@@ -537,32 +449,20 @@ onMounted(async () => {
   color: var(--color-rust);
 }
 
-
-/* =========================================================
-   NUEVO PRODUCTO
-========================================================= */
-
 .new-product-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   height: 48px;
   padding: 0 18px;
-
   border-radius: 10px;
-
   background: var(--color-rust);
   color: #fff;
-
   text-decoration: none;
-
   font-size: 0.85rem;
   font-weight: 700;
-
   white-space: nowrap;
-
   transition:
     background .2s ease,
     transform .2s ease,
@@ -576,36 +476,25 @@ onMounted(async () => {
 
 .new-product-button:hover {
   background: var(--color-rust-dark);
-
   transform: translateY(-1px);
-
   box-shadow:
     0 8px 20px rgba(183, 53, 45, 0.20);
 }
-
-/* ==============================
-   MENSAJE DE ÉXITO
-============================== */
 
 .success-toast {
   position: fixed;
   top: 30px;
   right: 30px;
   z-index: 9999;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
   border: 1px solid #b8dfc4;
   border-radius: 14px;
-
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.12);
 
@@ -615,15 +504,11 @@ onMounted(async () => {
 .success-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e8f7ec;
 }
 
@@ -648,11 +533,6 @@ onMounted(async () => {
   font-size: 0.78rem;
 }
 
-
-/* ==============================
-   ANIMACIÓN
-============================== */
-
 .success-toast-enter-active,
 .success-toast-leave-active {
   transition:
@@ -666,77 +546,41 @@ onMounted(async () => {
   transform: translateY(-10px);
 }
 
-
-
-
-
-
-/* =========================================================
-   TABLA
-========================================================= */
-
 .products-table-wrapper {
   width: 100%;
-
   overflow-x: auto;
-
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 .admin-table {
   width: 100%;
-
   min-width: 1050px;
-
   border-collapse: separate;
-
   border-spacing: 0;
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
-
 .admin-table th {
   padding: 16px 20px;
-
   text-align: left;
-
   background:
     rgba(0, 0, 0, 0.025);
 
   border-bottom: 1px solid var(--color-line);
-
   color: var(--color-ink-soft);
-
   font-family: var(--font-display);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: .06em;
 }
 
-
-/* =========================================================
-   FILAS
-========================================================= */
-
 .admin-table td {
   padding: 17px 20px;
-
   border-bottom: 1px solid var(--color-line);
-
   vertical-align: middle;
 }
 
@@ -754,35 +598,22 @@ onMounted(async () => {
   border-bottom: none;
 }
 
-
-/* =========================================================
-   PRODUCTO
-========================================================= */
-
 .product-info {
   display: flex;
-
   align-items: center;
-
   gap: 14px;
-
   min-width: 260px;
 }
 
 .product-thumbnail {
   width: 58px;
   height: 58px;
-
   flex: 0 0 58px;
-
   overflow: hidden;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 12px;
-
   background:
     rgba(0, 0, 0, .035);
 
@@ -792,16 +623,13 @@ onMounted(async () => {
 .product-thumbnail img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .product-thumbnail-empty {
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   color: var(--color-ink-soft);
 }
 
@@ -812,82 +640,49 @@ onMounted(async () => {
 
 .product-text {
   display: flex;
-
   flex-direction: column;
-
   min-width: 0;
 }
 
 .product-name {
   color: var(--color-ink);
-
   font-size: 0.9rem;
-
   line-height: 1.3;
 }
 
 .product-brand {
   margin-top: 3px;
-
   color: var(--color-rust);
-
   font-size: 0.78rem;
-
   font-weight: 700;
 }
 
 .product-code {
   margin-top: 3px;
-
   color: var(--color-ink-soft);
-
   font-family: var(--font-mono);
-
   font-size: 0.8rem;
 }
 
-
-/* =========================================================
-   PRECIO
-========================================================= */
-
 .table-price {
   color: var(--color-ink);
-
   font-family: var(--font-display);
-
   font-size: 1rem;
-
-  
-
-  
 }
-
-
-/* =========================================================
-   IMAGEN
-========================================================= */
 
 .image-upload {
   display: flex;
-
   justify-content: center;
 }
 
 .image-button {
   position: relative;
-
   width: 72px;
   height: 72px;
-
   padding: 0;
-
   overflow: hidden;
-
   border: 1px solid var(--color-line);
-
   border-radius: 13px;
-
   background:
     rgba(0, 0, 0, 0.025);
 
@@ -896,22 +691,17 @@ onMounted(async () => {
 
 .product-image {
   display: block;
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .no-image {
   width: 100%;
   height: 100%;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   color: var(--color-ink-soft);
 }
 
@@ -922,29 +712,19 @@ onMounted(async () => {
 
 .image-overlay {
   position: absolute;
-
   inset: 0;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   gap: 5px;
-
   background:
     rgba(0, 0, 0, .62);
 
   color: #fff;
-
   font-size: .7rem;
-
   font-weight: 700;
-
   opacity: 0;
-
   transition:
     opacity .2s ease;
 }
@@ -958,25 +738,10 @@ onMounted(async () => {
   opacity: 1;
 }
 
-
-/* =========================================================
-   ACCIONES
-========================================================= */
-
-
-
-
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
 @media (max-width: 900px) {
 
   .products-page-header {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -1000,18 +765,10 @@ onMounted(async () => {
 }
 
 @media (max-width: 600px) {
-
   .admin-products-view {
     padding: 40px 14px 60px;
   }
 
-}
-
-/* ==============================
-   RESPONSIVE mensaje exito
-============================== */
-
-@media (max-width: 600px) {
   .success-toast {
     top: 20px;
     right: 15px;
@@ -1020,5 +777,6 @@ onMounted(async () => {
     min-width: auto;
     max-width: none;
   }
+
 }
 </style>

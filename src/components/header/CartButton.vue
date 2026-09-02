@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router';
 import { useCartStore } from '../../stores/cart';
 
 const cartStore = useCartStore();
+
 </script>
 
 <template>
@@ -15,6 +16,7 @@ const cartStore = useCartStore();
     <span v-if="cartStore.itemCount > 0" class="cart-badge">{{ cartStore.itemCount }}</span>
   </RouterLink>
 </template>
+
 
 <style scoped>
 .cart-btn {
@@ -30,14 +32,17 @@ const cartStore = useCartStore();
   color: #fff;
   text-decoration: none;
 }
+
 .cart-btn svg {
   width: 20px;
   height: 20px;
 }
+
 .cart-btn:hover {
   border-color: var(--color-rust);
   color: var(--color-rust);
 }
+
 .cart-badge {
   position: absolute;
   top: -6px;

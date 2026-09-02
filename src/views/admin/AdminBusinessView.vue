@@ -121,7 +121,6 @@ async function load() {
   }
 }
 
-
 async function save() {
 
   saving.value = true;
@@ -138,42 +137,33 @@ async function save() {
       province: form.value.province,
       country: form.value.country,
 
-
       phone: form.value.phone,
       whatsapp: form.value.whatsapp,
 
       email: form.value.email,
 
-
       instagram: form.value.instagram,
       facebook: form.value.facebook,
-
 
       morningOpen: form.value.morningOpen,
       morningClose: form.value.morningClose,
 
-
       afternoonOpen: form.value.afternoonOpen,
       afternoonClose: form.value.afternoonClose,
-
 
       saturdayOpen: form.value.saturdayOpen,
       saturdayClose: form.value.saturdayClose,
     };
 
-
     console.log('Enviando:', dto);
 
-
     await businessService.update(dto);
-
 
     showMessage('Datos actualizados correctamente');
 
     setTimeout(() => {
       router.push({ name: 'admin-home' });
     }, 1200);
-
 
   } catch (error) {
 
@@ -185,11 +175,8 @@ async function save() {
 
   }
 }
-
-
 onMounted(load);
 </script>
-
 
 <template>
 
@@ -213,9 +200,7 @@ onMounted(load);
   class="business-form"
   @submit.prevent="save"
 >
-
   <!-- ================= INFORMACIÓN GENERAL ================= -->
-
   <section class="form-card">
 
     <div class="card-header">
@@ -224,7 +209,7 @@ onMounted(load);
 
     <div class="form-grid">
 
-      <div class="field">
+      <div class="field field--business">
         <label>Nombre del negocio</label>
         <input
           v-model="form.name"
@@ -232,7 +217,7 @@ onMounted(load);
         >
       </div>
 
-      <div class="field">
+      <div class="field field--business">
         <label>Dirección</label>
         <input
           v-model="form.address"
@@ -240,7 +225,7 @@ onMounted(load);
         >
       </div>
 
-      <div class="field">
+      <div class="field field--business">
         <label>Ciudad</label>
         <input
           v-model="form.city"
@@ -249,7 +234,7 @@ onMounted(load);
         >
       </div>
 
-      <div class="field">
+      <div class="field field--business">
         <label>Provincia</label>
 
         <select v-model="form.province">
@@ -267,10 +252,9 @@ onMounted(load);
           </option>
 
         </select>
-
       </div>
 
-      <div class="field">
+      <div class="field field--business">
 
         <label>País</label>
 
@@ -289,15 +273,10 @@ onMounted(load);
           </option>
 
         </select>
-
       </div>
-
     </div>
-
   </section>
-
   <!-- ================= CONTACTO ================= -->
-
   <section class="form-card">
 
     <div class="card-header">
@@ -306,7 +285,7 @@ onMounted(load);
 
     <div class="form-grid">
 
-      <div class="field">
+      <div class="field field--business">
         <label>Teléfono</label>
         <input
           v-model="form.phone"
@@ -314,7 +293,7 @@ onMounted(load);
         >
       </div>
 
-      <div class="field">
+      <div class="field field--business">
         <label>WhatsApp</label>
         <input
           v-model="form.whatsapp"
@@ -323,22 +302,16 @@ onMounted(load);
         >
       </div>
 
-      <div class="field">
+      <div class="field field--business">
         <label>Email</label>
         <input
           v-model="form.email"
           type="email"
         >
       </div>
-
     </div>
-
   </section>
-
-
-
-      <!-- ================= HORARIOS ================= -->
-
+    <!-- ================= HORARIOS ================= -->
   <section class="form-card">
 
     <div class="card-header">
@@ -357,16 +330,12 @@ onMounted(load);
             type="time"
             v-model="form.morningOpen"
           >
-
           <span>a</span>
-
           <input
             type="time"
             v-model="form.morningClose"
           >
-
         </div>
-
       </div>
 
       <div class="hours-box">
@@ -379,16 +348,12 @@ onMounted(load);
             type="time"
             v-model="form.afternoonOpen"
           >
-
           <span>a</span>
-
           <input
             type="time"
             v-model="form.afternoonClose"
           >
-
         </div>
-
       </div>
 
       <div class="hours-box">
@@ -401,24 +366,16 @@ onMounted(load);
             type="time"
             v-model="form.saturdayOpen"
           >
-
           <span>a</span>
-
           <input
             type="time"
             v-model="form.saturdayClose"
           >
-
         </div>
-
       </div>
-
     </div>
-
   </section>
-
   <!-- ================= REDES SOCIALES ================= -->
-
   <section class="form-card">
 
     <div class="card-header">
@@ -427,7 +384,7 @@ onMounted(load);
 
     <div class="form-grid">
 
-      <div class="field">
+      <div class="field field--business">
 
         <label>Instagram</label>
 
@@ -436,10 +393,9 @@ onMounted(load);
           type="text"
           placeholder="https://www.instagram.com/..."
         >
-
       </div>
 
-      <div class="field">
+      <div class="field field--business">
 
         <label>Facebook</label>
 
@@ -448,11 +404,8 @@ onMounted(load);
           type="text"
           placeholder="https://www.facebook.com/..."
         >
-
       </div>
-
     </div>
-
   </section>
 
   <Transition name="success-toast">
@@ -491,25 +444,16 @@ onMounted(load);
     >
       {{ saving ? 'Guardando cambios...' : 'Guardar' }}
     </button>
-
   </div>
-
 </form>
-
 </div>
-
 </template>
 
 
 <style scoped>
-
 .admin-business-view {
   padding: var(--space-5) var(--space-4);
 }
-
-/*==============================
-  TÍTULO
-==============================*/
 
 .admin-business-view h1 {
   font-size: 2rem;
@@ -517,19 +461,11 @@ onMounted(load);
   margin-bottom: var(--space-5);
 }
 
-/*==============================
-  FORMULARIO
-==============================*/
-
 .business-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-
-/*==============================
-  TARJETAS
-==============================*/
 
 .form-card {
   background: var(--color-surface);
@@ -557,92 +493,11 @@ onMounted(load);
   line-height: 1.5;
 }
 
-/*==============================
-  GRID
-==============================*/
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.4rem;
 }
-
-/*==============================
-  CAMPOS
-==============================*/
-
-.field {
-  display: flex;
-  flex-direction: column;
-}
-
-.field label {
-  margin-bottom: .45rem;
-  font-size: .85rem;
-  font-weight: 600;
-  color: var(--color-ink-soft);
-}
-
-.field input,
-.field select,
-.field textarea {
-
-  width: 100%;
-
-  padding: .85rem 1rem;
-
-  background: var(--color-surface);
-
-  border: 1px solid var(--color-line);
-
-  border-radius: 12px;
-
-  font-size: .95rem;
-
-  transition:
-    border-color .2s,
-    box-shadow .2s,
-    transform .15s;
-
-}
-
-.field textarea {
-
-  resize: vertical;
-
-  min-height: 120px;
-
-}
-
-.field input:hover,
-.field select:hover,
-.field textarea:hover {
-
-  border-color: #bfc8d6;
-
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-
-  outline: none;
-
-  border-color: var(--color-steel);
-
-  box-shadow: 0 0 0 4px rgba(37,99,235,.08);
-
-}
-
-.field input[type="time"] {
-
-  font-family: var(--font-mono);
-
-}
-
-/*==============================
-  HORARIOS
-==============================*/
 
 .hours-grid {
   display: flex;
@@ -687,51 +542,32 @@ onMounted(load);
   color: var(--color-ink-soft);
 }
 
-/*==============================
-  MENSAJE DE ÉXITO
-==============================*/
-
 .success-toast {
   position: fixed;
-
   top: 30px;
   right: 30px;
-
   z-index: 9999;
-
   display: flex;
   align-items: center;
-
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
-
   border: 1px solid #b8dfc4;
-
   border-radius: 14px;
-
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
-
   color: #207a3c;
 }
 
 .success-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e8f7ec;
 }
 
@@ -743,7 +579,6 @@ onMounted(load);
 .success-toast-content {
   display: flex;
   flex-direction: column;
-
   gap: 3px;
 }
 
@@ -756,10 +591,6 @@ onMounted(load);
   color: #4d6655;
   font-size: 0.78rem;
 }
-
-/*==============================
-  ANIMACIÓN
-==============================*/
 
 .success-toast-enter-active,
 .success-toast-leave-active {
@@ -774,22 +605,11 @@ onMounted(load);
   transform: translateY(-10px);
 }
 
-
-/*==============================
-  BOTÓN
-==============================*/
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   margin-top: .5rem;
 }
-
-
-
-/*==============================
-  RESPONSIVE
-==============================*/
 
 @media (max-width: 900px) {
 

@@ -9,6 +9,7 @@ import AvailabilityTag from '@/components/AvailabilityTag.vue';
 
 const route = useRoute();
 const router = useRouter();
+
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 
@@ -46,8 +47,7 @@ async function loadProduct() {
 }
 
 async function loadBusiness() {
-  // If it fails (e.g. business data hasn't been set up yet), we just
-  // don't show the WhatsApp button
+  
   try {
     const response = await businessService.get();
     business.value = response.data;
@@ -78,7 +78,6 @@ onMounted(() => {
 <template>
   <div class="container product-page">
 
-    <!-- Estados -->
     <p v-if="loading" class="page-state">
       Cargando producto...
     </p>
@@ -87,13 +86,9 @@ onMounted(() => {
       {{ error }}
     </p>
 
-
     <div v-else>
 
       <main class="product-layout">
-
-
-        <!-- Imagen principal -->
         <section class="product-media">
 
           <div class="image-frame">
@@ -109,16 +104,9 @@ onMounted(() => {
             </span>
 
           </div>
-
         </section>
 
-
-
-
-
-        <!-- Información -->
         <section class="product-panel">
-
 
           <div class="product-heading">
 
@@ -129,22 +117,15 @@ onMounted(() => {
               {{ product.category.name }}
             </p>
 
-
             <h1>
               {{ product.name }}
             </h1>
-
 
             <AvailabilityTag
               :code="product.code"
               :stock="product.stock"
             />
-
           </div>
-
-
-
-
 
           <div class="product-price">
 
@@ -152,15 +133,10 @@ onMounted(() => {
 
           </div>
 
-
-
-
-
           <div
             v-if="product.description"
             class="product-description"
           >
-
             <h3>
               Descripción
             </h3>
@@ -184,17 +160,13 @@ onMounted(() => {
             </p>
           </div>
 
-          <!-- Compra -->
-
           <div class="purchase-box">
-
 
             <div class="quantity-control">
 
               <label for="quantity">
                 Cantidad
               </label>
-
 
               <input
                 id="quantity"
@@ -204,17 +176,13 @@ onMounted(() => {
                 v-model.number="quantity"
                 :disabled="product.stock === 0"
               />
-
             </div>
-
-
 
             <button
               class="button button-primary purchase-button"
               :disabled="product.stock === 0"
               @click="addToCart"
             >
-
               {{
                 product.stock === 0
                 ? 'Sin stock'
@@ -222,7 +190,6 @@ onMounted(() => {
               }}
 
             </button>
-
 
           </div>
 
@@ -253,18 +220,10 @@ onMounted(() => {
             </div>
           </Transition>
 
-
-
-
-
-
-          <!-- WhatsApp -->
-
           <div
             v-if="whatsappUrl"
             class="contact-box"
           >
-
             <div>
 
               <strong>
@@ -277,14 +236,12 @@ onMounted(() => {
 
             </div>
 
-
             <a
               :href="whatsappUrl"
               target="_blank"
               rel="noopener noreferrer"
               class="whatsapp-button"
             >
-
               <svg
                 viewBox="0 0 24 24"
                 width="22"
@@ -297,8 +254,6 @@ onMounted(() => {
               WhatsApp
 
             </a>
-
-
           </div>
         </section>
       </main>  
@@ -306,61 +261,36 @@ onMounted(() => {
   </div>
 </template>
 
+
 <style scoped>
 
-
 .product-page {
-
   padding:
     var(--space-5)
     var(--space-4);
-
 }
-
-
 
 .page-state {
-
   text-align:center;
-
   padding:3rem;
-
   font-family:
     var(--font-mono);
-
   color:
     var(--color-ink-soft);
-
 }
-
 
 .page-state-error {
-
   color:
     var(--color-rust);
-
 }
-
-
-
-/* BACK */
 
 .product-back {
-
   margin-bottom:
     var(--space-4);
-
 }
 
-
-
-
-/* LAYOUT PRINCIPAL */
-
 .product-layout {
-
   display:grid;
-
   grid-template-columns:
     1.25fr
     .85fr;
@@ -369,27 +299,7 @@ onMounted(() => {
     var(--space-5);
 
   align-items:start;
-
 }
-
-
-
-@media(max-width:900px){
-
-  .product-layout{
-
-    grid-template-columns:1fr;
-
-  }
-
-  .product-media {
-    position: static;
-  }
-
-}
-
-
-
 
 .image-frame {
   aspect-ratio: 1 / 1;
@@ -400,54 +310,28 @@ onMounted(() => {
   overflow: hidden;
 }
 
-
-
 .image-frame img {
-
   width:100%;
-
   height:100%;
-
   object-fit:contain;
-
   padding:2rem;
-
 }
 
-
-
 .image-frame span {
-
   font-family:
     var(--font-mono);
 
   color:
     var(--color-ink-soft);
-
 }
-
-
-
-
-
-/* PANEL DERECHO */
-
 
 .product-panel {
-
   display:flex;
-
   flex-direction:column;
-
   gap:var(--space-3);
-
 }
 
-
-
-
 .product-category {
-
   font-family:
     var(--font-mono);
 
@@ -455,88 +339,50 @@ onMounted(() => {
     uppercase;
 
   letter-spacing:.1em;
-
   color:
     var(--color-rust);
 
   margin:0;
-
 }
 
-
-
 .product-heading h1 {
-
   margin:
     .5rem 0;
 
   line-height:1.15;
-
 }
 
-
-
 .product-code {
-
   margin-top:.8rem;
-
   font-family:
     var(--font-mono);
 
   font-size:.85rem;
-
   color:
     var(--color-ink-soft);
-
 }
-
-
 
 .product-price {
-
   font-family: var(--font-display);
-
   font-weight:700;
-
   font-size:2.2rem;
-
   color:
     var(--color-rust);
-
 }
 
-
-
-
-
-/* DESCRIPCION */
-
 .product-description {
-
   border-top:
     1px solid var(--color-line);
 
   padding-top:
     var(--space-3);
-
 }
-
-
 
 .product-description h3 {
-
   margin-bottom:.5rem;
-
 }
 
-
-
-
-
-/* COMPRA */
-
 .purchase-box {
-
   background:
     var(--color-surface);
 
@@ -548,64 +394,38 @@ onMounted(() => {
 
   border-radius:
     var(--radius-md);
-
 }
-
-
 
 .quantity-control {
-
   display:flex;
   gap:1rem;
-
 }
-
-
 
 .quantity-control input {
-
   max-width:100px;
-
 }
 
-
-
 .purchase-button {
-
   margin-top:
     var(--space-3);
 
   width:100%;
-
 }
-
-
-
-
-
-/* ==============================
-   MENSAJE DE ÉXITO
-============================== */
 
 .success-toast {
   position: fixed;
   top: 30px;
   right: 30px;
   z-index: 9999;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   min-width: 300px;
   max-width: 380px;
-
   padding: 14px 18px;
-
   background: #ffffff;
   border: 1px solid #b8dfc4;
   border-radius: 14px;
-
   box-shadow:
     0 12px 35px rgba(0, 0, 0, 0.12);
 
@@ -615,15 +435,11 @@ onMounted(() => {
 .success-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: #e8f7ec;
 }
 
@@ -648,9 +464,6 @@ onMounted(() => {
   font-size: 0.78rem;
 }
 
-
-/* Animación */
-
 .success-toast-enter-active,
 .success-toast-leave-active {
   transition:
@@ -664,15 +477,7 @@ onMounted(() => {
   transform: translateY(-10px);
 }
 
-
-
-
-
-
-/* WHATSAPP */
-
 .contact-box {
-
   margin-top:
     var(--space-3);
 
@@ -688,144 +493,87 @@ onMounted(() => {
   display:flex;
 
   justify-content:space-between;
-
   align-items:center;
-
   gap:1rem;
-
 }
 
-
-
 .contact-box p {
-
   margin:.3rem 0 0;
 
   color:
     var(--color-ink-soft);
 
   font-size:.9rem;
-
 }
 
-
-
 .whatsapp-button {
-
-
   display:flex;
-
   align-items:center;
-
   gap:.5rem;
-
-
   background:#33ad60;
-
   color:white;
-
-
   padding:
     .8rem 1.2rem;
-
 
   border-radius:
     999px;
 
-
   text-decoration:none;
-
-
   white-space:nowrap;
-
-
   transition:.2s ease;
-
-
 }
-
-
 
 .whatsapp-button:hover {
-
   background:#2d9754;
-
   transform:
     translateY(-2px);
-
 }
-
-
-
-
-
-/* COMPATIBILIDAD */
 
 .compatibility-section {
-
   margin-top:
     var(--space-5);
-
   padding:
     var(--space-4);
-
-
   background:
     var(--color-surface);
-
-
   border-left:
     4px solid var(--color-safety);
-
-
   border-radius:
     var(--radius-md);
-
 }
-
-
 
 .compatibility-section h2 {
-
   margin-bottom:
     var(--space-2);
-
 }
 
+@media(max-width:900px){
 
+  .product-layout{
+    grid-template-columns:1fr;
+  }
 
+  .product-media {
+    position: static;
+  }
+}
 
 
 @media(max-width:600px){
 
-
   .contact-box{
-
     flex-direction:column;
-
     align-items:stretch;
-
   }
-
 
   .whatsapp-button{
-
     justify-content:center;
-
   }
-
 
   .product-media{
-
     position:static;
-
   }
 
-
-}
-/* Responsive mensaje exito */
-
-@media (max-width: 600px) {
   .success-toast {
     top: 20px;
     right: 15px;
@@ -835,6 +583,4 @@ onMounted(() => {
     max-width: none;
   }
 }
-
-
 </style>

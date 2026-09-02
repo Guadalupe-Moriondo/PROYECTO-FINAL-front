@@ -1,8 +1,10 @@
 <script setup>
+
 defineProps({
   open: { type: Boolean, default: false },
 });
 defineEmits(['toggle']);
+
 </script>
 
 <template>
@@ -21,6 +23,7 @@ defineEmits(['toggle']);
   </button>
 </template>
 
+
 <style scoped>
 .hamburger-btn {
   display: flex;
@@ -34,16 +37,19 @@ defineEmits(['toggle']);
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
+
 .hamburger-btn:hover,
 .hamburger-btn-open {
   border-color: var(--color-rust);
 }
+
 .hamburger-icon {
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 18px;
 }
+
 .hamburger-icon span {
   display: block;
   height: 2px;
@@ -51,12 +57,15 @@ defineEmits(['toggle']);
   border-radius: 1px;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
+
 .hamburger-btn-open .hamburger-icon span:nth-child(1) {
   transform: translateY(6px) rotate(45deg);
 }
+
 .hamburger-btn-open .hamburger-icon span:nth-child(2) {
   opacity: 0;
 }
+
 .hamburger-btn-open .hamburger-icon span:nth-child(3) {
   transform: translateY(-6px) rotate(-45deg);
 }

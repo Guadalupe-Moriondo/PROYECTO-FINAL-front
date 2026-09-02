@@ -295,6 +295,177 @@ button, input, select, textarea {
   border-radius: 20px;
 }
 
+/* Header de página — título + margen inferior estándar */
+.page-header {
+  margin-bottom: var(--space-5);
+}
+
+/* Variante ancha del container, usada en Catalogo/Contacto/Home */
+.container--wide {
+  width: min(1200px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+/* ============================================================
+   VARIANTES DE .field
+   ============================================================ */
+
+/* Catalogo: filtros de búsqueda */
+.field--search {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field--search label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.field--search input,
+.field--search select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--color-ink);
+  font: inherit;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.field--search input:focus,
+.field--search select:focus {
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 3px rgba(183, 53, 45, 0.1);
+}
+
+/* Login / Register: inputs altos de formulario de acceso */
+.field--auth {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 20px; /* Register usa 18px, ver override abajo */
+}
+.field--auth label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+.field--auth input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+.field--auth input:focus {
+  outline: 2px solid var(--color-rust);
+  outline-offset: 1px;
+}
+
+/* Admin > Datos del negocio */
+.field--business {
+  display: flex;
+  flex-direction: column;
+}
+.field--business label {
+  margin-bottom: .45rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+.field--business input,
+.field--business select,
+.field--business textarea {
+  width: 100%;
+  padding: .85rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  font-size: .95rem;
+  transition: border-color .2s, box-shadow .2s, transform .15s;
+}
+.field--business textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+.field--business input:hover,
+.field--business select:hover,
+.field--business textarea:hover {
+  border-color: #bfc8d6;
+}
+.field--business input:focus,
+.field--business select:focus,
+.field--business textarea:focus {
+  outline: none;
+  border-color: var(--color-steel);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.08);
+}
+.field--business input[type="time"] {
+  font-family: var(--font-mono);
+}
+
+/* Admin > Categorías */
+.field--categories {
+  display: flex;
+  flex-direction: column;
+}
+.field--categories label {
+  margin-bottom: .55rem;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+.field--categories input,
+.field--categories select {
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  padding: 0 1rem;
+  background: white;
+  font-size: .95rem;
+  transition: .2s;
+}
+.field--categories input:focus,
+.field--categories select:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 4px rgba(188,34,34,.12);
+}
+
+/* ============================================================
+   VARIANTES DE .error-message
+   ============================================================ */
+
+.error-message--catalog {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(183, 53, 45, 0.08);
+  color: var(--color-danger, #b7352d);
+  font-size: 0.9rem;
+}
+
+.error-message--checkout {
+  margin-top: 1rem;
+  padding: .9rem 1rem;
+  background: #fdecec;
+  color: #b42318;
+  border-radius: 12px;
+  border: 1px solid #f5c2c7;
+}
+
+.error-message--admin {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 14px;
+  background: #fff1f2;
+  color: #be123c;
+}
+
 /* ============================================================
    RESPONSIVE — panel de administración
    Reglas centralizadas: como usamos los mismos nombres de clase

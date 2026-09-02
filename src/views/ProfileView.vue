@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import usersService from '../services/users.service';
 
 const loading = ref(true);
@@ -41,15 +41,6 @@ function toggleShowPassword(field) {
   showPassword.value[field] = !showPassword.value[field];
 }
 
-const initials = computed(() => {
-  if (!profile.value.name) return '';
-  return profile.value.name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join('');
-});
 
 async function loadProfile() {
   loading.value = true;
@@ -149,17 +140,13 @@ onMounted(loadProfile);
 <template>
   <div class="container profile-view">
 
-    <!-- ================= HEADER ================= -->
     <div class="profile-page-header">
-
       <div>
         <h1>
           Mi perfil
         </h1>
       </div>
-
     </div>
-
 
     <p
       v-if="loading"
@@ -168,13 +155,10 @@ onMounted(loadProfile);
       Cargando perfil...
     </p>
 
-
     <div
       v-else
       class="profile-layout"
     >
-
-      <!-- ================= INFORMACIÓN ================= -->
       <section class="profile-card">
 
         <div class="profile-card-header">
@@ -215,9 +199,7 @@ onMounted(loadProfile);
                 </button>
 
               </div>
-
             </template>
-
 
             <template v-else>
 
@@ -235,7 +217,6 @@ onMounted(loadProfile);
                   @click="saveField('name', nameValue)"
                   title="Guardar"
                 >
-
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path
                       d="m9.2 16.6-4-4L3.8 14l5.4 5.4L21 7.6 19.6 6.2 9.2 16.6Z"
@@ -244,26 +225,21 @@ onMounted(loadProfile);
 
                 </button>
 
-
                 <button
                   type="button"
                   class="icon-button danger"
                   @click="cancelEditName"
                   title="Cancelar"
                 >
-
                   <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                         d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
-                      />
-                    </svg>
+                    <path
+                      d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
+                    />
+                  </svg>
 
                 </button>
-
               </div>
-
             </template>
-
 
             <div class="profile-meta">
 
@@ -276,16 +252,11 @@ onMounted(loadProfile);
               </span>
 
             </div>
-
           </div>
-
         </div>
-
 
         <div class="profile-divider"></div>
 
-
-        <!-- ================= EMAIL ================= -->
         <div class="profile-field">
 
           <label>
@@ -307,13 +278,11 @@ onMounted(loadProfile);
 
             </div>
 
-
             <input
               v-model="emailValue"
               type="email"
               @input="onEmailInput"
             />
-
 
             <button
               type="button"
@@ -324,11 +293,8 @@ onMounted(loadProfile);
             </button>
 
           </div>
-
         </div>
 
-
-        <!-- ================= TELÉFONO ================= -->
         <div class="profile-field">
 
           <label>
@@ -350,14 +316,12 @@ onMounted(loadProfile);
 
             </div>
 
-
             <input
               v-model="phoneValue"
               type="text"
               placeholder="Ingresá tu teléfono"
               @input="onPhoneInput"
             />
-
 
             <button
               type="button"
@@ -368,9 +332,7 @@ onMounted(loadProfile);
             </button>
 
           </div>
-
         </div>
-
 
         <p
           v-if="profileMessage"
@@ -383,8 +345,6 @@ onMounted(loadProfile);
 
       </section>
 
-
-      <!-- ================= SEGURIDAD ================= -->
       <section class="profile-card security-card">
 
         <div class="security-header">
@@ -398,8 +358,6 @@ onMounted(loadProfile);
               <path
                 d="M12 2.5 20 5v6.2c0 5.1-3.2 8.7-8 10.3-4.8-1.6-8-5.2-8-10.3V5l8-2.5Zm0 2.1L6 6.5v4.7c0 3.9 2.3 6.7 6 8.1 3.7-1.4 6-4.2 6-8.1V6.5l-6-1.9Zm-1.1 10.2-2.5-2.5 1.4-1.4 1.1 1.1 3.3-3.3 1.4 1.4-4.7 4.7Z"
               />
-
-              
             </svg>
 
           </div>
@@ -417,8 +375,6 @@ onMounted(loadProfile);
 
         </div>
 
-
-        <!-- Contraseña actual -->
         <div class="form-group">
 
           <label>
@@ -437,7 +393,6 @@ onMounted(loadProfile);
               placeholder="Ingresá tu contraseña actual"
             />
 
-
             <button
               type="button"
               class="password-toggle"
@@ -452,12 +407,10 @@ onMounted(loadProfile);
                   : 'Mostrar contraseña'
               "
             >
-
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
-
                 <path
                   v-if="!showPassword.currentPassword"
                   d="M12 5c5.2 0 8.5 5 9.5 7-1.5 2-4.3 7-9.5 7s-8-5-9.5-7C4 10 6.8 5 12 5Zm0 2C8.8 7 6.6 9.8 4.8 12 6.6 14.2 8.8 17 12 17s5.4-2.8 7.2-5C17.4 9.8 15.2 7 12 7Zm0 2.3A2.7 2.7 0 1 1 12 14.7a2.7 2.7 0 0 1 0-5.4Z"
@@ -471,13 +424,9 @@ onMounted(loadProfile);
               </svg>
 
             </button>
-
           </div>
-
         </div>
 
-
-        <!-- Nueva -->
         <div class="form-group">
 
           <label>
@@ -510,7 +459,6 @@ onMounted(loadProfile);
                   : 'Mostrar contraseña'
               "
             >
-
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -523,11 +471,8 @@ onMounted(loadProfile);
             </button>
 
           </div>
-
         </div>
 
-
-        <!-- Confirmar -->
         <div class="form-group">
 
           <label>
@@ -560,7 +505,6 @@ onMounted(loadProfile);
                   : 'Mostrar contraseña'
               "
             >
-
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -573,9 +517,7 @@ onMounted(loadProfile);
             </button>
 
           </div>
-
         </div>
-
 
         <button
           type="button"
@@ -607,28 +549,17 @@ onMounted(loadProfile);
         </p>
 
       </section>
-
     </div>
-
   </div>
 </template>
 
-<style scoped>
 
-/* =========================================================
-   GENERAL
-========================================================= */
+<style scoped>
 
 .profile-view {
   padding: 2.5rem var(--space-4) 4rem;
-
   min-height: 100vh;
 }
-
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .profile-page-header {
   margin-bottom: 32px;
@@ -636,119 +567,70 @@ onMounted(loadProfile);
 
 .profile-eyebrow {
   margin: 0 0 7px;
-
   color: var(--color-rust);
-
   font-family: var(--font-mono);
-
   font-size: 0.72rem;
   font-weight: 700;
-
   text-transform: uppercase;
-
   letter-spacing: 0.14em;
 }
 
 .profile-page-header h1 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: clamp(2.1rem, 4vw, 2.8rem);
-
   line-height: 1.05;
 }
 
 .profile-description {
   max-width: 650px;
-
   margin: 10px 0 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.95rem;
-
   line-height: 1.6;
 }
 
-
-/* =========================================================
-   LAYOUT
-========================================================= */
-
 .profile-layout {
   display: grid;
-
   grid-template-columns:
     minmax(0, 1.15fr)
     minmax(360px, 0.85fr);
 
   gap: 25px;
-
   align-items: start;
 }
 
-
-/* =========================================================
-   CARDS
-========================================================= */
-
 .profile-card {
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
-
   padding: 28px;
-
   box-shadow:
     0 8px 25px rgba(0, 0, 0, 0.04);
 }
 
-
-/* =========================================================
-   PERFIL
-========================================================= */
-
 .profile-card-header {
   display: flex;
-
   align-items: center;
-
   gap: 17px;
-
   margin-bottom: 25px;
 }
 
 .avatar {
-   width:70px;
-
-    height:70px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:var(--color-bg);
-
-    border:1px solid var(--color-line);
-
-    flex-shrink:0;
-
- 
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--color-bg);
+  border:1px solid var(--color-line);
+  flex-shrink:0;
 }
 
 .avatar svg{
-
-    width:50px;
-
-    height:50px;
-
+  width:50px;
+  height:50px;
 }
 
 .profile-header-info {
@@ -757,19 +639,14 @@ onMounted(loadProfile);
 
 .name-row {
   display: flex;
-
   align-items: center;
-
   gap: 9px;
 }
 
 .profile-name {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: 1.3rem;
-
   line-height: 1.15;
 }
 
@@ -798,89 +675,54 @@ onMounted(loadProfile);
 }
 .profile-meta {
   display: flex;
-
   align-items: center;
-
   flex-wrap: wrap;
-
   gap: 8px;
-
   margin-top: 7px;
-
   color: var(--color-ink-soft);
-
   font-size: 0.76rem;
 }
 
 .role-badge {
   padding: 4px 9px;
-
   border-radius: 999px;
-
   background:
     rgba(183, 53, 45, 0.08);
 
   color: var(--color-rust);
-
   font-weight: 700;
-
   text-transform: capitalize;
 }
 
 .profile-divider {
   height: 1px;
-
   margin-bottom: 24px;
-
   background: var(--color-line);
 }
 
-
-/* =========================================================
-   EDICIÓN NOMBRE
-========================================================= */
-
 .name-edit-row {
   display: flex;
-
   align-items: center;
-
   gap: 7px;
 }
 
 .name-edit-row input {
   min-width: 0;
-
   width: 220px;
-
   height: 38px;
-
   padding: 0 11px;
-
   border: 1px solid var(--color-line);
-
   border-radius: 9px;
-
   background: #fff;
-
   color: var(--color-ink);
-
   outline: none;
 }
 
 .name-edit-row input:focus {
   border-color: var(--color-rust);
-
   box-shadow:
     0 0 0 3px rgba(183, 53, 45, 0.08);
 }
-
-
-
-
-/* =========================================================
-   CAMPOS
-========================================================= */
 
 .profile-field {
   margin-bottom: 20px;
@@ -888,33 +730,21 @@ onMounted(loadProfile);
 
 .profile-field label {
   display: block;
-
   margin-bottom: 8px;
-
   color: var(--color-ink);
-
   font-size: 0.82rem;
-
   font-weight: 700;
 }
 
 .field-box {
   min-height: 46px;
-
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
   padding: 0 12px;
-
   border: 1px solid var(--color-line);
-
   border-radius: 11px;
-
   background: #fff;
-
   transition:
     border-color .2s ease,
     box-shadow .2s ease;
@@ -922,7 +752,6 @@ onMounted(loadProfile);
 
 .field-box:focus-within {
   border-color: var(--color-rust);
-
   box-shadow:
     0 0 0 3px rgba(183, 53, 45, 0.08);
 }
@@ -930,13 +759,10 @@ onMounted(loadProfile);
 .field-icon {
   width: 32px;
   height: 32px;
-
   flex: 0 0 32px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 9px;
 
   background:
@@ -952,37 +778,23 @@ onMounted(loadProfile);
 
 .field-box input {
   flex: 1;
-
   min-width: 0;
-
   border: none;
-
   outline: none;
-
   background: transparent;
-
   color: var(--color-ink);
-
   font-size: 0.88rem;
 }
 
 .field-box button {
   padding: 7px 11px;
-
   border: 1px solid var(--color-rust);
-
   border-radius: 8px;
-
   background: transparent;
-
   color: var(--color-rust);
-
   font-size: 0.75rem;
-
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background .2s ease,
     color .2s ease;
@@ -990,49 +802,34 @@ onMounted(loadProfile);
 
 .field-box button:hover:not(:disabled) {
   background: var(--color-rust);
-
   color: #fff;
 }
 
 .field-box button:disabled {
   opacity: 0.35;
-
   cursor: not-allowed;
 }
 
-
-/* =========================================================
-   SEGURIDAD
-========================================================= */
-
 .security-card {
   position: sticky;
-
   top: 25px;
 }
 
 .security-header {
   display: flex;
-
   align-items: flex-start;
-
   gap: 14px;
-
   margin-bottom: 28px;
 }
 
 .security-icon {
   width: 44px;
   height: 44px;
-
   flex: 0 0 44px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 12px;
-
   background:
     rgba(183, 53, 45, 0.08);
 
@@ -1046,26 +843,16 @@ onMounted(loadProfile);
 
 .security-header h2 {
   margin: 0;
-
   color: var(--color-ink);
-
   font-size: 1.35rem;
 }
 
 .security-header p:last-child {
   margin: 5px 0 0;
-
   color: var(--color-ink-soft);
-
   font-size: 0.8rem;
-
   line-height: 1.5;
 }
-
-
-/* =========================================================
-   PASSWORD
-========================================================= */
 
 .form-group {
   margin-bottom: 18px;
@@ -1073,33 +860,21 @@ onMounted(loadProfile);
 
 .form-group label {
   display: block;
-
   margin-bottom: 8px;
-
   color: var(--color-ink);
-
   font-size: 0.82rem;
-
   font-weight: 700;
 }
 
 .password-box {
   height: 46px;
-
   display: flex;
-
   align-items: center;
-
   gap: 8px;
-
   padding: 0 11px;
-
   border: 1px solid var(--color-line);
-
   border-radius: 11px;
-
   background: #fff;
-
   transition:
     border-color .2s ease,
     box-shadow .2s ease;
@@ -1107,26 +882,18 @@ onMounted(loadProfile);
 
 .password-box:focus-within {
   border-color: var(--color-rust);
-
   box-shadow:
     0 0 0 3px rgba(183, 53, 45, 0.08);
 }
 
 .password-box input {
   flex: 1;
-
   min-width: 0;
-
   height: 100%;
-
   padding: 0;
-
   border: none;
-
   outline: none;
-
   background: transparent;
-
   color: var(--color-ink);
 }
 
@@ -1137,21 +904,14 @@ onMounted(loadProfile);
 .password-toggle {
   width: 30px;
   height: 30px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex: 0 0 30px;
-
   padding: 0;
-
   border: none;
-
   background: transparent;
-
   color: rgb(133, 133, 133);;
-
   cursor: pointer;
 }
 
@@ -1162,43 +922,24 @@ onMounted(loadProfile);
 
 .password-toggle:hover {
   color: rgb(77, 76, 76);
-
   background: transparent;
 }
 
-
-/* =========================================================
-   BOTÓN CONTRASEÑA
-========================================================= */
-
 .change-password-button {
   width: 100%;
-
   min-height: 46px;
-
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 9px;
-
   margin-top: 5px;
-
   border: none;
-
   border-radius: 10px;
-
   background: var(--color-rust);
-
   color: #fff;
-
   font-size: 0.88rem;
-
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background .2s ease,
     transform .2s ease;
@@ -1211,19 +952,8 @@ onMounted(loadProfile);
 
 .change-password-button:hover {
   background: var(--color-rust-dark);
-
   transform: translateY(-1px);
 }
-
-
-/* =========================================================
-   MENSAJES
-========================================================= */
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 900px) {
 

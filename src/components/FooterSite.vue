@@ -1,11 +1,9 @@
 <script setup>
 import { computed } from 'vue';
-import { RouterLink } from 'vue-router';
 import { useBusiness } from '../composables/useBusiness';
 
 const { business } = useBusiness();
 const year = new Date().getFullYear();
-
 const mailLink = computed(() => (business.value?.email ? `mailto:${business.value.email}` : null));
 
 const instagramLink = computed(() => {
@@ -105,13 +103,14 @@ const facebookLink = computed(() => {
 .site-footer {
   background: var(--color-steel);
   color: #a9b0ac;
-  margin-top: var(--space-5);        /* antes: --space-6 (64px) → 40px */
+  margin-top: var(--space-5);       
 }
+
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: var(--space-4);               /* antes: --space-5 (40px) → 24px */
-  padding: var(--space-4);           /* antes: --space-5 var(--space-4) → 24px parejo */
+  gap: var(--space-4);               
+  padding: var(--space-4);           
 }
 
 .footer-col-title {
@@ -120,7 +119,7 @@ const facebookLink = computed(() => {
   letter-spacing: 0.1em;
   font-size: 0.85rem;
   color: #fff;
-  margin: var(--space-3) 0 var(--space-1);  /* antes: 10% 0 6px */
+  margin: var(--space-3) 0 var(--space-1); 
 }
 
 .footer-col-right {
@@ -130,19 +129,19 @@ const facebookLink = computed(() => {
 }
 
 .footer-address {
-  margin-top: var(--space-2);        /* antes: 12px */
+  margin-top: var(--space-2);     
   color: #cfd3d1;
   font-size: .95rem;
   max-width: 320px;
 }
 
-
 .footer-social {
   display: flex;
-  gap: var(--space-3);               /* antes: 20px */
-  margin-bottom: var(--space-2);     /* antes: 10px */
+  gap: var(--space-3);              
+  margin-bottom: var(--space-2);  
   flex-wrap: wrap;
 }
+
 .footer-social-link {
   display: flex;
   align-items: center;
@@ -151,10 +150,12 @@ const facebookLink = computed(() => {
   color: #cfd3d1;
   font-size: 0.85rem;
 }
+
 .footer-social-link svg {
   width: 20px;
   height: 18px;
 }
+
 .footer-social-link:hover {
   color: var(--color-rust);
 }
@@ -162,10 +163,12 @@ const facebookLink = computed(() => {
 .footer-nav-list a {
   display: inline-block;
 }
+
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: var(--space-2) var(--space-4);  /* antes: --space-3 (16px) → 8px arriba/abajo */
+  padding: var(--space-2) var(--space-4); 
 }
+
 .footer-copy {
   margin: 0;
   font-family: var(--font-mono);

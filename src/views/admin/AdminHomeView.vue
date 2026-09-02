@@ -13,6 +13,7 @@ const sections = [
 ];
 
 const orderNotificationsStore = useOrderNotificationsStore();
+
 </script>
 
 <template>
@@ -45,11 +46,13 @@ const orderNotificationsStore = useOrderNotificationsStore();
 .admin-home-view {
   padding: var(--space-5) var(--space-4);
 }
+
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-3);
 }
+
 .admin-card {
   text-decoration: none;
   color: inherit;
@@ -59,6 +62,7 @@ const orderNotificationsStore = useOrderNotificationsStore();
   border-radius: var(--radius-md);
   padding: var(--space-4);
 }
+
 .admin-card:hover { border-color: var(--color-rust); }
 .admin-card h2 { margin-bottom: var(--space-1); font-size: 1.15rem; }
 .admin-card p { margin: 0; color: var(--color-ink-soft); font-size: 0.9rem; }
@@ -73,25 +77,20 @@ const orderNotificationsStore = useOrderNotificationsStore();
   min-width: 28px;
   height: 28px;
   padding: 0 7px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
   background: var(--color-rust);
   color: white;
-
   font-size: 0.8rem;
   font-weight: 700;
-
   animation: notification-pulse 1.5s infinite;
 }
 
 .new-order-message {
   display: block;
   margin-top: 12px;
-
   color: var(--color-rust);
   font-size: 0.85rem;
   font-weight: 700;
