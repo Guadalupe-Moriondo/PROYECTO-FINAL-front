@@ -233,7 +233,7 @@ onMounted(load);
       </div>
 
       <div class="table-scroll">
-        <table class="admin-table">
+        <table class="admin-table admin-table--basic">
           <thead>
             <tr>
 
@@ -384,8 +384,6 @@ onMounted(load);
 .page-description {
   margin-top: .7rem;
   max-width: 620px;
-  color: var(--color-ink-soft);
-  line-height: 1.7;
 }
 
 .category-card,
@@ -532,34 +530,6 @@ onMounted(load);
 
 .table-scroll {
   overflow-x: auto;
-}
-
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.admin-table th {
-  background: #fafafa;
-  padding: 1rem 1.5rem;
-  text-align: left;
-  font-size: .75rem;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--color-ink-soft);
-}
-
-.admin-table td {
-  padding: 1.2rem 1.5rem;
-  border-top: 1px solid var(--color-line);
-}
-
-.admin-table tbody tr {
-  transition: .2s;
-}
-
-.admin-table tbody tr:hover {
-  background: #fafafa;
 }
 
 .table-name {

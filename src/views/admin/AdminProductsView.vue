@@ -208,7 +208,7 @@ onMounted(async () => {
       v-else
       class="products-table-wrapper"
     >
-      <table class="admin-table">
+      <table class="admin-table admin-table--detailed">
         <thead>
           <tr>
 
@@ -556,32 +556,8 @@ onMounted(async () => {
     0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-.admin-table {
-  width: 100%;
+.admin-table--detailed {
   min-width: 1050px;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.admin-table th {
-  padding: 16px 20px;
-  text-align: left;
-  background:
-    rgba(0, 0, 0, 0.025);
-
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-ink-soft);
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-.admin-table td {
-  padding: 17px 20px;
-  border-bottom: 1px solid var(--color-line);
-  vertical-align: middle;
 }
 
 .product-row {
@@ -592,10 +568,6 @@ onMounted(async () => {
 .product-row:hover {
   background:
     rgba(48, 47, 47, 0.025);
-}
-
-.admin-table tbody tr:last-child td {
-  border-bottom: none;
 }
 
 .product-info {

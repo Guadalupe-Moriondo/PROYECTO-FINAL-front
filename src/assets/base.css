@@ -1,5 +1,5 @@
 :root {
-  /* Palette: rojo / blanco / negro */
+  /* Paleta colores/
   --color-bg: #ffffff;          /* fondo general blanco */
   --color-surface: #ffffff;     /* cards y superficies elevadas */
   --color-ink: #141414;         /* texto principal, casi negro */
@@ -13,12 +13,12 @@
   --color-success: #1a1a1a;
   --color-line: #e2e2e2;        /* líneas finas, bordes */
 
-  /* Typography */
+  /* Tipografía*/
   --font-display: 'Oswald', sans-serif;
   --font-body: 'Source Sans 3', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
-  /* Spacing */
+  /* Espacio */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 16px;
@@ -26,7 +26,7 @@
   --space-5: 40px;
   --space-6: 64px;
 
-  /* Radii */
+  /* Radio */
   --radius-sm: 20px;
   --radius-md: 25px;
 }
@@ -69,7 +69,7 @@ button, input, select, textarea {
   padding: 0 var(--space-4);
 }
 
-/* Buttons */
+/* Botones */
 .button {
   display: inline-flex;
   align-items: center;
@@ -467,6 +467,483 @@ button, input, select, textarea {
 }
 
 /* ============================================================
+   VARIANTES DE .admin-table
+   Categorías y Stock ya usaban el mismo diseño (border-collapse:
+   collapse). Pedidos y Productos comparten otro (border-collapse:
+   separate + header con fondo sutil). Quedan 2 familias en vez
+   de 4 copias casi iguales. El min-width sigue local en cada
+   vista porque depende de cuántas columnas tiene cada tabla.
+   ============================================================ */
+
+.admin-table--basic {
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table--basic th {
+  background: #fafafa;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-ink-soft);
+}
+.admin-table--basic td {
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid var(--color-line);
+}
+.admin-table--basic tbody tr {
+  transition: .2s;
+}
+.admin-table--basic tbody tr:hover {
+  background: #fafafa;
+}
+
+.admin-table--detailed {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.admin-table--detailed th {
+  padding: 16px 20px;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.025);
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.admin-table--detailed td {
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: middle;
+}
+.admin-table--detailed tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================================
+   VARIANTES DE .statistics-grid / .stat-card / .stat-label / .stat-value
+   ============================================================ */
+
+.stat-card--accent {
+  border-left-color: var(--color-rust);
+}
+.stat-card--accent .stat-value {
+  color: var(--color-rust);
+}
+
+/* Pedidos por mes / por año */
+.statistics-grid--period {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: var(--space-5);
+}
+.stat-card--period {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  border-left: 5px solid var(--color-steel);
+}
+.stat-label--period {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: .75rem;
+  letter-spacing: .05em;
+  color: var(--color-ink-soft);
+}
+.stat-value--period {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* Panel de Estadísticas */
+.statistics-grid--dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+.stat-card--dashboard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--color-steel);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.stat-card--dashboard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+.stat-label--dashboard {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+}
+.stat-value--dashboard {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Usuarios: tarjetas resumen clickeables */
+.statistics-grid--summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card--summary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--color-rust);
+  border-radius: 16px;
+  padding: 1.3rem;
+  cursor: pointer;
+  transition: .25s;
+}
+.stat-card--summary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+.stat-label--summary {
+  display: block;
+  color: var(--color-ink-soft);
+  font-size: .8rem;
+  margin-bottom: .4rem;
+}
+.stat-value--summary {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Variante compacta de .page-header (usada por AdminUsersView) */
+.page-header--compact {
+  margin-bottom: 2rem;
+}
+
+
+/* ============================================================
+   VARIANTES DE .detail-* (fila expandible con productos del pedido)
+   .detail-column y .detail-toggle son IDÉNTICOS en las 3 vistas
+   de pedidos admin (Pedidos, Mes, Año) → quedan compartidos sin
+   sufijo. El resto varía por vista → 3 familias: --order (Mis
+   Pedidos, cliente), --admin (tabla de Pedidos), --period (Mes/Año).
+   ============================================================ */
+ 
+.detail-column {
+  text-align: right;
+}
+.detail-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 9px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+.detail-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+.detail-toggle:hover {
+  background: rgba(107, 107, 107, 0.07);
+  border-color: rgba(95, 95, 95, 0.2);
+  color: rgb(63, 63, 63);
+  transform: translateY(-1px);
+}
+ 
+/* Mis Pedidos (vista cliente) */
+.detail-image-wrapper--order {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+}
+.detail-image--order {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 11px;
+  border: 1px solid var(--color-line);
+}
+.detail-image-placeholder--order {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.035);
+  color: var(--color-ink-soft);
+}
+.detail-image-placeholder--order svg {
+  width: 22px;
+  height: 22px;
+}
+.detail-name--order {
+  color: var(--color-ink);
+  font-size: 0.88rem;
+  line-height: 1.3;
+}
+.detail-price--order {
+  color: black;
+  font-size: 0.80rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 12px;
+}
+ 
+/* Admin > Pedidos (tabla expandible) */
+.detail-list--admin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.detail-image-wrapper--admin {
+  width: 58px;
+  height: 58px;
+}
+.detail-image--admin,
+.detail-image-placeholder--admin {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+.detail-image--admin {
+  object-fit: cover;
+  border: 1px solid var(--color-line);
+}
+.detail-image-placeholder--admin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-ink-soft);
+}
+.detail-image-placeholder--admin svg {
+  width: 22px;
+  height: 22px;
+}
+.detail-qty--admin {
+  flex-shrink: 0;
+  color: var(--color-rust);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.detail-name--admin {
+  display: block;
+  color: var(--color-ink);
+  font-size: 0.87rem;
+}
+.detail-price--admin {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+ 
+/* Historial por mes / por año */
+.detail-list--period {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+.detail-list--period li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.detail-qty--period {
+  font-family: var(--font-mono);
+  color: var(--color-steel);
+}
+.detail-name--period {
+  color: var(--color-ink);
+}
+.detail-subtotal {
+  margin-left: auto;
+  font-family: var(--font-display);
+  color: var(--color-ink-soft);
+  font-weight: 600;
+}
+ 
+/* ============================================================
+   .password-box / .password-toggle
+   Compartidos por Login, Register y Profile — idénticos salvo que
+   Profile agrega un efecto de foco (borde iluminado). Ese extra
+   queda en el modificador --profile.
+   ============================================================ */
+ 
+.password-box {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid var(--color-line);
+  border-radius: 11px;
+  background: #fff;
+}
+.password-box input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-ink);
+}
+.password-box input::placeholder {
+  color: #8a8a8a;
+}
+ 
+.password-box--profile {
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.password-box--profile:focus-within {
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 3px rgba(183, 53, 45, 0.08);
+}
+ 
+.password-toggle {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgb(133, 133, 133);
+  cursor: pointer;
+}
+.password-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+.password-toggle:hover {
+  color: rgb(77, 76, 76);
+  background: transparent;
+}
+
+/* Historial por mes / por año */
+.table-wrapper--period {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+/* Compartido por Pedidos-por-mes, Pedidos-por-año y Estadísticas */
+.page-subtitle {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: .95rem;
+}
+
+/* Parte común de .page-description (Carrito y Admin > Categorías);
+   el margin-top y max-width difieren levemente por vista, quedan
+   como override local de 2 líneas en cada archivo. */
+.page-description {
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}
+ 
+/* ============================================================
+   Login / Register: logo flotante y tarjeta del formulario
+   Idénticos entre las 2 vistas.
+   ============================================================ */
+
+.auth-logo {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  line-height: 1;
+}
+.auth-logo .logo-mark {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--color-rust);
+  letter-spacing: 0.02em;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e2e2e2;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+.auth-card h1 {
+  margin-bottom: 32px;
+  font-size: 2.4rem;
+}
+
+.auth-card-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
+/* Mis Pedidos / Admin > Pedidos: encabezado de página */
+.orders-header {
+  margin-bottom: 32px;
+}
+.orders-header h1 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: clamp(2.1rem, 4vw, 2.8rem);
+  line-height: 1.05;
+}
+
+/* ============================================================
    RESPONSIVE — panel de administración
    Reglas centralizadas: como usamos los mismos nombres de clase
    en todas las vistas admin (admin-table, admin-header, etc.),
@@ -488,7 +965,8 @@ button, input, select, textarea {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  .admin-table {
+  .admin-table--basic,
+  .admin-table--detailed {
     min-width: 560px;
   }
 

@@ -263,7 +263,7 @@ onMounted(async () => {
                   :key="detail.id"
                   class="order-detail"
                 >
-                  <div class="detail-image-wrapper">
+                  <div class="detail-image-wrapper detail-image-wrapper--order">
 
                     <img
                       v-if="imageUrl(detail.product)"
@@ -272,12 +272,12 @@ onMounted(async () => {
                         detail.product?.name ||
                         'Producto'
                       "
-                      class="detail-image"
+                      class="detail-image detail-image--order"
                     />
 
                     <div
                       v-else
-                      class="detail-image-placeholder"
+                      class="detail-image-placeholder detail-image-placeholder--order"
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -293,7 +293,7 @@ onMounted(async () => {
 
                   <div class="detail-info">
 
-                    <strong class="detail-name">
+                    <strong class="detail-name detail-name--order">
                       {{
                         detail.product?.name ||
                         'Producto eliminado'
@@ -304,7 +304,7 @@ onMounted(async () => {
                       {{ detail.quantity }} unidad(es)
                     </span>
                   </div>
-                  <span class="detail-price">
+                  <span class="detail-price detail-price--order">
                       $
                       {{
                         Number(detail.unitPrice)
@@ -401,7 +401,7 @@ onMounted(async () => {
                   :key="detail.id"
                   class="order-detail"
                 >
-                  <div class="detail-image-wrapper">
+                  <div class="detail-image-wrapper detail-image-wrapper--order">
 
                     <img
                       v-if="imageUrl(detail.product)"
@@ -410,12 +410,12 @@ onMounted(async () => {
                         detail.product?.name ||
                         'Producto'
                       "
-                      class="detail-image"
+                      class="detail-image detail-image--order"
                     />
 
                     <div
                       v-else
-                      class="detail-image-placeholder"
+                      class="detail-image-placeholder detail-image-placeholder--order"
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -431,7 +431,7 @@ onMounted(async () => {
 
                   <div class="detail-info">
 
-                    <strong class="detail-name">
+                    <strong class="detail-name detail-name--order">
                       {{
                         detail.product?.name ||
                         'Producto eliminado'
@@ -442,7 +442,7 @@ onMounted(async () => {
                       {{ detail.quantity }} unidad(es)
                     </span>
                   </div>
-                  <span class="detail-price">
+                  <span class="detail-price detail-price--order">
                      $
                     {{
                       Number(detail.unitPrice)
@@ -494,35 +494,6 @@ onMounted(async () => {
 .orders-view {
   padding: 55px 0 80px;
   min-height: 100vh;
-}
-
-.orders-header {
-  margin-bottom: 32px;
-}
-
-.orders-eyebrow {
-  margin: 0 0 7px;
-  color: var(--color-rust);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-
-.orders-header h1 {
-  margin: 0;
-  color: var(--color-ink);
-  font-size: clamp(2.1rem, 4vw, 2.8rem);
-  line-height: 1.05;
-}
-
-.orders-description {
-  max-width: 650px;
-  margin: 10px 0 0;
-  color: var(--color-ink-soft);
-  font-size: 0.95rem;
-  line-height: 1.6;
 }
 
 .orders-sections {
@@ -765,38 +736,6 @@ onMounted(async () => {
   border-bottom: none;
 }
 
-.detail-image-wrapper {
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
-}
-
-.detail-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 11px;
-  border: 1px solid var(--color-line);
-}
-
-.detail-image-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 11px;
-  background:
-    rgba(0, 0, 0, 0.035);
-
-  color: var(--color-ink-soft);
-}
-
-.detail-image-placeholder svg {
-  width: 22px;
-  height: 22px;
-}
-
 .detail-info {
   display: flex;
   flex-direction: column;
@@ -804,23 +743,9 @@ onMounted(async () => {
   min-width: 0;
 }
 
-.detail-name {
-  color: var(--color-ink);
-  font-size: 0.88rem;
-  line-height: 1.3;
-}
-
 .detail-quantity {
   color: var(--color-ink-soft);
   font-size: 0.77rem;
-}
-
-.detail-price {
-  color: black;
-  font-size: 0.80rem;
-  flex-shrink: 0;
-  margin-left: auto;   
-  padding-left: 12px;
 }
 
 .order-card-footer {

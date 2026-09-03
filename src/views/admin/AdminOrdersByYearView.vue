@@ -83,18 +83,18 @@ onMounted(load);
     <p v-if="loading" class="loading-state">Cargando...</p>
 
     <template v-else>
-      <div class="statistics-grid">
-        <div class="stat-card">
-          <span class="stat-label">Pedidos de {{ selectedYear }}</span>
-          <span class="stat-value">{{ yearStats.orders }}</span>
+      <div class="statistics-grid statistics-grid--period">
+        <div class="stat-card--period">
+          <span class="stat-label stat-label--period">Pedidos de {{ selectedYear }}</span>
+          <span class="stat-value stat-value--period">{{ yearStats.orders }}</span>
         </div>
-        <div class="stat-card stat-card--accent">
-          <span class="stat-label">Facturación de {{ selectedYear }}</span>
-          <span class="stat-value">$ {{ Number(yearStats.total).toLocaleString('es-AR') }}</span>
+        <div class="stat-card--period stat-card--accent">
+          <span class="stat-label stat-label--period">Facturación de {{ selectedYear }}</span>
+          <span class="stat-value stat-value--period">$ {{ Number(yearStats.total).toLocaleString('es-AR') }}</span>
         </div>
       </div>
 
-      <div v-if="orders.length" class="table-wrapper">
+      <div v-if="orders.length" class="table-wrapper table-wrapper--period">
         <table class="history-table">
           <thead>
             <tr>
@@ -142,10 +142,10 @@ onMounted(load);
               </tr>
               <tr v-if="expandedOrderId === order.id" class="detail-row">
                 <td colspan="5">
-                  <ul v-if="order.details?.length" class="detail-list">
+                  <ul v-if="order.details?.length" class="detail-list detail-list--period">
                     <li v-for="detail in order.details" :key="detail.id">
-                      <span class="detail-qty">{{ detail.quantity }} ×</span>
-                      <span class="detail-name">{{ detail.product?.name || 'Producto eliminado' }}</span>
+                      <span class="detail-qty detail-qty--period">{{ detail.quantity }} ×</span>
+                      <span class="detail-name detail-name--period">{{ detail.product?.name || 'Producto eliminado' }}</span>
                       <span v-if="detail.product?.code" class="table-subtext">({{ detail.product.code }})</span>
                       <span v-if="lineSubtotal(detail) != null" class="detail-subtotal">
                         $ {{ lineSubtotal(detail).toLocaleString('es-AR') }}
@@ -180,12 +180,6 @@ onMounted(load);
   margin:0 0 .5rem;
 }
 
-.page-subtitle {
-  margin:0;
-  color:var(--color-ink-soft);
-  font-size:.95rem;
-}
-
 .year-search {
   display:flex;
   align-items:center;
@@ -212,56 +206,6 @@ onMounted(load);
   border-radius:10px;
   border:1px solid var(--color-line);
   font-family:var(--font-display);
-}
-
-.statistics-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:1rem;
-  margin-bottom:var(--space-5);
-}
-
-.stat-card {
-  background:var(--color-surface);
-  border:1px solid var(--color-line);
-  border-radius:16px;
-  padding:1.5rem;
-  display:flex;
-  flex-direction:column;
-  gap:.4rem;
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
-  border-left:5px solid var(--color-steel);
-}
-
-.stat-card--accent {
-  border-left-color:var(--color-rust);
-}
-
-.stat-label {
-  font-family:var(--font-display);
-  text-transform:uppercase;
-  font-size:.75rem;
-  letter-spacing:.05em;
-  color:var(--color-ink-soft);
-}
-
-.stat-value {
-  font-family:var(--font-display);
-  font-size:1.8rem;
-  font-weight:700;
-  color:var(--color-ink);
-}
-
-.stat-card--accent .stat-value {
-  color:var(--color-rust);
-}
-
-.table-wrapper {
-  background:var(--color-surface);
-  border:1px solid var(--color-line);
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
 .history-table {
@@ -311,76 +255,8 @@ onMounted(load);
   color:var(--color-ink-soft);
 }
 
-.detail-column {
-  text-align: right;
-}
-
-.detail-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 8px 12px;
-  border: 1px solid var(--color-line);
-  border-radius: 9px;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition:
-    background .2s ease,
-    border-color .2s ease,
-    color .2s ease,
-    transform .2s ease;
-}
-
-.detail-toggle svg {
-  width: 16px;
-  height: 16px;
-}
-
-.detail-toggle:hover {
-  background:
-    rgba(107, 107, 107, 0.07);
-
-  border-color:
-    rgba(95, 95, 95, 0.2);
-
-  color: rgb(63, 63, 63);
-
-  transform: translateY(-1px);
-}
-
-.detail-list {
-  list-style:none;
-  margin:0;
-  padding:0;
-  display:flex;
-  flex-direction:column;
-  gap:.8rem;
-}
-
-.detail-list li {
-  display:flex;
-  align-items:center;
-  gap:1rem;
-  font-size:.9rem;
-}
-
-.detail-qty {
-  font-family:var(--font-mono);
-  color:var(--color-steel);
-}
-
-.detail-name {
-  color:var(--color-ink);
-}
-
-.detail-subtotal {
-  margin-left:auto;
-  font-family:var(--font-display);
-  color:var(--color-ink-soft);
-  font-weight:600;
+.detail-list--period li {
+  font-size: .9rem;
 }
 
 @media(max-width:900px){

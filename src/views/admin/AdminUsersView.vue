@@ -35,16 +35,13 @@ async function loadUsers() {
     );
 
     users.value = response.data.items;
-
     total.value = response.data.total;
 
     statistics.value = {
     totalUsers:
         response.data.statistics?.totalUsers ?? 0,
-
     totalAdmins:
         response.data.statistics?.totalAdmins ?? 0,
-
     totalCustomers:
         response.data.statistics?.totalCustomers ?? 0,
     };
@@ -59,7 +56,6 @@ async function loadUsers() {
     error.value =
       'No se pudieron cargar los usuarios.';
 
-
   } finally {
 
     loading.value = false;
@@ -68,21 +64,14 @@ async function loadUsers() {
 }
 
 function searchUsers() {
-
   page.value = 1;
-
   loadUsers();
-
 }
 
 function filterByRole(role) {
-
   roleFilter.value = role;
-
   page.value = 1;
-
   loadUsers();
-
 }
 
 function changePage(newPage) {
@@ -95,9 +84,7 @@ function changePage(newPage) {
   }
 
   page.value = newPage;
-
   loadUsers();
-
 }
 
 const totalPages = computed(() => {
@@ -105,7 +92,6 @@ const totalPages = computed(() => {
   return Math.ceil(
     total.value / limit
   );
-
 });
 
 async function changeRole(user, newRole) {
@@ -180,11 +166,9 @@ function formatDate(date) {
 }
 
 function roleLabel(role) {
-
   return role === 'admin'
     ? 'Administrador'
     : 'Cliente';
-
 }
 
 onMounted(() => {
@@ -196,31 +180,31 @@ onMounted(() => {
 
   <div class="container admin-users-view">
 
-    <div class="page-header">
+    <div class="page-header page-header--compact">
       <h1>Usuarios</h1>
     </div>
 
-    <div class="statistics-grid">
+    <div class="statistics-grid statistics-grid--summary">
 
-      <div class="stat-card clickable" @click="filterByRole('all')">
-        <span class="stat-label">Total usuarios</span>
-        <span class="stat-value">{{ statistics.totalUsers }}</span>
+      <div class="stat-card stat-card--summary clickable" @click="filterByRole('all')">
+        <span class="stat-label stat-label--summary">Total usuarios</span>
+        <span class="stat-value stat-value--summary">{{ statistics.totalUsers }}</span>
       </div>
 
       <div
-        class="stat-card stat-card--accent clickable"
+        class="stat-card stat-card--summary stat-card--accent clickable"
         @click="filterByRole('admin')"
       >
-        <span class="stat-label">Administradores</span>
-        <span class="stat-value">{{ statistics.totalAdmins }}</span>
+        <span class="stat-label stat-label--summary">Administradores</span>
+        <span class="stat-value stat-value--summary">{{ statistics.totalAdmins }}</span>
       </div>
 
       <div
-        class="stat-card clickable"
+         class="stat-card stat-card--summary clickable"
         @click="filterByRole('customer')"
       >
-        <span class="stat-label">Clientes</span>
-        <span class="stat-value">{{ statistics.totalCustomers }}</span>
+        <span class="stat-label stat-label--summary">Clientes</span>
+        <span class="stat-value stat-value--summary">{{ statistics.totalCustomers }}</span>
       </div>
 
     </div>
@@ -443,44 +427,6 @@ onMounted(() => {
 <style scoped>
 .admin-users-view{
   padding:var(--space-5) var(--space-4);
-}
-
-.page-header{
-  margin-bottom:2rem;
-}
-
-.statistics-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:1rem;
-  margin-bottom:2rem;
-}
-
-.stat-card{
-  background:var(--color-surface);
-  border:1px solid var(--color-line);
-  border-left:4px solid var(--color-rust);
-  border-radius:16px;
-  padding:1.3rem;
-  cursor:pointer;
-  transition:.25s;
-}
-
-.stat-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-}
-
-.stat-label{
-  display:block;
-  color:var(--color-ink-soft);
-  font-size:.8rem;
-  margin-bottom:.4rem;
-}
-
-.stat-value{
-  font-size:2rem;
-  font-weight:700;
 }
 
 .users-toolbar {

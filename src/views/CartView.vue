@@ -228,9 +228,7 @@ function imageUrl(product) {
 
 .page-description {
   margin-top: .8rem;
-  color: var(--color-ink-soft);
   max-width: 650px;
-  line-height: 1.7;
 }
 
 .cart-layout {

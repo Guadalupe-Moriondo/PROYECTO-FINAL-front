@@ -166,26 +166,6 @@ async function submit() {
   min-height: 100vh;
 }
 
-.auth-logo {
-  position: absolute;
-  top: 24px;
-  left: 32px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  text-decoration: none;
-  line-height: 1;
-}
-
-.auth-logo .logo-mark {
-
-  font-size: 2rem;
-  font-weight:900;
-  color: var(--color-rust);
-  letter-spacing: 0.02em;
-}
-
 .login-page {
   width: 100%;
   min-height: 100vh;
@@ -202,86 +182,9 @@ async function submit() {
   padding: var(--space-6);
 }
 
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  border: 1px solid #e2e2e2;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-.auth-card h1 {
-  margin-bottom: 32px;
-  font-size: 2.4rem;
-}
-
-.password-box {
-  height: 46px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 11px;
-  border: 1px solid var(--color-line);
-  border-radius: 11px;
-  background: #fff;
-}
-
-.password-box input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--color-ink);
-}
-
-.password-box input:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.password-box input::placeholder {
-  color: #8a8a8a;
-}
-
-.password-toggle {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 30px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: rgb(133, 133, 133);
-  cursor: pointer;
-}
-
-.password-toggle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.password-toggle:hover {
-  color: rgb(77, 76, 76);
-  background: transparent;
-}
-
 .button-full {
   width: 100%;
   margin-top: 8px;
-}
-
-.auth-card-footer {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 0.9rem;
-  color: var(--color-ink-soft);
 }
 
 .login-image {

@@ -52,13 +52,13 @@ onMounted(load);
 
     <template v-else>
 
-      <div class="statistics-grid">
+      <div class="statistics-grid statistics-grid--dashboard">
 
         <router-link 
           :to="{ name: 'admin-order-history-month' }" 
-          class="stat-card stat-card--clickable"
+          class="stat-card stat-card--dashboard stat-card--clickable"
         >
-          <span class="stat-label">
+          <span class="stat-label stat-label--dashboard">
             Pedidos del mes
 
             <span class="stat-toggle-hint">
@@ -66,18 +66,18 @@ onMounted(load);
             </span>
           </span>
 
-          <span class="stat-value">
+          <span class="stat-value stat-value--dashboard">
             {{ statistics.month.orders }}
           </span>
         </router-link>
 
-        <div class="stat-card stat-card--accent">
+        <div class="stat-card stat-card--dashboard stat-card--accent">
 
-          <span class="stat-label">
+          <span class="stat-label stat-label--dashboard">
             Facturación mensual
           </span>
 
-          <span class="stat-value">
+          <span class="stat-value stat-value--dashboard">
             $ {{ Number(statistics.month.total).toLocaleString('es-AR') }}
           </span>
 
@@ -85,9 +85,9 @@ onMounted(load);
 
         <router-link 
           :to="{ name: 'admin-order-history-year' }" 
-          class="stat-card stat-card--clickable"
+          class="stat-card stat-card--dashboard stat-card--clickable"
         >
-          <span class="stat-label">
+          <span class="stat-label stat-label--dashboard">
             Pedidos del año
 
             <span class="stat-toggle-hint">
@@ -95,19 +95,19 @@ onMounted(load);
             </span>
           </span>
 
-          <span class="stat-value">
+          <span class="stat-value stat-value--dashboard">
             {{ statistics.year.orders }}
           </span>
 
         </router-link>
 
-        <div class="stat-card stat-card--accent">
+        <div class="stat-card stat-card--dashboard stat-card--accent">
 
-          <span class="stat-label">
+          <span class="stat-label stat-label--dashboard">
             Facturación anual
           </span>
 
-          <span class="stat-value">
+          <span class="stat-value stat-value--dashboard">
             $ {{ Number(statistics.year.total).toLocaleString('es-AR') }}
           </span>
 
@@ -123,68 +123,8 @@ onMounted(load);
   padding: var(--space-5) var(--space-4);
 }
 
-.page-subtitle {
-  margin: 0;
-  color: var(--color-ink-soft);
-  font-size: 0.95rem;
-}
-
-.statistics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-3);
-  margin-bottom: var(--space-5);
-}
-
-.stat-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-left: 4px solid var(--color-steel);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-
-.stat-card--accent {
-  border-left-color: var(--color-rust);
-}
-
-.stat-label {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
-  color: var(--color-ink-soft);
-}
-
-.stat-value {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--color-ink);
-}
-
-.stat-card--accent .stat-value {
-  color: var(--color-rust);
-}
-
 .section-title {
   margin-top: var(--space-2);
-}
-
-.table-wrapper {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  overflow-x: auto;
 }
 
 .history-table {

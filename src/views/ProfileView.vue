@@ -381,7 +381,7 @@ onMounted(loadProfile);
             Contraseña actual
           </label>
 
-          <div class="password-box">
+          <div class="password-box password-box--profile">
 
             <input
               v-model="passwordForm.currentPassword"
@@ -433,7 +433,7 @@ onMounted(loadProfile);
             Nueva contraseña
           </label>
 
-          <div class="password-box">
+          <div class="password-box password-box--profile">
 
             <input
               v-model="passwordForm.newPassword"
@@ -479,7 +479,7 @@ onMounted(loadProfile);
             Confirmar contraseña
           </label>
 
-          <div class="password-box">
+          <div class="password-box password-box--profile">
 
             <input
               v-model="passwordForm.confirmPassword"
@@ -864,65 +864,6 @@ onMounted(loadProfile);
   color: var(--color-ink);
   font-size: 0.82rem;
   font-weight: 700;
-}
-
-.password-box {
-  height: 46px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 11px;
-  border: 1px solid var(--color-line);
-  border-radius: 11px;
-  background: #fff;
-  transition:
-    border-color .2s ease,
-    box-shadow .2s ease;
-}
-
-.password-box:focus-within {
-  border-color: var(--color-rust);
-  box-shadow:
-    0 0 0 3px rgba(183, 53, 45, 0.08);
-}
-
-.password-box input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  padding: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--color-ink);
-}
-
-.password-box input::placeholder {
-  color: #8a8a8a;
-}
-
-.password-toggle {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 30px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: rgb(133, 133, 133);;
-  cursor: pointer;
-}
-
-.password-toggle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.password-toggle:hover {
-  color: rgb(77, 76, 76);
-  background: transparent;
 }
 
 .change-password-button {

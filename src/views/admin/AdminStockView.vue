@@ -243,7 +243,7 @@ onMounted(() => {
         v-else
         class="table-scroll"
       >
-        <table class="admin-table">
+        <table class="admin-table admin-table--basic">
           <thead>
 
             <tr>
@@ -471,34 +471,6 @@ onMounted(() => {
   overflow-x:auto;
 }
 
-.admin-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.admin-table th{
-  padding:1rem 1.5rem;
-  text-align:left;
-  background:#fafafa;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  font-size:.75rem;
-  color:var(--color-ink-soft);
-}
-
-.admin-table td{
-  padding:1.2rem 1.5rem;
-  border-top:1px solid var(--color-line);
-}
-
-.admin-table tbody tr{
-  transition:.2s;
-}
-
-.admin-table tbody tr:hover{
-  background:#fafafa;
-}
-
 .button.button-primary{
   display:block;
   margin:0 0 0 auto;
@@ -525,5 +497,6 @@ onMounted(() => {
     align-items:flex-start;
     gap:1rem;
   }
+
 }
 </style>

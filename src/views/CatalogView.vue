@@ -438,7 +438,7 @@ watch(
 }
 
 @media (max-width: 1200px) {
-
+  
   .catalog-layout {
     grid-template-columns: 230px minmax(0, 1fr);
     gap: 25px;
@@ -448,9 +448,7 @@ watch(
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
   }
-
 }
-
 
 @media (max-width: 900px) {
 
@@ -474,12 +472,11 @@ watch(
   .filter-button {
     grid-column: 1 / -1;
   }
-
 }
 
 
 @media (max-width: 600px) {
-
+  
   .container {
     width: min(100% - 28px, 1200px);
   }
@@ -512,6 +509,5 @@ watch(
   .products-topbar h2 {
     font-size: 1.5rem;
   }
-
 }
 </style>

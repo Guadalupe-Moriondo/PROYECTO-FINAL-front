@@ -233,7 +233,7 @@ onMounted(async () => {
       v-else
       class="orders-table-wrapper"
     >
-      <table class="admin-table">
+      <table class="admin-table admin-table--detailed">
 
         <thead>
           <tr>
@@ -438,25 +438,25 @@ onMounted(async () => {
   
                   <ul
                     v-if="order.details?.length"
-                    class="detail-list"
+                    class="detail-list detail-list--admin"
                   >
                     <li
                       v-for="detail in order.details"
                       :key="detail.id"
                       class="detail-item"
                     >
-                      <div class="detail-image-wrapper">
+                      <div class="detail-image-wrapper detail-image-wrapper--admin">
 
                         <img
                           v-if="imageUrl(detail.product)"
                           :src="imageUrl(detail.product)"
                           :alt="detail.product?.name || 'Producto'"
-                          class="detail-image"
+                          class="detail-image detail-image--admin"
                         />
 
                         <div
                           v-else
-                          class="detail-image-placeholder"
+                          class="detail-image-placeholder detail-image-placeholder--admin"
                         >
                           <svg
                             viewBox="0 0 24 24"
@@ -471,12 +471,12 @@ onMounted(async () => {
                       <!-- Información -->
                       <div class="detail-product">
 
-                        <span class="detail-qty">
+                        <span class="detail-qty detail-qty--admin">
                           {{ detail.quantity }} ×
                         </span>
 
                         <div>
-                          <strong class="detail-name">
+                          <strong class="detail-name detail-name--admin">
                             {{
                               detail.product?.name ||
                               'Producto eliminado'
@@ -496,7 +496,7 @@ onMounted(async () => {
                       <!-- Subtotal -->
                       <div
                         v-if="lineSubtotal(detail) != null"
-                        class="detail-price"
+                        class="detail-price detail-price--admin"
                       >
                         $
                         {{
@@ -534,34 +534,6 @@ onMounted(async () => {
   padding: 55px 0 80px;
 }
 
-.orders-header {
-  margin-bottom: 32px;
-}
-
-.orders-eyebrow {
-  margin: 0 0 7px;
-  color: var(--color-rust);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-
-.orders-header h1 {
-  margin: 0;
-  color: var(--color-ink);
-  font-size: clamp(2.1rem, 4vw, 2.8rem);
-  line-height: 1.05;
-}
-
-.orders-description {
-  margin: 10px 0 0;
-  color: var(--color-ink-soft);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
 .orders-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -572,34 +544,14 @@ onMounted(async () => {
     0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-.admin-table {
-  width: 100%;
+.admin-table--detailed {
   min-width: 950px;
-  border-collapse: separate;
-  border-spacing: 0;
 }
-
-.admin-table th {
-  padding: 16px 20px;
-  text-align: left;
-  background:
-    rgba(0, 0, 0, 0.025);
-
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-ink-soft);
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.admin-table--detailed th {
   white-space: nowrap;
 }
 
-.admin-table td {
-  padding: 17px 20px;
-  border-bottom: 1px solid var(--color-line);
-  vertical-align: middle;
-}
+
 
 .order-row {
   background: var(--color-surface);
@@ -610,10 +562,6 @@ onMounted(async () => {
 .order-row:hover {
   background:
     rgba(48, 47, 47, 0.025);
-}
-
-.admin-table tbody tr:last-child td {
-  border-bottom: none;
 }
 
 .order-number {
@@ -768,46 +716,6 @@ onMounted(async () => {
   color: #258148;
 }
 
-.detail-column {
-  text-align: right;
-}
-
-.detail-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 8px 12px;
-  border: 1px solid var(--color-line);
-  border-radius: 9px;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-size: 0.78rem;
-  cursor: pointer;
-  transition:
-    background .2s ease,
-    border-color .2s ease,
-    color .2s ease,
-    transform .2s ease;
-}
-
-.detail-toggle svg {
-  width: 16px;
-  height: 16px;
-}
-
-.detail-toggle:hover {
-  background:
-    rgba(107, 107, 107, 0.07);
-
-  border-color:
-    rgba(95, 95, 95, 0.2);
-
-  color: rgb(63, 63, 63);
-
-  transform: translateY(-1px);
-}
-
 .detail-row td {
   padding: 0;
   background:
@@ -840,15 +748,6 @@ onMounted(async () => {
   font-size: 1.1rem;
 }
 
-.detail-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 .detail-item {
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr) auto;
@@ -860,57 +759,11 @@ onMounted(async () => {
   border-radius: 13px;
 }
 
-.detail-image-wrapper {
-  width: 58px;
-  height: 58px;
-}
-
-.detail-image,
-.detail-image-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-}
-
-.detail-image {
-  object-fit: cover;
-  border: 1px solid var(--color-line);
-}
-
-.detail-image-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background:
-    rgba(0, 0, 0, 0.04);
-
-  color: var(--color-ink-soft);
-}
-
-.detail-image-placeholder svg {
-  width: 22px;
-  height: 22px;
-}
-
 .detail-product {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
-}
-
-.detail-qty {
-  flex-shrink: 0;
-  color: var(--color-rust);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.detail-name {
-  display: block;
-  color: var(--color-ink);
-  font-size: 0.87rem;
 }
 
 .detail-code {
@@ -919,14 +772,6 @@ onMounted(async () => {
   color: var(--color-ink-soft);
   font-size: 0.75rem;
   font-family: var(--font-mono);
-}
-
-.detail-price {
-  color: var(--color-ink);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 .empty-detail {
@@ -1123,10 +968,6 @@ onMounted(async () => {
 
   .orders-header h1 {
     font-size: 2rem;
-  }
-
-  .orders-description {
-    font-size: 0.88rem;
   }
 
   .detail-container {
