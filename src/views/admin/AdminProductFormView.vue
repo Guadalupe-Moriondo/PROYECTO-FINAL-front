@@ -342,8 +342,7 @@ onMounted(() => {
       <div class="form-actions">
 
         <RouterLink
-          :to="{ name: 'admin-products' }"
-          query: { page: route.query.page || undefined }
+          :to="{ name: 'admin-products', query: { page: route.query.page || undefined } }"
           class="button button-secondary"
         >
           Cancelar

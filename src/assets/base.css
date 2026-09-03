@@ -1,5 +1,5 @@
 :root {
-  /* Paleta colores/
+  /*Paleta de colores*/
   --color-bg: #ffffff;          /* fondo general blanco */
   --color-surface: #ffffff;     /* cards y superficies elevadas */
   --color-ink: #141414;         /* texto principal, casi negro */
@@ -13,12 +13,12 @@
   --color-success: #1a1a1a;
   --color-line: #e2e2e2;        /* líneas finas, bordes */
 
-  /* Tipografía*/
+  /*Tipografía*/
   --font-display: 'Oswald', sans-serif;
   --font-body: 'Source Sans 3', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 
-  /* Espacio */
+  /*Espaciado*/
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 16px;
@@ -26,15 +26,17 @@
   --space-5: 40px;
   --space-6: 64px;
 
-  /* Radio */
+  /*Radio de bordes*/
   --radius-sm: 20px;
   --radius-md: 25px;
 }
 
+/*Paddings y bordes están dentro del ancho/alto*/
 * {
   box-sizing: border-box;
 }
 
+/*Estilo del body*/
 body {
   margin: 0;
   background: var(--color-bg);
@@ -44,6 +46,7 @@ body {
   line-height: 1.5;
 }
 
+/*Titulos*/
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   text-transform: uppercase;
@@ -56,20 +59,23 @@ h1 { font-size: 2rem; display:flex; align-items: center;}
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.15rem; }
 
+/*Links heredan color del texto*/
 a { color: inherit; }
 
+/*Tipografia controles del formulario*/
 button, input, select, textarea {
   font-family: inherit;
   font-size: 1rem;
 }
 
+/*Contenedor centrado contenido*/
 .container {
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 var(--space-4);
 }
 
-/* Botones */
+/*Botones*/
 .button {
   display: inline-flex;
   align-items: center;
@@ -86,46 +92,49 @@ button, input, select, textarea {
   transition: transform 0.08s ease, background 0.15s ease;
   text-decoration: none;
 }
+
+/*Efecto presionado al hacer click*/
 .button:active { transform: translateY(1px); }
 
+/*Botón principal*/
 .button-primary {
   background: rgb(172, 37, 37);
   color: white;
-
   border: none;
   border-radius: 12px;
-
   padding: .85rem 1.6rem;
-
   font-size: .95rem;
   font-weight: 600;
-  
   cursor: pointer;
-
   transition: all .2s ease;
-
   box-shadow: 0 6px 16px rgba(0,0,0,.12);
 }
 
+/* Efecto al pasar el mouse*/
 .button-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(24, 24, 24, 0.28);
  
 }
 
+/*Deshabilitado, no reacciona al hover*/
 .button-primary:disabled {
   opacity: .6;
   cursor: not-allowed;
   transform: none;
 }
 
+/*Botón secundario*/
 .button-secondary {
   background: transparent;
   border-color: var(--color-steel);
   color: var(--color-steel);
 }
+
+/*Efecto al pasar el mouse*/
 .button-secondary:hover { background: var(--color-steel); color: #fff; }
 
+/*Botón para eliminar o dar de baja*/
 .button-danger {
   background: transparent;
   border-color: var(--color-danger);
@@ -133,12 +142,13 @@ button, input, select, textarea {
 }
 .button-danger:hover { background: var(--color-danger); color: #fff; }
 
+/*Boton deshabilitado general*/
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Forms */
+/*Formularios*/
 .field {
   display: flex;
   flex-direction: column;
@@ -159,6 +169,8 @@ button, input, select, textarea {
   background: var(--color-surface);
   color: var(--color-ink);
 }
+
+/*Borde rojo al hacer click*/
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
@@ -166,6 +178,7 @@ button, input, select, textarea {
   outline-offset: 1px;
 }
 
+/*Mensaje de confirmación*/
 .success-message {
   background: #e8f7ec;
   color: #207a3c;
@@ -174,6 +187,7 @@ button, input, select, textarea {
   border-radius: 12px;
 }
 
+/*Mensaje de error*/
 .error-message {
   background: #ffe8e8;
   color: #c0392b;
@@ -181,16 +195,16 @@ button, input, select, textarea {
   padding: .9rem 1rem;
   border-radius: 12px;
 }
-/* Utilities */
+
+/*Oculta contenido visual pero lo deja disponible para leer la pantalla*/
 .visually-hidden {
   position: absolute;
   width: 1px; height: 1px;
   overflow: hidden;
-  clip: rect(0 0 0 0);
-
-  
+  clip: rect(0 0 0 0); 
 }
 
+/*Contenedor de los botones editar/eliminar*/
 .table-actions {
   display: flex;
   align-items: center;
@@ -199,17 +213,15 @@ button, input, select, textarea {
   white-space: nowrap;
 }
 
+/*Boton circular, el color lo pone la clase con la que se lo combina*/
 .icon-button {
   width: 35px;
   height: 35px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   border-radius: 50px;
-
   cursor: pointer;
   transition: .2s;
 }
@@ -219,20 +231,17 @@ button, input, select, textarea {
   height: 18px;
 }
 
-/* Editar */
-
+/*Editar*/
 .edit-button {
   background: #d1e3fa;
   color: #2563eb;
-  
 }
 
 .edit-button:hover {
   background: #a6c6f3;
 }
 
-/* Eliminar */
-
+/*Eliminar*/
 .delete-button {
   background: #e7e5e5;
   color: #686868;
@@ -242,7 +251,7 @@ button, input, select, textarea {
   background: #c7c6c6;
 }
 
-
+/*Confirmar/guardar*/
 .icon-button.success {
   background: #abe2be;
   color: #2d9754;
@@ -252,6 +261,7 @@ button, input, select, textarea {
   background: #8ccaa1;
 }
 
+/*Cancelar*/
 .icon-button.danger {
   background: #ffcdcd;
   color: #dc2626;
@@ -261,56 +271,42 @@ button, input, select, textarea {
   background: #fdabab;
 }
 
+/*Texto "Cargando..."*/
 .loading-state {
   padding: 65px 0;
-
   text-align: center;
-
   color: var(--color-ink-soft);
-
   font-family: var(--font-body);
-
   font-size: 0.85rem;
 }
 
+/*Bloque para "no hay resultados"*/
 .empty-state {
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
-
   min-height: 420px;
-
   padding: 45px 20px;
-
   text-align: center;
-
   background: var(--color-surface);
-
   border: 1px solid var(--color-line);
-
   border-radius: 20px;
 }
 
-/* Header de página — título + margen inferior estándar */
+/*Header de página — título + margen inferior*/
 .page-header {
   margin-bottom: var(--space-5);
 }
 
-/* Variante ancha del container, usada en Catalogo/Contacto/Home */
+/*Variante ancha del container*/
 .container--wide {
   width: min(1200px, calc(100% - 40px));
   margin: 0 auto;
 }
 
-/* ============================================================
-   VARIANTES DE .field
-   ============================================================ */
 
-/* Catalogo: filtros de búsqueda */
+/*Catalogo: filtros de búsqueda*/
 .field--search {
   display: flex;
   flex-direction: column;
@@ -340,12 +336,12 @@ button, input, select, textarea {
   box-shadow: 0 0 0 3px rgba(183, 53, 45, 0.1);
 }
 
-/* Login / Register: inputs altos de formulario de acceso */
+/*Login/Register: inputs altos de formulario de acceso*/
 .field--auth {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  margin-bottom: 20px; /* Register usa 18px, ver override abajo */
+  margin-bottom: 20px; 
 }
 .field--auth label {
   font-size: 0.85rem;
@@ -366,7 +362,7 @@ button, input, select, textarea {
   outline-offset: 1px;
 }
 
-/* Admin > Datos del negocio */
+/*Admin - Datos del negocio*/
 .field--business {
   display: flex;
   flex-direction: column;
@@ -408,7 +404,7 @@ button, input, select, textarea {
   font-family: var(--font-mono);
 }
 
-/* Admin > Categorías */
+/*Admin - Categorías*/
 .field--categories {
   display: flex;
   flex-direction: column;
@@ -436,10 +432,7 @@ button, input, select, textarea {
   box-shadow: 0 0 0 4px rgba(188,34,34,.12);
 }
 
-/* ============================================================
-   VARIANTES DE .error-message
-   ============================================================ */
-
+/*Mensaje de error*/
 .error-message--catalog {
   margin-bottom: 20px;
   padding: 14px 16px;
@@ -449,6 +442,7 @@ button, input, select, textarea {
   font-size: 0.9rem;
 }
 
+/*Error al confirmar el pedido*/
 .error-message--checkout {
   margin-top: 1rem;
   padding: .9rem 1rem;
@@ -458,6 +452,7 @@ button, input, select, textarea {
   border: 1px solid #f5c2c7;
 }
 
+/*Error vistas admin general*/
 .error-message--admin {
   margin: 1rem 0;
   padding: 1rem;
@@ -466,15 +461,8 @@ button, input, select, textarea {
   color: #be123c;
 }
 
-/* ============================================================
-   VARIANTES DE .admin-table
-   Categorías y Stock ya usaban el mismo diseño (border-collapse:
-   collapse). Pedidos y Productos comparten otro (border-collapse:
-   separate + header con fondo sutil). Quedan 2 familias en vez
-   de 4 copias casi iguales. El min-width sigue local en cada
-   vista porque depende de cuántas columnas tiene cada tabla.
-   ============================================================ */
 
+/*Tabla simple (Categorias y stock)*/
 .admin-table--basic {
   width: 100%;
   border-collapse: collapse;
@@ -499,6 +487,7 @@ button, input, select, textarea {
   background: #fafafa;
 }
 
+/*Tabla detallada (Pedidos y productos)*/
 .admin-table--detailed {
   width: 100%;
   border-collapse: separate;
@@ -525,10 +514,7 @@ button, input, select, textarea {
   border-bottom: none;
 }
 
-/* ============================================================
-   VARIANTES DE .statistics-grid / .stat-card / .stat-label / .stat-value
-   ============================================================ */
-
+/*Modificador de color Historial, Panel Estadísticas y usuarios*/
 .stat-card--accent {
   border-left-color: var(--color-rust);
 }
@@ -536,7 +522,7 @@ button, input, select, textarea {
   color: var(--color-rust);
 }
 
-/* Pedidos por mes / por año */
+/*Pedidos por mes/año (tarjetas)*/
 .statistics-grid--period {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -568,7 +554,7 @@ button, input, select, textarea {
   color: var(--color-ink);
 }
 
-/* Panel de Estadísticas */
+/*Panel de Estadísticas(vista principal de admin/orders/history)*/
 .statistics-grid--dashboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -604,7 +590,7 @@ button, input, select, textarea {
   color: var(--color-ink);
 }
 
-/* Usuarios: tarjetas resumen clickeables */
+/*Usuarios: tarjetas resumen clickeables*/
 .statistics-grid--summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -635,7 +621,6 @@ button, input, select, textarea {
   font-weight: 700;
 }
 
-/* Variante compacta de .page-header (usada por AdminUsersView) */
 .page-header--compact {
   margin-bottom: 2rem;
 }
@@ -649,9 +634,12 @@ button, input, select, textarea {
    Pedidos, cliente), --admin (tabla de Pedidos), --period (Mes/Año).
    ============================================================ */
  
+/*Columna botón expandir*/
 .detail-column {
   text-align: right;
 }
+
+/*Botón ver productos(ver detalle)*/
 .detail-toggle {
   display: inline-flex;
   align-items: center;
@@ -681,7 +669,7 @@ button, input, select, textarea {
   transform: translateY(-1px);
 }
  
-/* Mis Pedidos (vista cliente) */
+/*Mis Pedidos(vista cliente del producto) */
 .detail-image-wrapper--order {
   width: 58px;
   height: 58px;
@@ -694,6 +682,8 @@ button, input, select, textarea {
   border-radius: 11px;
   border: 1px solid var(--color-line);
 }
+
+/*Icono placeholder cuando el producto no tiene foto cargada*/
 .detail-image-placeholder--order {
   width: 100%;
   height: 100%;
@@ -721,7 +711,7 @@ button, input, select, textarea {
   padding-left: 12px;
 }
  
-/* Admin > Pedidos (tabla expandible) */
+/* Admin-Pedidos (tabla expandible)*/
 .detail-list--admin {
   display: flex;
   flex-direction: column;
@@ -775,7 +765,7 @@ button, input, select, textarea {
   white-space: nowrap;
 }
  
-/* Historial por mes / por año */
+/* Historial por mes/por año*/
 .detail-list--period {
   list-style: none;
   margin: 0;
@@ -802,13 +792,24 @@ button, input, select, textarea {
   color: var(--color-ink-soft);
   font-weight: 600;
 }
+
+/*Historial por mes/año celdas de la tabla*/
+.table-mono--period {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.table-mono-ord--period {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.table-subtext--period {
+  display: block;
+  margin-top: .25rem;
+  font-size: .85rem;
+  color: var(--color-ink-soft);
+}
  
-/* ============================================================
-   .password-box / .password-toggle
-   Compartidos por Login, Register y Profile — idénticos salvo que
-   Profile agrega un efecto de foco (borde iluminado). Ese extra
-   queda en el modificador --profile.
-   ============================================================ */
+/*Compartidos por Login, Register y Profile*/
  
 .password-box {
   height: 46px;
@@ -842,6 +843,7 @@ button, input, select, textarea {
   box-shadow: 0 0 0 3px rgba(183, 53, 45, 0.08);
 }
  
+/*Botón del ojo(mostrar/ocultar contraseña)*/
 .password-toggle {
   width: 30px;
   height: 30px;
@@ -864,7 +866,8 @@ button, input, select, textarea {
   background: transparent;
 }
 
-/* Historial por mes / por año */
+/*Historial por mes/ por año (caja blanca que envuelve toda la
+  tabla, con esquinas redondeadas y sombra)*/
 .table-wrapper--period {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
@@ -873,25 +876,19 @@ button, input, select, textarea {
   box-shadow: 0 8px 25px rgba(0,0,0,.08);
 }
 
-/* Compartido por Pedidos-por-mes, Pedidos-por-año y Estadísticas */
+/*Compartido por pedidos-por-mes, pedidos-por-año y estadísticas*/
 .page-subtitle {
   margin: 0;
   color: var(--color-ink-soft);
   font-size: .95rem;
 }
 
-/* Parte común de .page-description (Carrito y Admin > Categorías);
-   el margin-top y max-width difieren levemente por vista, quedan
-   como override local de 2 líneas en cada archivo. */
 .page-description {
   color: var(--color-ink-soft);
   line-height: 1.7;
 }
  
-/* ============================================================
-   Login / Register: logo flotante y tarjeta del formulario
-   Idénticos entre las 2 vistas.
-   ============================================================ */
+/*Login/Register:logo flotante y tarjeta del formulario*/
 
 .auth-logo {
   position: absolute;
@@ -911,6 +908,7 @@ button, input, select, textarea {
   letter-spacing: 0.02em;
 }
 
+/*Tarjeta blanca que contiene el formulario de login/registro*/
 .auth-card {
   width: 100%;
   max-width: 420px;
@@ -925,6 +923,7 @@ button, input, select, textarea {
   font-size: 2.4rem;
 }
 
+/*Texto de abajo de la tarjeta("¿No tenés cuenta? Registrate")*/
 .auth-card-footer {
   text-align: center;
   margin-top: 24px;
@@ -932,7 +931,7 @@ button, input, select, textarea {
   color: var(--color-ink-soft);
 }
 
-/* Mis Pedidos / Admin > Pedidos: encabezado de página */
+/*Mis Pedidos/Admin-Pedidos encabezado de página*/
 .orders-header {
   margin-bottom: 32px;
 }
@@ -943,24 +942,13 @@ button, input, select, textarea {
   line-height: 1.05;
 }
 
-/* ============================================================
-   RESPONSIVE — panel de administración
-   Reglas centralizadas: como usamos los mismos nombres de clase
-   en todas las vistas admin (admin-table, admin-header, etc.),
-   estas reglas les pegan a TODAS sin tener que repetirlas en
-   cada archivo. Cada vista solo necesita la clase ".admin-view"
-   en su <div class="container ..."> raiz para el ajuste de
-   padding general.
-   ============================================================ */
+/*Responsive - panel de administración*/
 @media (max-width: 900px) {
   .admin-view {
     padding-left: var(--space-3);
     padding-right: var(--space-3);
   }
 
-  /* Tablas: scrollean horizontal dentro de su propio wrapper.
-     OJO: el scroll va en un <div class="table-scroll"> que envuelve
-     a la tabla, NO en la tabla misma. */
   .table-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -970,20 +958,17 @@ button, input, select, textarea {
     min-width: 560px;
   }
 
-  /* Headers de vista con título + acción a la derecha -> apilados */
   .admin-header {
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-2);
   }
 
-  /* Grids de tarjetas de estadisticas (Historial, mes, año) */
   .statistics-grid {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-2);
   }
 
-  /* Formularios/buscadores en fila -> apilados */
   .new-category-form
    {
     flex-direction: column;
@@ -1008,13 +993,11 @@ button, input, select, textarea {
     flex: 0 0 auto;
   }
 
-  /* Header de cada tarjeta de Consultas (nombre + estado) */
   .query-header {
     flex-direction: column;
     gap: var(--space-2);
   }
 
-  /* Formularios con max-width fijo (Stock, Datos del negocio) */
   .business-form,
   .stock-section {
     max-width: none;

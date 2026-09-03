@@ -10,13 +10,6 @@ const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
 
-
-onMounted(() => {
-  if (authStore.isLoggedIn) {
-    cartStore.loadCart();
-  }
-});
-
 function changeQuantity(item, newQuantity) {
   if (newQuantity < 1) {
     cartStore.removeItem(item.id);
@@ -33,6 +26,12 @@ function imageUrl(product) {
   if (!product?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
+
+onMounted(() => {
+  if (authStore.isLoggedIn) {
+    cartStore.loadCart();
+  }
+});
 </script>
 
 <template>

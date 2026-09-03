@@ -1,18 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import productsService from '../../services/products.service';
 import Pagination from '../../components/Pagination.vue';
 import InventoryTag from '../../components/InventoryTag.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const products = ref([]);
 const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
-
 const search = ref('');
 let searchTimeout = null;
 
@@ -45,6 +45,7 @@ async function load() {
 
 function changePage(newPage) {
   page.value = newPage;
+  router.replace({ query: { ...route.query, page: newPage } });
   load();
 }
 

@@ -8,7 +8,6 @@ import localLogo from '../assets/local.jpg';
 const router = useRouter();
 
 const authStore = useAuthStore();
-
 const name = ref('');
 const email = ref('');
 const password = ref('');

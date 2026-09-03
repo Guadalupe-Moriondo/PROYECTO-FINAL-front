@@ -7,7 +7,6 @@ import Pagination from '../../components/Pagination.vue';
 
 const alerts = ref([]);
 const loadingAlerts = ref(true);
-
 const form = ref({ productId: '', type: 'entry', quantity: 1, reason: '' });
 const products = ref([]);
 const error = ref('');

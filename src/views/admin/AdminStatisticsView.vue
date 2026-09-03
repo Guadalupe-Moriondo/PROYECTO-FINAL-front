@@ -157,16 +157,6 @@ onMounted(load);
   border-bottom: none;
 }
 
-.table-mono {
-  font-family: var(--font-mono);
-}
-
-.table-subtext {
-  display: block;
-  font-size: 0.78rem;
-  color: var(--color-ink-soft);
-}
-
 .status-badge {
   display: inline-block;
   font-family: var(--font-mono);

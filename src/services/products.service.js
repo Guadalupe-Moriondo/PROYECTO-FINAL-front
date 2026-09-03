@@ -28,8 +28,5 @@ export default {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
-  lowStock() {
-    return api.get('/products/admin/low-stock');
-  },
 };
 

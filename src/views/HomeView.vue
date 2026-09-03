@@ -42,6 +42,8 @@ const heroImageFailed = ref(false);
 const products = ref([]);
 const productsLoading = ref(true);
 
+let heroInterval = null;
+
 async function loadProducts() {
   try {
     const response = await productsService.list(1, 10);
@@ -52,17 +54,16 @@ async function loadProducts() {
       response.data ||
       [];
   } catch (e) {
+    console.error('Error al cargar productos destacados:', e);
     products.value = [];
   } finally {
     productsLoading.value = false;
   }
 }
 
-onMounted(loadProducts);
-
-let heroInterval = null;
-
 onMounted(() => {
+  loadProducts();
+
   heroInterval = setInterval(() => {
     currentHeroImage.value =
       (currentHeroImage.value + 1) % heroImages.length;

@@ -18,7 +18,6 @@ const isAuthPage = computed(() =>
 
 const sidebarOpen = ref(false);
 
-
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;
 }

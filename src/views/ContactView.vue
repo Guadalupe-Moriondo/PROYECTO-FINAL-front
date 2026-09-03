@@ -5,15 +5,6 @@ import ubicacionImg from '../assets/local.jpg';
 
 const business = ref(null);
 
-async function loadBusiness() {
-  try {
-    const response = await businessService.get();
-    business.value = response.data;
-  } catch (e) {
-    business.value = null;
-  }
-}
-
 const whatsappLink = computed(() => {
 
   if (!business.value?.whatsapp) return null;
@@ -61,6 +52,16 @@ const mapsUrl = computed(() => {
 
   return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 });
+
+async function loadBusiness() {
+  try {
+    const response = await businessService.get();
+    business.value = response.data;
+  } catch (e) {
+    console.error('Error al cargar los datos del negocio:', e);
+    business.value = null;
+  }
+}
 
 onMounted(loadBusiness);
 

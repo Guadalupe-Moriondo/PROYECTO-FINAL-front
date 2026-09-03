@@ -41,7 +41,6 @@ function toggleShowPassword(field) {
   showPassword.value[field] = !showPassword.value[field];
 }
 
-
 async function loadProfile() {
   loading.value = true;
 
@@ -92,6 +91,7 @@ async function saveField(field, value) {
       profileMessage.value = '';
     }, 3000);
   } catch (error) {
+    console.error('Error al actualizar el perfil:', error);
     profileMessage.value = 'No se pudo actualizar el perfil';
   } finally {
     savingField.value = false;

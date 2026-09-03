@@ -259,6 +259,7 @@ onMounted(load);
                   <input
                     v-model="editForm.name"
                     type="text"
+                    class="input-edit-row"
                   />
                 </td>
 
@@ -266,6 +267,7 @@ onMounted(load);
                   <input
                     v-model="editForm.description"
                     type="text"
+                    class="input-edit-row"
                   />
                 </td>
 
@@ -549,6 +551,25 @@ onMounted(load);
   color: rgb(49, 49, 49);
   font-size: .82rem;
   
+}
+
+.input-edit-row {
+  width: 100%;
+  height: 34px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: #fff;
+  font-size: .88rem;
+  color: var(--color-ink);
+  transition: .2s;
+  box-sizing: border-box;
+}
+
+.input-edit-row:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 3px rgba(188, 34, 34, .12);
 }
 
 @media (max-width: 1200px) {

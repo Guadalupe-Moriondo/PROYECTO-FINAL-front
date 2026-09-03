@@ -38,6 +38,7 @@ async function loadProducts() {
     products.value = response.data.data;
     totalPages.value = response.data.totalPages;
   } catch (e) {
+    console.error('Error al cargar el catálogo:', e);
     error.value = 'No se pudo cargar el catálogo. Intentá nuevamente.';
   } finally {
     loading.value = false;

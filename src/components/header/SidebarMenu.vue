@@ -26,6 +26,7 @@ async function loadCategories() {
     const response = await categoriesService.list();
     categories.value = response.data.data;
   } catch (e) {
+    console.error('Error al cargar categorías:', e);
     categories.value = [];
   }
 }

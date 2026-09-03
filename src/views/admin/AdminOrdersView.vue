@@ -10,6 +10,8 @@ const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const successMessage = ref('');
+const expandedOrderId = ref(null);
+
 let successTimeout = null;
 
 const { business, loadBusiness } = useBusiness();
@@ -107,8 +109,6 @@ async function changeStatus(order, newStatus) {
   }
 }
 
-// Fila expandida: guarda el id del pedido abierto (uno solo a la vez)
-const expandedOrderId = ref(null);
 
 function toggleDetail(order) {
   expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;

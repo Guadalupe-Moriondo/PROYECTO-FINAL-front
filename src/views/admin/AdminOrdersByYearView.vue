@@ -3,10 +3,6 @@ import { ref, onMounted } from 'vue';
 import ordersService from '../../services/orders.service';
 import Pagination from '../../components/Pagination.vue';
 
-function currentYear() {
-  return String(new Date().getFullYear());
-}
-
 const selectedYear = ref(currentYear());
 
 const loading = ref(true);
@@ -15,6 +11,10 @@ const page = ref(1);
 const totalPages = ref(1);
 const yearStats = ref({ orders: 0, total: 0 });
 const expandedOrderId = ref(null);
+
+function currentYear() {
+  return String(new Date().getFullYear());
+}
 
 function toggleDetail(order) {
   expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
@@ -108,13 +108,13 @@ onMounted(load);
           <tbody>
             <template v-for="order in orders" :key="order.id">
               <tr>
-                <td class="table-mono-ord">{{ order.orderNumber }}</td>
+                <td class="table-mono-ord table-mono-ord--period">{{ order.orderNumber }}</td>
                 <td>
                   {{ order.user?.name }}
-                  <span class="table-subtext">{{ order.user?.email }}</span>
+                  <span class="table-subtext table-subtext--period">{{ order.user?.email }}</span>
                 </td>
                 <td>{{ new Date(order.createdAt).toLocaleDateString('es-AR') }}</td>
-                <td class="table-mono">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
+                <td class="table-mono table-mono--period">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
                 <td class="detail-column">
                   <button
                   type="button"
@@ -146,13 +146,13 @@ onMounted(load);
                     <li v-for="detail in order.details" :key="detail.id">
                       <span class="detail-qty detail-qty--period">{{ detail.quantity }} ×</span>
                       <span class="detail-name detail-name--period">{{ detail.product?.name || 'Producto eliminado' }}</span>
-                      <span v-if="detail.product?.code" class="table-subtext">({{ detail.product.code }})</span>
+                      <span v-if="detail.product?.code" class="table-subtext table-subtext--period">({{ detail.product.code }})</span>
                       <span v-if="lineSubtotal(detail) != null" class="detail-subtotal">
                         $ {{ lineSubtotal(detail).toLocaleString('es-AR') }}
                       </span>
                     </li>
                   </ul>
-                  <p v-else class="table-subtext">Este pedido no tiene productos cargados.</p>
+                  <p v-else class="table-subtext table-subtext--period">Este pedido no tiene productos cargados.</p>
                 </td>
               </tr>
             </template>
@@ -236,23 +236,6 @@ onMounted(load);
 
 .history-table tbody tr:hover {
   background:rgba(0,0,0,.025);
-}
-
-.table-mono {
-  font-family:var(--font-display);
-  font-weight: 600;
-}
-
-.table-mono-ord {
-  font-family:var(--font-mono);
-  font-weight: 600;
-}
-
-.table-subtext {
-  display:block;
-  margin-top:.25rem;
-  font-size:.85rem;
-  color:var(--color-ink-soft);
 }
 
 .detail-list--period li {

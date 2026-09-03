@@ -27,15 +27,16 @@ function handleClickOutside(event) {
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutside));
-onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside));
-
 function logout() {
   close();
   authStore.logout();
   cartStore.clearLocal();
   router.push({ name: 'home' });
 }
+
+onMounted(() => document.addEventListener('click', handleClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside));
+
 </script>
 
 <template>

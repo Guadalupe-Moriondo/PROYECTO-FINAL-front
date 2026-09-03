@@ -11,10 +11,6 @@ const paymentMethod = ref('cash');
 const submitting = ref(false);
 const error = ref('');
 
-onMounted(() => {
-  cartStore.loadCart();
-});
-
 async function confirmOrder() {
   error.value = '';
   submitting.value = true;
@@ -28,6 +24,10 @@ async function confirmOrder() {
     submitting.value = false;
   }
 }
+
+onMounted(() => {
+  cartStore.loadCart();
+});
 </script>
 
 <template>

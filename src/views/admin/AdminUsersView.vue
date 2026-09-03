@@ -16,6 +16,13 @@ const page = ref(1);
 const limit = 10;
 const total = ref(0);
 
+const totalPages = computed(() => {
+
+  return Math.ceil(
+    total.value / limit
+  );
+});
+
 const statistics = ref({
   totalUsers: 0,
   totalAdmins: 0,
@@ -86,13 +93,6 @@ function changePage(newPage) {
   page.value = newPage;
   loadUsers();
 }
-
-const totalPages = computed(() => {
-
-  return Math.ceil(
-    total.value / limit
-  );
-});
 
 async function changeRole(user, newRole) {
 
