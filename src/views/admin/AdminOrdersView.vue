@@ -638,8 +638,8 @@ onMounted(async () => {
   font-family: var(--font-display);
   font-size: 0.9rem;
   font-weight: 600;
-  background-color: #c6e6d0;
-  border:6px solid #c6e6d0;
+  background-color: #bddbc5;
+  border:6px solid #bddbc5;
   border-radius: 50px;
   white-space: nowrap;
 }
@@ -688,6 +688,7 @@ onMounted(async () => {
   pointer-events: none;
   color: currentColor;
   font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .status-pending {
@@ -794,14 +795,14 @@ onMounted(async () => {
 .notification-actions {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 8px;
+  width: 100%;
 }
 
 .notify-buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  width: 130px;
   margin: 0;
 }
 
@@ -815,15 +816,16 @@ onMounted(async () => {
   
 }
 .notify-icon {
-  width: 100px;
-  height: 34px;
+  width: 120px;
+  height: 30px;
   border: none;
-  border-radius: 50px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  transition: .5s;
+  transition: .2s;
   color: white;
   box-sizing: border-box;
 }

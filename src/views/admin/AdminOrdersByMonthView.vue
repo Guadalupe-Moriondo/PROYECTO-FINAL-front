@@ -38,6 +38,11 @@ function lineSubtotal(detail) {
   return Number(unitPrice) * Number(detail.quantity);
 }
 
+function imageUrl(product) {
+  if (!product?.imageUrl) return null;
+  return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
+}
+
 async function load() {
   loading.value = true;
   try {
@@ -82,7 +87,7 @@ onMounted(load);
     <div class="month-search">
       <label for="month-input">Mes</label>
       <input id="month-input" type="month" v-model="selectedMonth" @change="search" />
-      <button type="button" class="button" @click="search">Buscar</button>
+      <button type="button" class="button button-primary" @click="search">Buscar</button>
     </div>
 
     <p v-if="loading" class="loading-state">Cargando...</p>
@@ -150,9 +155,19 @@ onMounted(load);
                 <td colspan="5">
                   <ul v-if="order.details?.length" class="detail-list detail-list--period">
                     <li v-for="detail in order.details" :key="detail.id">
+                      <div class="detail-image-wrapper detail-image-wrapper--admin">
+                        <img 
+                          v-if="imageUrl(detail.product)"
+                          :src="imageUrl(detail.product)"
+                          :alt="detail.product?.name || 'Producto'"
+                          class="detail-image detail-image--admin"
+                        />
+                      </div>
                       <span class="detail-qty detail-qty--period">{{ detail.quantity }} ×</span>
-                      <span class="detail-name detail-name--period">{{ detail.product?.name || 'Producto eliminado' }}</span>
-                      <span v-if="detail.product?.code" class="table-subtext table-subtext--period">({{ detail.product.code }})</span>
+                      <div>
+                        <span class="detail-name detail-name--period">{{ detail.product?.name || 'Producto eliminado' }}</span>
+                        <span v-if="detail.product?.code" class="detail-code"> Código: {{ detail.product.code }}</span>
+                      </div>
                       <span v-if="lineSubtotal(detail) != null" class="detail-subtotal">
                         $ {{ lineSubtotal(detail).toLocaleString('es-AR') }}
                       </span>
@@ -240,6 +255,27 @@ onMounted(load);
 
 .history-table tbody tr:hover {
   background:rgba(0,0,0,.025);
+}
+
+.button-primary {
+  background: rgb(172, 37, 37);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: .70rem 1.0rem;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+}
+
+.detail-code {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-ink-soft);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
 }
 
 @media(max-width:900px){

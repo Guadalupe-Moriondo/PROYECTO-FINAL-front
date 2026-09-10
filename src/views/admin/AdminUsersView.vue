@@ -552,7 +552,7 @@ onMounted(() => {
 }
 
 .user-actions select{
-  width:200px;
+  width:150px;
   padding:.5rem;
   border-radius:50px;
   border:1px solid var(--color-line);

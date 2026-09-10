@@ -207,7 +207,7 @@ onMounted(() => {
       </Transition>
 
       <button
-        class="button-primary"
+        class="button button-primary"
         @click="registerMovement"
       >
         Registrar
