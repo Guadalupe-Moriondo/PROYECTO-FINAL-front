@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed} from 'vue';
 import productsService from '../../services/products.service';
 import stockService from '../../services/stock.service';
 import InventoryTag from '../../components/InventoryTag.vue';
@@ -9,23 +9,16 @@ const alerts = ref([]);
 const loadingAlerts = ref(true);
 const form = ref({ productId: '', type: 'entry', quantity: 1, reason: '' });
 const products = ref([]);
+const productSearch = ref('');
+const showProductResults = ref(false);
+const showTypeResults = ref(false);
 const error = ref('');
 const message = ref('');
 let messageTimeout = null;
+let errorTimeout = null;
 const page = ref(1);
 const totalPages = ref(1);
 
-function showMessage(text) {
-  message.value = text;
-
-  if (messageTimeout) {
-    clearTimeout(messageTimeout);
-  }
-
-  messageTimeout = setTimeout(() => {
-    message.value = '';
-  }, 3000);
-}
 
 async function loadAlerts() {
   loadingAlerts.value = true;
@@ -45,8 +38,42 @@ async function loadProducts() {
   products.value = response.data.data;
 }
 
+const filteredProducts = computed(() => {
+  const search = productSearch.value.toLowerCase().trim();
+
+  if (!search) {
+    return products.value;
+  }
+
+  return products.value.filter(product =>
+    product.name.toLowerCase().includes(search) ||
+    product.code.toLowerCase().includes(search)
+  );
+});
+
+function selectProduct(product) {
+  form.value.productId = product.id;
+  productSearch.value = `${product.code} — ${product.name}`;
+  showProductResults.value = false;
+}
+
+function selectType(type) {
+  form.value.type = type;
+  showTypeResults.value = false;
+}
+
 async function registerMovement() {
   error.value = '';
+
+  if (!form.value.productId) {
+    showErrorMessage('Debes seleccionar un producto');
+    return;
+  }
+
+  if (!['in', 'out'].includes(form.value.type)) {
+    showErrorMessage('El tipo de movimiento debe ser Entrada o Salida');
+    return;
+  }
 
   try {
     await stockService.registerMovement(form.value);
@@ -59,10 +86,50 @@ async function registerMovement() {
     showMessage('Movimiento registrado correctamente');
 
   } catch (e) {
-    error.value =
-      e.response?.data?.message ||
-      'No se pudo registrar el movimiento';
+    showError(e);
   }
+}
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 3000);
+}
+
+function showErrorMessage(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 3000);
+}
+
+function showError(e) {
+  const backendMessage =
+    e.response?.data?.message ||
+    'No se pudo registrar el movimiento';
+
+  error.value = Array.isArray(backendMessage)
+    ? backendMessage.join(', ')
+    : backendMessage;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 3000);
 }
 
 onMounted(() => {
@@ -96,27 +163,32 @@ onMounted(() => {
             Producto
           </label>
 
-          <select
-            id="productId"
-            v-model="form.productId"
-            required
-          >
-            <option
-              value=""
-              disabled
-            >
-              Elegir producto...
-            </option>
+          <div class="product-search">
+            <input
+              id="productId"
+              v-model="productSearch"
+              type="text"
+              placeholder="Buscar producto..."
+              autocomplete="off"
+              @click="showProductResults = !showProductResults"
+            />
 
-            <option
-              v-for="p in products"
-              :key="p.id"
-              :value="p.id"
+            <div
+              v-if="showProductResults && filteredProducts.length"
+              class="product-results"
             >
-              {{ p.code }} — {{ p.name }}
-            </option>
-
-          </select>
+              <button
+                v-for="product in filteredProducts"
+                :key="product.id"
+                type="button"
+                class="product-result"
+                @click="selectProduct(product)"
+              >
+                <strong>{{ product.code }}</strong>
+                <span>{{ product.name }}</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="field">
@@ -125,19 +197,36 @@ onMounted(() => {
             Tipo
           </label>
 
-          <select
-            id="type"
-            v-model="form.type"
-          >
-            <option value="in">
-              Entrada
-            </option>
+          <div class="product-search">
+            <input
+              id="type"
+              :value="form.type === 'in' ? 'Entrada' : 'Salida'"
+              type="text"
+              readonly
+              @click="showTypeResults = !showTypeResults"
+            />
 
-            <option value="out">
-              Salida
-            </option>
+            <div
+              v-if="showTypeResults"
+              class="product-results"
+            >
+              <button
+                type="button"
+                class="product-result"
+                @click="selectType('in')"
+              >
+                <span>Entrada</span>
+              </button>
 
-          </select>
+              <button
+                type="button"
+                class="product-result"
+                @click="selectType('out')"
+              >
+                <span>Salida</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="field">
@@ -172,13 +261,6 @@ onMounted(() => {
         </div>
       </form>
 
-      <p
-        v-if="error"
-        class="error-message"
-      >
-        {{ error }}
-      </p>
-
       <Transition name="success-toast">
         <div
           v-if="message"
@@ -202,6 +284,32 @@ onMounted(() => {
           <div class="success-toast-content">
             <strong>{{ message }}</strong>
             <span>Los cambios se guardaron correctamente.</span>
+          </div>
+        </div>
+      </Transition>
+
+      <Transition name="error-toast">
+        <div
+          v-if="error"
+          class="error-toast"
+        >
+          <div class="error-toast-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+
+          <div class="error-toast-content">
+            <strong>{{ error }}</strong>
+            <span>No se pudieron guardar los cambios.</span>
           </div>
         </div>
       </Transition>
@@ -381,6 +489,58 @@ onMounted(() => {
   box-shadow:0 0 0 4px rgba(185,28,28,.12);
 }
 
+.product-search {
+  position: relative;
+  width: 100%;
+}
+
+.product-search input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.product-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.product-result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 12px 16px;
+  border: 0;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+}
+
+.product-result:hover {
+  background: #f7f7f4;
+}
+
+.product-result strong {
+  font-size: 0.75rem;
+  color: var(--color-steel);
+  
+}
+
+.product-result span {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
 .success-toast {
   position: fixed;
   top: 30px;
@@ -444,6 +604,79 @@ onMounted(() => {
     transform: translateY(-10px);
 }
 
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #efb8b8;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #b42323;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fdecec;
+}
+
+.error-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #7a4d4d;
+  font-size: 0.78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
 .table-header{
   display:flex;
   justify-content:space-between;
@@ -496,6 +729,17 @@ onMounted(() => {
     align-items:flex-start;
     gap:1rem;
   }
+}
 
+@media(max-width:600px) {
+  .success-toast,
+  .error-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
+  }
 }
 </style>

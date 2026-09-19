@@ -12,7 +12,6 @@ const form = ref({
   province: '',
   country: '',
 
-  phone: '',
   whatsapp: '',
   email: '',
 
@@ -33,6 +32,12 @@ const loading = ref(true);
 const saving = ref(false);
 const message = ref('');
 let messageTimeout = null;
+const phoneArea = ref('');
+const phoneNumber = ref('');
+const whatsappArea = ref('');
+const whatsappNumber = ref('');
+const showProvinceResults = ref(false);
+const showCountryResults = ref(false);
 
 const provinces = [
   'Buenos Aires',
@@ -69,18 +74,6 @@ const countries = [
   'Uruguay',
 ];
 
-function showMessage(text) {
-  message.value = text;
-
-  if (messageTimeout) {
-    clearTimeout(messageTimeout);
-  }
-
-  messageTimeout = setTimeout(() => {
-    message.value = '';
-  }, 3000);
-}
-
 async function load() {
   try {
     const response = await businessService.get();
@@ -95,7 +88,6 @@ async function load() {
       province: response.data.province || '',
       country: response.data.country || '',
 
-      phone: response.data.phone || '',
       whatsapp: response.data.whatsapp || '',
 
       email: response.data.email || '',
@@ -113,6 +105,18 @@ async function load() {
       saturdayOpen: response.data.saturdayOpen || '',
       saturdayClose: response.data.saturdayClose || '',
     };
+
+    const phone = String(response.data.phone || '')
+      .replace(/\D/g, '');
+
+    phoneArea.value = phone.slice(0, 4);
+    phoneNumber.value = phone.slice(4);
+
+    const whatsapp = String(response.data.whatsapp || '')
+      .replace(/\D/g, '');
+
+    whatsappArea.value = whatsapp.slice(0, 4);
+    whatsappNumber.value = whatsapp.slice(4);
 
   } catch (error) {
     console.error('Error cargando datos del negocio:', error);
@@ -137,8 +141,8 @@ async function save() {
       province: form.value.province,
       country: form.value.country,
 
-      phone: form.value.phone,
-      whatsapp: form.value.whatsapp,
+      phone: `${phoneArea.value}${phoneNumber.value}`,
+      whatsapp: `${whatsappArea.value}${whatsappNumber.value}`,
 
       email: form.value.email,
 
@@ -174,6 +178,28 @@ async function save() {
     saving.value = false;
 
   }
+}
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 3000);
+}
+
+function selectProvince(province) {
+  form.value.province = province;
+  showProvinceResults.value = false;
+}
+
+function selectCountry(country) {
+  form.value.country = country;
+  showCountryResults.value = false;
 }
 onMounted(load);
 </script>
@@ -237,42 +263,61 @@ onMounted(load);
       <div class="field field--business">
         <label>Provincia</label>
 
-        <select v-model="form.province">
-
-          <option value="">
-            Seleccionar provincia
-          </option>
-
-          <option
-            v-for="province in provinces"
-            :key="province"
-            :value="province"
+        <div class="product-search">
+          <input
+            v-model="form.province"
+            type="text"
+            placeholder="Seleccionar provincia"
+            readonly
+            @click="showProvinceResults = !showProvinceResults"
           >
-            {{ province }}
-          </option>
 
-        </select>
+          <div
+            v-if="showProvinceResults"
+            class="product-results"
+          >
+            <button
+              v-for="province in provinces"
+              :key="province"
+              type="button"
+              class="product-result"
+              @click="selectProvince(province)"
+            >
+              <span>{{ province }}</span>
+            </button>
+          </div>
+
+        </div>
       </div>
 
       <div class="field field--business">
 
         <label>País</label>
 
-        <select v-model="form.country">
-
-          <option value="">
-            Seleccionar país
-          </option>
-
-          <option
-            v-for="country in countries"
-            :key="country"
-            :value="country"
+        <div class="product-search">
+          <input
+            v-model="form.country"
+            type="text"
+            placeholder="Seleccionar país"
+            readonly
+            @click="showCountryResults = !showCountryResults"
           >
-            {{ country }}
-          </option>
 
-        </select>
+          <div
+            v-if="showCountryResults"
+            class="product-results"
+          >
+            <button
+              v-for="country in countries"
+              :key="country"
+              type="button"
+              class="product-result"
+              @click="selectCountry(country)"
+            >
+              <span>{{ country }}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -287,19 +332,40 @@ onMounted(load);
 
       <div class="field field--business">
         <label>Teléfono</label>
-        <input
-          v-model="form.phone"
-          type="text"
-        >
+        <div class="phone-fields">
+          <input
+            v-model="phoneArea"
+            type="tel"
+            placeholder="Código"
+            maxlength="4"
+          >
+
+          <input
+            v-model="phoneNumber"
+            type="tel"
+            placeholder="Número"
+            maxlength="6"
+          >
+        </div>
       </div>
 
       <div class="field field--business">
         <label>WhatsApp</label>
-        <input
-          v-model="form.whatsapp"
-          type="text"
-          placeholder="54-93511-234567"
-        >
+        <div class="phone-fields">
+          <input
+            v-model="whatsappArea"
+            type="tel"
+            placeholder="Código"
+            maxlength="4"
+          >
+
+          <input
+            v-model="whatsappNumber"
+            type="tel"
+            placeholder="Número"
+            maxlength="6"
+          >
+        </div>
       </div>
 
       <div class="field field--business">
@@ -437,6 +503,13 @@ onMounted(load);
 
   <div class="form-actions">
 
+    <RouterLink
+      :to="{ name: 'admin-home' }"
+      class="button button-secondary"
+    >
+      Cancelar
+    </RouterLink>
+
     <button
       type="submit"
       class="button button-primary"
@@ -499,24 +572,94 @@ onMounted(load);
   gap: 1.4rem;
 }
 
+.product-search {
+  position: relative;
+  width: 100%;
+}
+
+.product-search input {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 0 1rem;
+  font-size: .95rem;
+  color: var(--color-ink);
+  transition: .25s;
+  cursor: pointer;
+}
+
+.product-search input:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 4px rgba(185, 28, 28, .12);
+}
+
+.product-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .12);
+}
+
+.product-result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border: 0;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.product-result:hover {
+  background: #f7f7f4;
+}
+
+.product-result span {
+  font-size: .9rem;
+  color: var(--color-ink);
+}
+
+.phone-fields {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.phone-fields input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .hours-grid {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .hours-box {
-  background: rgba(0,0,0,.02);
+  background: #fafafa;
   border: 1px solid var(--color-line);
-  border-radius: 14px;
-  padding: 1rem 1.2rem;
-  transition: .2s;
+  border-radius: 18px;
+  padding: 1.2rem 1.4rem;
+  transition: .25s;
 }
 
 .hours-box:hover {
   border-color: #cfd8e3;
-  transform: translateY(-1px);
-  
 }
 
 .hours-box h3 {
@@ -534,6 +677,21 @@ onMounted(load);
 
 .hours-row input {
   flex: 1;
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 0 1rem;
+  font-size: .95rem;
+  color: var(--color-ink);
+  transition: .25s;
+}
+
+.hours-row input:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 4px rgba(185, 28, 28, .12);
 }
 
 .hours-row span {
@@ -608,18 +766,43 @@ onMounted(load);
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: .5rem;
+  gap: 1rem;
+  padding: 2rem;
+  border-top: 1px solid var(--color-line);
+  background: #fafafa;
 }
+
+.button {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.6rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: .25s;
+}
+
+.button-secondary{
+  background:#a7a6a6;
+  color:white;
+  border:none;
+}
+
+.button-secondary:hover{
+  background:#949393;
+  transform:translateY(-2px);
+  box-shadow: 0 12px 24px rgba(24, 24, 24, 0.28);
+}
+
+
 
 @media (max-width: 900px) {
 
   .form-grid {
     grid-template-columns: 1fr;
   }
-
-}
-
-@media (max-width: 900px) {
 
   .form-card {
     padding: 1.2rem;
@@ -639,6 +822,10 @@ onMounted(load);
   }
 
   .button-primary {
+    width: 100%;
+  }
+
+  .button {
     width: 100%;
   }
 

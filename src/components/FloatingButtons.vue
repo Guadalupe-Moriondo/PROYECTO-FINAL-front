@@ -10,17 +10,15 @@ const showFloatingButtons = computed(() => route.name === 'home');
 
 const whatsappLink = computed(() => {
   if (!business.value?.whatsapp) return null;
-  const digits = business.value.whatsapp.replace(/\D/g, '');
+  const number = business.value.whatsapp.replace(/\D/g, '');
   const text = encodeURIComponent(`Hola! Quería hacer una consulta sobre sus productos.`);
   
-  return `https://wa.me/${digits}?text=${text}`;
+  return `https://wa.me/${number}?text=${text}`;
 });
 
 const mailLink = computed(() => {
   if (!business.value?.email) return null;
-
   const subject = encodeURIComponent('Consulta desde la web');
-
   const body = encodeURIComponent(
   `Hola,
 

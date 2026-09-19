@@ -25,6 +25,18 @@ const error = ref('');
 const selectedImage = ref(null);
 const imagePreview = ref(null);
 const imageInput = ref(null);
+const showCategoryResults = ref(false);
+const categorySearch = ref('');
+
+const filteredCategories = computed(() => {
+  const search = categorySearch.value.toLowerCase().trim();
+
+  if (!search) return categories.value;
+
+  return categories.value.filter(category =>
+    category.name.toLowerCase().includes(search)
+  );
+});
 
 async function loadCategories() {
   const response = await categoriesService.list();
@@ -106,9 +118,21 @@ function onImageSelected(event) {
   imagePreview.value = URL.createObjectURL(file);
 }
 
-onMounted(() => {
-  loadCategories();
-  if (isEditing.value) loadProduct();
+function selectCategory(category) {
+  form.value.categoryId = category.id;
+  categorySearch.value = category.name;
+  showCategoryResults.value = false;
+}
+
+onMounted(async () => {
+  await loadCategories();
+  if (isEditing.value) {
+    await loadProduct();
+    const category = categories.value.find(
+      cat => cat.id === form.value.categoryId
+    );
+    categorySearch.value = category?.name || '';
+  }
 });
 </script>
 
@@ -165,24 +189,32 @@ onMounted(() => {
               Categoría
             </label>
 
-            <select
-              id="categoryId"
-              v-model="form.categoryId"
-              required
-            >
-              <option value="" disabled>
-                Elegir categoría...
-              </option>
+            <div class="category-search">
+              <input
+                id="categoryId"
+                v-model="categorySearch"
+                type="text"
+                placeholder="Elegir categoría..."
+                autocomplete="off"
+                @click="showCategoryResults = !showCategoryResults"
+                @input="showCategoryResults = true"
+              />
 
-              <option
-                v-for="cat in categories"
-                :key="cat.id"
-                :value="cat.id"
+              <div
+                v-if="showCategoryResults && filteredCategories.length"
+                class="category-results"
               >
-                {{ cat.name }}
-              </option>
-
-            </select>
+                <button
+                  v-for="cat in filteredCategories"
+                  :key="cat.id"
+                  type="button"
+                  class="category-result"
+                  @click="selectCategory(cat)"
+                >
+                  {{ cat.name }}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="field">
@@ -353,9 +385,8 @@ onMounted(() => {
           class="button button-primary"
           :disabled="saving"
         >
-          {{ saving ? 'Guardando...' : 'Guardar producto' }}
+          {{ saving ? 'Guardando...' : 'Guardar' }}
         </button>
-
       </div>
     </form>
   </div>
@@ -422,6 +453,63 @@ onMounted(() => {
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:1.4rem;
+}
+
+.category-search {
+  position: relative;
+  width: 100%;
+}
+
+.category-search input {
+  width: 100%;
+  height: 52px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  border: 1px solid #d8dee8;
+  border-radius: 14px;
+  font-size: .95rem;
+  transition: .25s;
+  background: white;
+  color: var(--color-steel);
+  cursor: pointer;
+}
+
+.category-search input:focus {
+  outline: none;
+  border-color: #b71c1c;
+  box-shadow: 0 0 0 4px rgba(183, 28, 28, .12);
+}
+
+.category-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .12);
+}
+
+.category-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: 0;
+  background: white;
+  text-align: left;
+  font-size: .9rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: .2s;
+}
+
+.category-result:hover {
+  background: #f7f7f4;
 }
 
 .field{
@@ -559,25 +647,16 @@ onMounted(() => {
   transition:.25s;
 }
 
-.button-primary{
-  border:none;
-  background:#b71c1c;
-  color:white;
-}
-
-.button-primary:hover{
-  background:#991b1b;
-  transform:translateY(-2px);
-}
-
 .button-secondary{
-  background:white;
-  color:#555;
-  border:1px solid var(--color-line);
+  background:#a7a6a6;
+  color:white;
+  border:none;
 }
 
 .button-secondary:hover{
-  background:#f5f5f5;
+  background:#949393;
+  transform:translateY(-2px);
+  box-shadow: 0 12px 24px rgba(24, 24, 24, 0.28);
 }
 
 .error-message{
@@ -614,7 +693,7 @@ onMounted(() => {
   }
 
   .form-actions{
-    flex-direction:column-reverse;
+    justify-content: stretch;
   }
 
   .button{

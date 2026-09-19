@@ -447,21 +447,24 @@ onMounted(() => {
   transition:.25s;
 }
 
-.users-list{
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
+.users-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
 
-.user-card{
-  display:flex;
-  align-items:center;
-  gap:2rem;
-  background:var(--color-surface);
-  border:1px solid var(--color-line);
-  border-radius:18px;
-  padding:1.4rem 1.8rem;
-  transition:.25s;
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: 1.5rem;
+  transition: .25s;
+  min-height: 300px;
 }
 
 .user-card:hover{
@@ -491,20 +494,21 @@ onMounted(() => {
   height:34px;
 }
 
-.user-content{
-  flex:1;
+.user-content {
+  width: 100%;
 }
 
-.user-top{
-  display:flex;
-  align-items:center;
-  margin-bottom:.8rem;
+.user-top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: .8rem;
 }
 
 .user-top > div {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: .8rem;
+  gap: .6rem;
 }
 
 .user-top h2{
@@ -535,28 +539,29 @@ onMounted(() => {
   border:1px solid #d4a0a0;
 }
 
-.user-data{
-  display:flex;
-  gap:2rem;
-  flex-wrap:wrap;
-  color:var(--color-ink-soft);
-  font-size:.9rem;
+.user-data {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .6rem;
+  width: 100%;
 }
 
 .user-actions {
-  width: 220px;
+  width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-shrink: 0;
 }
 
-.user-actions select{
-  width:150px;
-  padding:.5rem;
-  border-radius:50px;
-  border:1px solid var(--color-line);
-  background:white;
+.user-actions select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: .6rem .8rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  background: white;
 }
 
 .owner-text {
@@ -713,23 +718,13 @@ onMounted(() => {
 }
 
 @media(max-width:900px){
-  .user-card{
-    flex-direction:column;
-    align-items:flex-start;
+  .users-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .user-actions{
     width:100%;
     justify-content:center;
-  }
-
-  .user-actions select{
-    width:100%;
-  }
-
-  .user-data{
-    flex-direction:column;
-    gap:.4rem;
   }
 
   .statistics-grid{
@@ -742,6 +737,9 @@ onMounted(() => {
 }
 
 @media (max-width: 600px) {
+  .users-list {
+    grid-template-columns: 1fr;
+  }
 
   .success-toast,
   .error-toast {

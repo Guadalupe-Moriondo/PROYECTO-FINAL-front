@@ -447,7 +447,7 @@ onMounted(async () => {
                       Number(detail.unitPrice)
                         .toLocaleString('es-AR')
                     }}
-                    
+                    c/u
                   </span>
 
                 </div>

@@ -6,11 +6,8 @@ import ubicacionImg from '../assets/local.jpg';
 const business = ref(null);
 
 const whatsappLink = computed(() => {
-
   if (!business.value?.whatsapp) return null;
-
   const number = business.value.whatsapp.replace(/\D/g, '');
-
   const text = encodeURIComponent(
     'Hola! Quisiera realizar una consulta.'
   );
@@ -19,7 +16,6 @@ const whatsappLink = computed(() => {
 });
 
 const mailLink = computed(() => {
-
   if (!business.value?.email) return null;
 
   const subject = encodeURIComponent(
@@ -38,7 +34,6 @@ const mailLink = computed(() => {
 });
 
 const mapsUrl = computed(() => {
-
   if (!business.value) return '';
 
   const address = [
@@ -61,6 +56,18 @@ async function loadBusiness() {
     console.error('Error al cargar los datos del negocio:', e);
     business.value = null;
   }
+}
+
+function formatPhone(phone) {
+  if (!phone) return '';
+
+  const number = String(phone).replace(/\D/g, '');
+
+  if (number.length >= 10) {
+    return `${number.slice(0, 4)}-${number.slice(4, 10)}`;
+  }
+
+  return number;
 }
 
 onMounted(loadBusiness);
@@ -237,7 +244,7 @@ onMounted(loadBusiness);
                 </span>
 
                 <p>
-                  {{ business.phone }}
+                  {{ formatPhone(business.phone) }}
                 </p>
 
               </div>

@@ -183,6 +183,13 @@ onMounted(() => {
             <strong>{{ cartStore.items.length }}</strong>
           </div>
 
+          <div class="summary-row">
+            <span>Unidades</span>
+            <strong>
+              {{ cartStore.items.reduce((total, item) => total + item.quantity, 0) }}
+            </strong>
+          </div>
+          
           <div class="summary-row total">
             <span>Total</span>
 
@@ -244,19 +251,13 @@ onMounted(() => {
 }
 
 .cart-card {
-
   display: flex;
   gap: 1.5rem;
   padding: 1.5rem;
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.05);
-  transition: .25s;
-}
-
-.cart-card:hover {
-  transform: translateY(-3px);
+  
 }
 
 .cart-image {

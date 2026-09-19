@@ -31,6 +31,7 @@ const whatsappUrl = computed(() => {
   const text = encodeURIComponent(
     `Hola! Quería consultar por el repuesto "${product.value.name}" (código ${product.value.code}).`,
   );
+  
   return `https://wa.me/${number}?text=${text}`;
 });
 

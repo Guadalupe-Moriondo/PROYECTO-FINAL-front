@@ -825,7 +825,7 @@ onMounted(async () => {
   justify-content: center;
   gap: 6px;
   cursor: pointer;
-  transition: .2s;
+  transition: .6s;
   color: white;
   box-sizing: border-box;
 }
@@ -850,25 +850,25 @@ onMounted(async () => {
   transform:translateY(-2px) scale(1.08);
 }
 
-.notification-success{
-  margin-top:10px;
-  padding:8px;
-  border-radius:8px;
-  background:#e8f7ec;
-  border:1px solid #b8dfc4;
-  color:#207a3c;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
+.notification-success {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 130px;
+  margin:0;
+  padding: 6px;
+  border-radius: 8px;
+  background: #e8f7ec;
+  border: 1px solid #b8dfc4;
+  color: #207a3c;
 }
 
-.notification-success strong{
-  font-size:.8rem;
+.notification-success strong {
+  font-size: .7rem;
 }
 
-.notification-success small{
-  color:#4d6655;
-  font-size:.8rem;
+.notification-success small {
+  color: #4d6655;
 }
 
 .success-toast {

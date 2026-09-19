@@ -7,11 +7,17 @@ const savingField = ref(false);
 
 const profileMessage = ref('');
 const passwordMessage = ref('');
+const errorMessage = ref('');
+
+let profileTimeout = null;
+let passwordTimeout = null;
+let errorTimeout = null;
 
 const editingName = ref(false);
 const nameValue = ref('');
 
-const phoneValue = ref('');
+const phoneArea = ref('');
+const phoneNumber = ref('');
 const phoneDirty = ref(false);
 
 const emailValue = ref('');
@@ -47,7 +53,7 @@ async function loadProfile() {
   try {
     const response = await usersService.getProfile();
     profile.value = response.data;
-    phoneValue.value = profile.value.phone || '';
+    loadPhone(profile.value.phone);
     emailValue.value = profile.value.email || '';
   } finally {
     loading.value = false;
@@ -65,7 +71,15 @@ function cancelEditName() {
 }
 
 function onPhoneInput() {
-  phoneDirty.value = phoneValue.value !== profile.value.phone;
+  const phone = `${phoneArea.value}${phoneNumber.value}`;
+  phoneDirty.value = phone !== (profile.value.phone || '');
+}
+
+function loadPhone(phone) {
+  const value = (phone || '').replace(/\D/g, '');
+
+  phoneArea.value = value.slice(0, 4);
+  phoneNumber.value = value.slice(4, 10);
 }
 
 function onEmailInput() {
@@ -87,7 +101,11 @@ async function saveField(field, value) {
     if (field === 'phone') phoneDirty.value = false;
     if (field === 'email') emailDirty.value = false;
 
-    setTimeout(() => {
+    if (profileTimeout) {
+      clearTimeout(profileTimeout);
+    }
+
+    profileTimeout = setTimeout(() => {
       profileMessage.value = '';
     }, 3000);
   } catch (error) {
@@ -102,7 +120,16 @@ async function changePassword() {
   passwordMessage.value = '';
 
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    passwordMessage.value = 'Las contraseñas no coinciden';
+    errorMessage.value = 'Las contraseñas no coinciden';
+
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
+    errorTimeout = setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
+
     return;
   }
 
@@ -120,12 +147,28 @@ async function changePassword() {
       confirmPassword: '',
     };
 
-    setTimeout(() => {
+    if (passwordTimeout) {
+      clearTimeout(passwordTimeout);
+    }
+
+    passwordTimeout = setTimeout(() => {
       passwordMessage.value = '';
     }, 3000);
   } catch (error) {
-    passwordMessage.value =
+    const message =
       error.response?.data?.message || 'No se pudo cambiar la contraseña';
+
+    errorMessage.value = Array.isArray(message)
+      ? message.join(', ')
+      : message;
+
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
+    errorTimeout = setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
   }
 }
 
@@ -139,6 +182,70 @@ onMounted(loadProfile);
 
 <template>
   <div class="container profile-view">
+
+    <Transition name="success-toast">
+      <div
+        v-if="profileMessage || passwordMessage"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div class="success-toast-content">
+          <strong>
+            {{ profileMessage || passwordMessage }}
+          </strong>
+
+          <span>
+            Los cambios se guardaron correctamente.
+          </span>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Toast de error -->
+    <Transition name="error-toast">
+      <div
+        v-if="errorMessage"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <div class="error-toast-content">
+          <strong>
+            {{ errorMessage }}
+          </strong>
+
+          <span>
+            No se pudieron guardar los cambios.
+          </span>
+        </div>
+      </div>
+    </Transition>
 
     <div class="profile-page-header">
       <div>
@@ -316,33 +423,34 @@ onMounted(loadProfile);
 
             </div>
 
-            <input
-              v-model="phoneValue"
-              type="text"
-              placeholder="Ingresá tu teléfono"
-              @input="onPhoneInput"
-            />
+            <div class="phone-inputs">
+              <input
+                v-model="phoneArea"
+                type="tel"
+                maxlength="4"
+                placeholder="Código"
+                @input="onPhoneInput"
+              />
+
+              <input
+                v-model="phoneNumber"
+                type="tel"
+                maxlength="6"
+                placeholder="Número"
+                @input="onPhoneInput"
+              />
+            </div>
 
             <button
               type="button"
               :disabled="!phoneDirty || savingField"
-              @click="saveField('phone', phoneValue)"
+              @click="saveField('phone', `${phoneArea}${phoneNumber}`)"
             >
               Guardar
             </button>
 
           </div>
         </div>
-
-        <p
-          v-if="profileMessage"
-          class="success-message"
-        >
-
-          {{ profileMessage }}
-
-        </p>
-
       </section>
 
       <section class="profile-card security-card">
@@ -537,17 +645,6 @@ onMounted(loadProfile);
           Cambiar contraseña
 
         </button>
-
-
-        <p
-          v-if="passwordMessage"
-          class="success-message"
-        >
-        
-          {{ passwordMessage }}
-
-        </p>
-
       </section>
     </div>
   </div>
@@ -656,7 +753,7 @@ onMounted(loadProfile);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 100px;
   background:
     rgba(207, 81, 74, 0.08);
   color: var(--color-rust);
@@ -810,6 +907,31 @@ onMounted(loadProfile);
   cursor: not-allowed;
 }
 
+.phone-inputs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.phone-inputs input:first-child {
+  width: 90px;
+  flex: 0 0 90px;
+}
+
+.phone-inputs input:last-child {
+  flex: 1;
+}
+
+.phone-inputs input {
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 0.88rem;
+}
+
 .security-card {
   position: sticky;
   top: 25px;
@@ -896,6 +1018,152 @@ onMounted(loadProfile);
   transform: translateY(-1px);
 }
 
+.success-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #b8dfc4;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #207a3c;
+}
+
+.success-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #e8f7ec;
+}
+
+.success-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.success-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.success-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.success-toast-content span {
+  color: #4d6655;
+  font-size: 0.78rem;
+}
+
+.success-toast-enter-active,
+.success-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.success-toast-enter-from,
+.success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #efb8b8;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #b42323;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fdecec;
+}
+
+.error-toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #7a4d4d;
+  font-size: 0.78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
 @media (max-width: 900px) {
 
   .profile-layout {
@@ -940,6 +1208,24 @@ onMounted(loadProfile);
 
   .name-edit-row {
     flex-wrap: wrap;
+  }
+
+  .success-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
+  }
+
+  .error-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+
+    min-width: auto;
+    max-width: none;
   }
 
 }

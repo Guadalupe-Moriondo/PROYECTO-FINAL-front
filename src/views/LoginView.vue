@@ -202,9 +202,9 @@ async function submit() {
 }
 
 @media (max-width: 900px) {
-
-  .login-page {
+ .login-page {
     grid-template-columns: 1fr;
+    background: var(--color-rust-dark);
   }
 
   .login-image {
@@ -218,17 +218,18 @@ async function submit() {
 
   .auth-card {
     padding: 28px 22px;
+    box-shadow: 0 12px 35px rgba(7, 7, 7, 0.651);
   }
 
   .auth-logo {
     top: 18px;
     left: 20px;
+    color: white;
   }
 
   .auth-logo .logo-mark {
     font-size: 1.5rem;
+    color: white;
   }
-
- 
 }
 </style>

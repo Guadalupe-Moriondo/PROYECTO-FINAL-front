@@ -62,7 +62,7 @@ onMounted(load);
             Pedidos del mes
 
             <span class="stat-toggle-hint">
-              detalle ▼
+              Ver detalle ▼
             </span>
           </span>
 
@@ -91,7 +91,7 @@ onMounted(load);
             Pedidos del año
 
             <span class="stat-toggle-hint">
-              detalle ▼
+              Ver detalle ▼
             </span>
           </span>
 
