@@ -88,14 +88,19 @@ onMounted(async () => {
 
   if (route.query.success === 'created') {
     message.value = '¡Producto creado correctamente!';
-
-    setTimeout(() => {
-      message.value = '';
-    }, 3000);
   }
 
   if (route.query.success === 'updated') {
     message.value = '¡Producto actualizado correctamente!';
+  }
+
+  if (route.query.success) {
+    router.replace({
+      query: {
+        ...route.query,
+        success: undefined,
+      },
+    });
 
     setTimeout(() => {
       message.value = '';
@@ -709,6 +714,26 @@ onMounted(async () => {
 
 .image-button:hover .image-overlay {
   opacity: 1;
+}
+
+.admin-table--detailed th:first-child,
+.admin-table--detailed td:first-child {
+  text-align: left;
+}
+
+.admin-table--detailed th:nth-child(2),
+.admin-table--detailed td:nth-child(2),
+.admin-table--detailed th:nth-child(3),
+.admin-table--detailed td:nth-child(3),
+.admin-table--detailed th:nth-child(4),
+.admin-table--detailed td:nth-child(4) {
+  text-align: center;
+}
+
+.table-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 900px) {

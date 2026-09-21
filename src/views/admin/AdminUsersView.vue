@@ -9,6 +9,7 @@ const loading = ref(true);
 const saving = ref(false);
 const message = ref('');
 const error = ref('');
+let errorTimeout = null;
 const authStore = useAuthStore();
 const search = ref('');
 const roleFilter = ref('all');
@@ -63,10 +64,16 @@ async function loadUsers() {
     error.value =
       'No se pudieron cargar los usuarios.';
 
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
+    errorTimeout = setTimeout(() => {
+      error.value = '';
+    }, 3000);
+
   } finally {
-
     loading.value = false;
-
   }
 }
 
@@ -94,23 +101,30 @@ function changePage(newPage) {
   loadUsers();
 }
 
-async function changeRole(user, newRole) {
+async function changeRole(user, event) {
+
+  const newRole = event.target.value;
+
+  if (newRole === user.role) {
+    return;
+  }
 
   const newRoleLabel =
     newRole === 'admin'
       ? 'Administrador'
       : 'Cliente';
 
+  const previousRole = user.role;
+
   const confirmed = window.confirm(
     `¿Querés cambiar el rol de ${user.name} a ${newRoleLabel}?`
   );
 
   if (!confirmed) {
+    event.target.value = previousRole;
     return;
   }
 
-  const previousRole = user.role;
-    
   saving.value = true;
   message.value = '';
   error.value = '';
@@ -128,9 +142,7 @@ async function changeRole(user, newRole) {
       'Se ha actualizado el rol correctamente.';
 
     setTimeout(() => {
-
       message.value = '';
-
     }, 3000);
 
   } catch (err) {
@@ -140,18 +152,24 @@ async function changeRole(user, newRole) {
       err
     );
 
-    user.role = previousRole;
+    event.target.value = previousRole;
 
     error.value =
       err.response?.data?.message ||
       'No se pudo actualizar el rol.';
 
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
+    errorTimeout = setTimeout(() => {
+      error.value = '';
+    }, 3000);
+
     loadUsers();
 
   } finally {
-
     saving.value = false;
-
   }
 }
 
@@ -260,17 +278,7 @@ onMounted(() => {
         class="error-toast"
       >
         <div class="error-toast-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <path
-              d="M6 6l12 12M18 6L6 18"
-              stroke-linecap="round"
-            />
-          </svg>
+          !
         </div>
 
         <div class="error-toast-content">
@@ -391,8 +399,8 @@ onMounted(() => {
 
             <select v-else
               :value="user.role"
-              @change="changeRole(user,$event.target.value)"
-              :disable="saving"
+              @change="changeRole(user,$event)"
+              :disabled="saving"
             >
               <option value="customer">Cliente</option>
               <option value="admin">Administrador</option>
@@ -666,12 +674,10 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #ffe8e8;
-}
-
-.error-toast-icon svg {
-  width: 20px;
-  height: 20px;
+  background: #fdecec;
+  color: #b42318;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .error-toast-content {

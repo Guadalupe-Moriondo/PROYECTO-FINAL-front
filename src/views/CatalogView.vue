@@ -13,6 +13,7 @@ const products = ref([]);
 const categories = ref([]);
 const loading = ref(true);
 const error = ref('');
+let errorTimeout = null;
 
 const filters = ref({
   name: route.query.search || '',
@@ -40,6 +41,14 @@ async function loadProducts() {
   } catch (e) {
     console.error('Error al cargar el catálogo:', e);
     error.value = 'No se pudo cargar el catálogo. Intentá nuevamente.';
+
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
+    errorTimeout = setTimeout(() => {
+      error.value = '';
+    }, 3000);
   } finally {
     loading.value = false;
   }
@@ -189,12 +198,24 @@ watch(
 
         <main class="catalog-products">
 
-          <p
-            v-if="error"
-            class="error-message error-message--catalog"
-          >
-            {{ error }}
-          </p>
+          <Transition name="error-toast">
+            <div
+              v-if="error"
+              class="error-toast"
+            >
+              <div class="error-toast-icon">
+                !
+              </div>
+
+              <div class="error-toast-content">
+                <strong>{{ error }}</strong>
+
+                <span>
+                  Ocurrió un error al cargar la información.
+                </span>
+              </div>
+            </div>
+          </Transition>
 
           <p
             v-if="loading"
@@ -436,6 +457,65 @@ watch(
   display: flex;
   justify-content: center;
   margin-top: 45px;
+}
+
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  max-width: 380px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #f0c2c2;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  color: #b42318;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fdecec;
+  color: #b42318;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #765050;
+  font-size: 0.78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 @media (max-width: 1200px) {

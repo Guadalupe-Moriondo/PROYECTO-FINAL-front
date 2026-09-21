@@ -110,7 +110,16 @@ async function saveField(field, value) {
     }, 3000);
   } catch (error) {
     console.error('Error al actualizar el perfil:', error);
-    profileMessage.value = 'No se pudo actualizar el perfil';
+    errorMessage.value = 'No se pudo actualizar el perfil';
+
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
+    errorTimeout = setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
+
   } finally {
     savingField.value = false;
   }
@@ -222,17 +231,7 @@ onMounted(loadProfile);
         class="error-toast"
       >
         <div class="error-toast-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <path
-              d="M6 6l12 12M18 6L6 18"
-              stroke-linecap="round"
-            />
-          </svg>
+          !
         </div>
 
         <div class="error-toast-content">
@@ -1119,20 +1118,15 @@ onMounted(loadProfile);
 .error-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
   background: #fdecec;
-}
-
-.error-toast-icon svg {
-  width: 20px;
-  height: 20px;
+  color: #b42318;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .error-toast-content {

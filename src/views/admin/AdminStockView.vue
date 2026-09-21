@@ -294,17 +294,7 @@ onMounted(() => {
           class="error-toast"
         >
           <div class="error-toast-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-            >
-              <path
-                d="M6 6l12 12M18 6L6 18"
-                stroke-linecap="round"
-              />
-            </svg>
+            !
           </div>
 
           <div class="error-toast-content">
@@ -632,20 +622,15 @@ onMounted(() => {
 .error-toast-icon {
   width: 36px;
   height: 36px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
   background: #fdecec;
-}
-
-.error-toast-icon svg {
-  width: 20px;
-  height: 20px;
+  color: #b42318;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .error-toast-content {
@@ -715,6 +700,11 @@ onMounted(() => {
   text-transform:uppercase;
   letter-spacing:.04em;
   transition:.25s;
+}
+
+.admin-table--basic th:nth-child(2),
+.admin-table--basic td:nth-child(2) {
+  text-align: center;
 }
 
 @media(max-width:900px){

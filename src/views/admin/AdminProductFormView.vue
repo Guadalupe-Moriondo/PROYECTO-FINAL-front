@@ -137,6 +137,14 @@ onMounted(async () => {
 </script>
 
 <template>
+
+  <Transition name="toast">
+    <div v-if="error" class="toast toast-error">
+      <span class="toast-icon">!</span>
+      <span>{{ error }}</span>
+    </div>
+  </Transition>
+  
   <div class="container admin-form-view">
 
     <header class="page-header">
@@ -363,13 +371,6 @@ onMounted(async () => {
           </button>
         </div>
       </section>
-
-      <p
-        v-if="error"
-        class="error-message"
-      >
-        {{ error }}
-      </p>
 
       <div class="form-actions">
 
@@ -659,13 +660,63 @@ onMounted(async () => {
   box-shadow: 0 12px 24px rgba(24, 24, 24, 0.28);
 }
 
-.error-message{
-  margin:0 2rem 2rem;
-  padding:1rem;
-  background:#fdecec;
-  color:#b42318;
-  border-radius:12px;
-  border:1px solid #f5c2c7;
+.toast {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+
+  min-width: 300px;
+  max-width: 420px;
+
+  padding: 1rem 1.2rem;
+
+  background: white;
+  border: 1px solid #f5c2c7;
+  border-radius: 14px;
+
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .15);
+
+  color: #b42318;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.toast-error {
+  border-left: 4px solid #b42318;
+}
+
+.toast-icon {
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #fdecec;
+  color: #b42318;
+
+  font-weight: 700;
+}
+
+/* Entrada */
+.toast-enter-active,
+.toast-leave-active {
+  transition: all .3s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 
 .visually-hidden{

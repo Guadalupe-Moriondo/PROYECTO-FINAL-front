@@ -544,15 +544,6 @@ onMounted(async () => {
     0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-.admin-table--detailed {
-  min-width: 950px;
-}
-.admin-table--detailed th {
-  white-space: nowrap;
-}
-
-
-
 .order-row {
   background: var(--color-surface);
   transition:
@@ -787,6 +778,22 @@ onMounted(async () => {
   align-items:center;
   gap:10px;
 }
+
+.admin-table--detailed th:nth-child(1),
+.admin-table--detailed td:nth-child(1),
+.admin-table--detailed th:nth-child(3),
+.admin-table--detailed td:nth-child(3),
+.admin-table--detailed th:nth-child(4),
+.admin-table--detailed td:nth-child(4),
+.admin-table--detailed th:nth-child(5),
+.admin-table--detailed td:nth-child(5),
+.admin-table--detailed th:nth-child(6),
+.admin-table--detailed td:nth-child(6),
+.admin-table--detailed th:nth-child(7),
+.admin-table--detailed td:nth-child(7) {
+  text-align: center;
+}
+
 .notification-cell {
   vertical-align: middle;
   white-space: nowrap;

@@ -235,13 +235,26 @@ onMounted(load);
 }
 
 .history-table th {
-  text-align:left;
-  padding:1rem 1.2rem;
-  background:rgba(0,0,0,.03);
-  font-family:var(--font-display);
-  text-transform:uppercase;
-  font-size:.75rem;
-  color:var(--color-ink-soft);
+  text-align: left;
+  padding: 1rem 1.2rem;
+  background: rgba(0,0,0,.03);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: .75rem;
+  color: var(--color-ink-soft);
+}
+
+.history-table th:nth-child(3),
+.history-table td:nth-child(3),
+.history-table th:nth-child(4),
+.history-table td:nth-child(4),
+.history-table th:nth-child(5),
+.history-table td:nth-child(5) {
+  text-align: center;
+}
+
+.detail-toggle {
+  margin: 0 auto;
 }
 
 .history-table td {

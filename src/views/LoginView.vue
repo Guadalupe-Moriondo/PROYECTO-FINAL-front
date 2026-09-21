@@ -60,6 +60,19 @@ async function submit() {
     <div class="login-page">
       <div class="login-panel">
 
+        <div class="login-form-content">
+          <RouterLink
+            :to="{ name: 'home' }"
+            class="auth-form-logo"
+            aria-label="Ir al inicio"
+          >
+            <span class="logo-mark">DM</span>
+            <span class="logo-text">
+              Repuestos<br />
+              Agrícolas
+            </span>
+          </RouterLink>
+
         <div class="auth-card">
 
           <h1>Ingresar</h1>
@@ -141,7 +154,7 @@ async function submit() {
               Registrate
             </RouterLink>
           </p>
-
+        </div>
         </div>
       </div>
 
@@ -153,7 +166,6 @@ async function submit() {
         />
 
       </div>
-
     </div>
   </div>
 </template>
@@ -201,8 +213,20 @@ async function submit() {
   object-position: center;
 }
 
+.login-form-content {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-form-logo {
+  display: none;
+}
+
 @media (max-width: 900px) {
- .login-page {
+  .login-page {
     grid-template-columns: 1fr;
     background: var(--color-rust-dark);
   }
@@ -214,6 +238,33 @@ async function submit() {
   .login-panel {
     min-height: 100vh;
     padding: var(--space-4);
+  }
+
+  .auth-form-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 50px;
+    text-decoration: none;
+    line-height: 1;
+  }
+
+ .auth-form-logo .logo-mark {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 800;
+    color: rgb(216, 60, 60);
+    letter-spacing: 0.02em;
+  }
+
+  .auth-form-logo .logo-text {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 1.2;
   }
 
   .auth-card {

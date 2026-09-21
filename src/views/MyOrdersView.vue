@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import ordersService from '../services/orders.service';
 import Pagination from '../components/Pagination.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const loading = ref(true);
 const showSuccessMessage = ref(false);
@@ -101,6 +102,11 @@ onMounted(async () => {
     setTimeout(() => {
       showSuccessMessage.value = false;
     }, 3000);
+
+    router.replace({
+      path: route.path,
+      query: {},
+    });
   }
 });
 </script>
@@ -899,8 +905,18 @@ onMounted(async () => {
   }
 
   .order-card-header {
+    position: relative;
     align-items: flex-start;
     flex-direction: column;
+    min-height: 40px;
+    padding-right: 100px;
+  }
+
+  .order-status {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    z-index: 2;
   }
 
   .order-card-footer {

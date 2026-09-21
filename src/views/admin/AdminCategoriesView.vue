@@ -159,6 +159,25 @@ onMounted(load);
         </div>
       </div>
     </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>{{ error }}</strong>
+
+          <span>
+            Ocurrió un error al cargar la información.
+          </span>
+        </div>
+      </div>
+    </Transition>
     <!-- ================= NUEVA CATEGORÍA ================= -->
     <section class="category-card">
 
@@ -207,13 +226,6 @@ onMounted(load);
         </button>
       </form>
     </section>
-
-    <p
-      v-if="error"
-      class="error-message error-message--admin"
-    >
-      {{ error }}
-    </p>
 
     <p
       v-if="loading"
@@ -474,39 +486,110 @@ onMounted(load);
    background: #e8f7ec; 
   }
 
-  .success-toast-icon svg {
-    width: 20px; 
-    height: 20px; 
-  } 
+.success-toast-icon svg {
+  width: 20px; 
+  height: 20px; 
+} 
 
-  .success-toast-content { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 3px; 
-  }
+.success-toast-content { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 3px; 
+}
 
-  .success-toast-content strong { 
-    font-size: 0.88rem; 
-    font-weight: 700; 
-  } 
+.success-toast-content strong { 
+  font-size: 0.88rem; 
+  font-weight: 700; 
+} 
 
-  .success-toast-content span { 
-    color: #4d6655; 
-    font-size: 0.78rem; 
-  }
+.success-toast-content span { 
+  color: #4d6655; 
+  font-size: 0.78rem; 
+}
 
-  .success-toast-enter-active, 
-  .success-toast-leave-active {
-     transition: 
-     opacity 0.25s ease, 
-     transform 0.25s ease; 
-  } 
+.success-toast-enter-active, 
+.success-toast-leave-active {
+    transition: 
+    opacity 0.25s ease, 
+    transform 0.25s ease; 
+} 
 
-  .success-toast-enter-from, 
-  .success-toast-leave-to { 
-    opacity: 0; 
-    transform: translateY(-10px); 
-  }
+.success-toast-enter-from, 
+.success-toast-leave-to { 
+  opacity: 0; 
+  transform: translateY(-10px); 
+}
+
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #f0c2c2;
+  border-radius: 14px;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #b42318;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fdecec;
+
+  color: #b42318;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #765050;
+  font-size: .78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 
 .table-header {
   display: flex;
@@ -572,6 +655,42 @@ onMounted(load);
   box-shadow: 0 0 0 3px rgba(188, 34, 34, .12);
 }
 
+/* ================= TABLA ================= */
+
+.admin-table--basic th:first-child,
+.admin-table--basic td:first-child,
+.admin-table--basic th:nth-child(2),
+.admin-table--basic td:nth-child(2) {
+  text-align: left;
+}
+
+.admin-table--basic th:nth-child(3),
+.admin-table--basic td:nth-child(3),
+.admin-table--basic th:nth-child(4),
+.admin-table--basic td:nth-child(4) {
+  text-align: center;
+}
+
+.admin-table--basic td {
+  vertical-align: middle;
+}
+
+.table-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-table--basic tr {
+  height: 76px;
+}
+
+.admin-table--basic td {
+  height: 76px;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
 @media (max-width: 1200px) {
 
   .category-form {
@@ -604,17 +723,5 @@ onMounted(load);
     align-items: flex-start;
     gap: 1rem;
   }
-
-  .table-actions {
-    flex-direction: column;
-  }
-
-  .edit-button,
-  .save-button,
-  .cancel-button,
-  .delete-button {
-    width: 100%;
-  }
-
 }
 </style>
