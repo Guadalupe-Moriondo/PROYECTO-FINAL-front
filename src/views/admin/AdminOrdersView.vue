@@ -5,18 +5,14 @@ import { useBusiness } from '../../composables/useBusiness';
 import Pagination from '../../components/Pagination.vue';
 import { useOrderNotificationsStore } from '../../stores/orderNotifications';
 
-const orders = ref([]);
-const loading = ref(true);
-const page = ref(1);
-const totalPages = ref(1);
-const successMessage = ref('');
-const expandedOrderId = ref(null);
+const STATUSES = [
+  'pending', 
+  'confirmed', 
+  'in_preparation', 
+  'withdraw', 
+  'delivered'
+];
 
-let successTimeout = null;
-
-const { business, loadBusiness } = useBusiness();
-
-const STATUSES = ['pending', 'confirmed', 'in_preparation', 'withdraw', 'delivered'];
 const STATUS_LABELS = {
   pending: 'Pendiente',
   confirmed: 'Confirmado',
@@ -31,37 +27,38 @@ const PAYMENT_LABELS = {
   card: 'Tarjeta',
 };
 
+const orders = ref([]);
+const loading = ref(true);
+const page = ref(1);
+const totalPages = ref(1);
+const message = ref('');
+let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
+const expandedOrderId = ref(null);
+
+const { business, loadBusiness } = useBusiness();
 const orderNotificationsStore = useOrderNotificationsStore();
-
-function canNotify(order) {
-  return order.status === 'withdraw';
-}
-
-function canChangeTo(order, status) {
-  const nextStatus = {
-    pending: 'confirmed',
-    confirmed: 'in_preparation',
-    in_preparation: 'withdraw',
-    withdraw: 'delivered',
-  };
-
-  if (status === order.status) {
-    return true;
-  }
-
-  if (status === 'delivered' && !order.customerNotified) {
-    return false;
-  }
-
-  return nextStatus[order.status] === status;
-}
 
 async function load() {
   loading.value = true;
-  const response = await ordersService.listAll(page.value, 10);
-  orders.value = response.data.data;
-  totalPages.value = response.data.totalPages;
-  loading.value = false;
+
+  try {
+    const response = await ordersService.listAll(page.value, 10);
+
+    orders.value = response.data.data;
+    totalPages.value = response.data.totalPages;
+  } catch (e) {
+    console.error('Error cargando pedidos:', e);
+
+    orders.value = [];
+    totalPages.value = 1;
+
+    showError('No se pudieron cargar los pedidos');
+    
+  } finally {
+    loading.value = false;
+  }
 }
 
 function changePage(newPage) {
@@ -77,15 +74,7 @@ async function changeStatus(order, newStatus) {
 
     // Mostrar mensaje cuando el pedido fue entregado
     if (newStatus === 'delivered') {
-      successMessage.value = `Pedido #${order.orderNumber} entregado correctamente`;
-
-      if (successTimeout) {
-        clearTimeout(successTimeout);
-      }
-
-      successTimeout = setTimeout(() => {
-        successMessage.value = '';
-      }, 3000);
+      showMessage(`Pedido #${order.orderNumber} entregado correctamente`);
 
       orders.value = orders.value.filter(
         (o) => o.id !== order.id
@@ -99,7 +88,7 @@ async function changeStatus(order, newStatus) {
   } catch (error) {
     console.error('Error al cambiar el estado:', error);
 
-    alert(
+    showError(
       error.response?.data?.message ||
       'No se pudo cambiar el estado del pedido.'
     );
@@ -107,28 +96,6 @@ async function changeStatus(order, newStatus) {
     // Volvemos a dejar el select en el estado real
     await load();
   }
-}
-
-
-function toggleDetail(order) {
-  expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
-}
-
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('es-AR');
-}
-
-function formatTime(date) {
-  return new Date(date).toLocaleTimeString('es-AR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-function lineSubtotal(detail) {
-  const unitPrice = detail.unitPrice ?? detail.product?.price;
-  if (unitPrice == null) return null;
-  return Number(unitPrice) * Number(detail.quantity);
 }
 
 async function sendWhatsapp(order) {
@@ -171,9 +138,77 @@ async function sendWhatsapp(order) {
   order.customerNotifiedAt = new Date();
 }
 
+function canNotify(order) {
+  return order.status === 'withdraw';
+}
+
+function canChangeTo(order, status) {
+  const nextStatus = {
+    pending: 'confirmed',
+    confirmed: 'in_preparation',
+    in_preparation: 'withdraw',
+    withdraw: 'delivered',
+  };
+
+  if (status === order.status) {
+    return true;
+  }
+
+  if (status === 'delivered' && !order.customerNotified) {
+    return false;
+  }
+
+  return nextStatus[order.status] === status;
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('es-AR');
+}
+
+function formatTime(date) {
+  return new Date(date).toLocaleTimeString('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function lineSubtotal(detail) {
+  const unitPrice = detail.unitPrice ?? detail.product?.price;
+  if (unitPrice == null) return null;
+  return Number(unitPrice) * Number(detail.quantity);
+}
+
+function toggleDetail(order) {
+  expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
+}
+
 function imageUrl(product) {
   if (!product?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
+}
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 5000);
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
 }
 
 onMounted(async () => {
@@ -187,7 +222,7 @@ onMounted(async () => {
   <div class="container admin-orders-view">
     <Transition name="success-toast">
       <div
-        v-if="successMessage"
+        v-if="message"
         class="success-toast"
       >
         <div class="success-toast-icon">
@@ -207,7 +242,26 @@ onMounted(async () => {
 
         <div class="success-toast-content">
           <strong>¡Entregado correctamente!</strong>
-          <span>{{ successMessage }}</span>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>{{ error }}</strong>
+
+          <span>
+            Ocurrió un error al cargar la información.
+          </span>
         </div>
       </div>
     </Transition>
@@ -475,7 +529,7 @@ onMounted(async () => {
                           {{ detail.quantity }} ×
                         </span>
 
-                        <div>
+                        <div class="detail-product-info">
                           <strong class="detail-name detail-name--admin">
                             {{
                               detail.product?.name ||
@@ -758,12 +812,23 @@ onMounted(async () => {
   min-width: 0;
 }
 
+.detail-product-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-width: 0;
+}
+
+
+
 .detail-code {
   display: block;
   margin-top: 3px;
   color: var(--color-ink-soft);
   font-size: 0.75rem;
   font-family: var(--font-mono);
+  text-align: left;
 }
 
 .empty-detail {
@@ -943,6 +1008,77 @@ onMounted(async () => {
   transform: translateY(-10px);
 }
 
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #f0c2c2;
+  border-radius: 14px;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #b42318;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fdecec;
+
+  color: #b42318;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #765050;
+  font-size: 0.78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
 @media (max-width:900px){
 
   .order-actions{
@@ -996,11 +1132,11 @@ onMounted(async () => {
     grid-column: 2;
   }
 
-  .success-toast {
+  .success-toast,
+  .error-toast{
     top: 20px;
     right: 15px;
     left: 15px;
-
     min-width: auto;
     max-width: none;
   }

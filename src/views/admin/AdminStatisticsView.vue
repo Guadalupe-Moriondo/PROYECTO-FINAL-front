@@ -2,12 +2,12 @@
 import { ref, onMounted } from 'vue';
 import ordersService from '../../services/orders.service';
 
-const loading = ref(true);
-
 const statistics = ref({
   month: { orders: 0, total: 0 },
   year: { orders: 0, total: 0 },
 });
+
+const loading = ref(true);
 
 async function load() {
   loading.value = true;

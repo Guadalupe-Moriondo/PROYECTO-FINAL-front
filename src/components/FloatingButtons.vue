@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-const { business } = useBusiness();
 const showFloatingButtons = computed(() => route.name === 'home');
 
 const whatsappLink = computed(() => {
@@ -28,6 +27,9 @@ const mailLink = computed(() => {
 
   return `https://mail.google.com/mail/?view=cm&fs=1&to=${business.value.email}&su=${subject}&body=${body}`;
 });
+
+const { business } = useBusiness();
+
 </script>
 
 <template>

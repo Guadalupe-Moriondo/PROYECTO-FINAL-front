@@ -2,26 +2,10 @@
 import { ref, onMounted } from 'vue';
 import usersService from '../services/users.service';
 
-const loading = ref(true);
-const savingField = ref(false);
-
-const profileMessage = ref('');
-const passwordMessage = ref('');
-const errorMessage = ref('');
-
-let profileTimeout = null;
-let passwordTimeout = null;
-let errorTimeout = null;
-
-const editingName = ref(false);
-const nameValue = ref('');
-
-const phoneArea = ref('');
-const phoneNumber = ref('');
-const phoneDirty = ref(false);
-
-const emailValue = ref('');
-const emailDirty = ref(false);
+const ROLE_LABELS = {
+  customer: 'Cliente',
+  administrator: 'Administrador',
+};
 
 const profile = ref({
   name: '',
@@ -43,9 +27,21 @@ const showPassword = ref({
   confirmPassword: false,
 });
 
-function toggleShowPassword(field) {
-  showPassword.value[field] = !showPassword.value[field];
-}
+const loading = ref(true);
+const savingField = ref(false);
+const profileMessage = ref('');
+let profileTimeout = null;
+const passwordMessage = ref('');
+let passwordTimeout = null;
+const errorMessage = ref('');
+let errorTimeout = null;
+const editingName = ref(false);
+const nameValue = ref('');
+const phoneArea = ref('');
+const phoneNumber = ref('');
+const phoneDirty = ref(false);
+const emailValue = ref('');
+const emailDirty = ref(false);
 
 async function loadProfile() {
   loading.value = true;
@@ -55,9 +51,73 @@ async function loadProfile() {
     profile.value = response.data;
     loadPhone(profile.value.phone);
     emailValue.value = profile.value.email || '';
+  } catch (error) {
+    console.error('Error al cargar el perfil:', error);
+    showError('No se pudo cargar el perfil');
   } finally {
     loading.value = false;
   }
+}
+
+async function saveField(field, value) {
+  if (!value.trim()) return;
+
+  savingField.value = true;
+
+  try {
+    await usersService.updateProfile({ [field]: value });
+
+    profile.value[field] = value;
+    showMessage('Perfil actualizado correctamente');
+
+      if (field === 'name') editingName.value = false;
+      if (field === 'phone') phoneDirty.value = false;
+      if (field === 'email') emailDirty.value = false;
+  } catch (error) {
+    console.error('Error al actualizar el perfil:', error);
+    showError('No se pudo actualizar el perfil');
+
+  } finally {
+    savingField.value = false;
+  }
+}
+
+async function changePassword() {
+  passwordMessage.value = '';
+
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    showError('Las contraseñas no coinciden');
+    return;
+  }
+
+  try {
+    await usersService.changePassword({
+      currentPassword: passwordForm.value.currentPassword,
+      newPassword: passwordForm.value.newPassword,
+    });
+
+    showPasswordMessage('Contraseña actualizada correctamente');
+
+    passwordForm.value = {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    };
+
+  } catch (error) {
+    const message =
+      error.response?.data?.message || 'No se pudo cambiar la contraseña';
+
+    showError(
+      Array.isArray(message)
+        ? message.join(', ')
+        : message
+    );
+  }
+}
+
+function toggleShowPassword(field) {
+  showPassword.value[field] = !showPassword.value[field];
 }
 
 function startEditName() {
@@ -86,104 +146,45 @@ function onEmailInput() {
   emailDirty.value = emailValue.value !== profile.value.email;
 }
 
-async function saveField(field, value) {
-  if (!value.trim()) return;
-
-  savingField.value = true;
-
-  try {
-    await usersService.updateProfile({ [field]: value });
-
-    profile.value[field] = value;
-    profileMessage.value = 'Perfil actualizado correctamente';
-
-    if (field === 'name') editingName.value = false;
-    if (field === 'phone') phoneDirty.value = false;
-    if (field === 'email') emailDirty.value = false;
-
-    if (profileTimeout) {
-      clearTimeout(profileTimeout);
-    }
-
-    profileTimeout = setTimeout(() => {
-      profileMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    console.error('Error al actualizar el perfil:', error);
-    errorMessage.value = 'No se pudo actualizar el perfil';
-
-    if (errorTimeout) {
-      clearTimeout(errorTimeout);
-    }
-
-    errorTimeout = setTimeout(() => {
-      errorMessage.value = '';
-    }, 3000);
-
-  } finally {
-    savingField.value = false;
-  }
-}
-
-async function changePassword() {
-  passwordMessage.value = '';
-
-  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    errorMessage.value = 'Las contraseñas no coinciden';
-
-    if (errorTimeout) {
-      clearTimeout(errorTimeout);
-    }
-
-    errorTimeout = setTimeout(() => {
-      errorMessage.value = '';
-    }, 3000);
-
-    return;
-  }
-
-  try {
-    await usersService.changePassword({
-      currentPassword: passwordForm.value.currentPassword,
-      newPassword: passwordForm.value.newPassword,
-    });
-
-    passwordMessage.value = 'Contraseña actualizada correctamente';
-
-    passwordForm.value = {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    };
-
-    if (passwordTimeout) {
-      clearTimeout(passwordTimeout);
-    }
-
-    passwordTimeout = setTimeout(() => {
-      passwordMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    const message =
-      error.response?.data?.message || 'No se pudo cambiar la contraseña';
-
-    errorMessage.value = Array.isArray(message)
-      ? message.join(', ')
-      : message;
-
-    if (errorTimeout) {
-      clearTimeout(errorTimeout);
-    }
-
-    errorTimeout = setTimeout(() => {
-      errorMessage.value = '';
-    }, 3000);
-  }
-}
-
 function formatDate(date) {
   if (!date) return '-';
   return new Date(date).toLocaleDateString('es-AR');
+}
+
+function showMessage(text) {
+  profileMessage.value = text;
+
+  if (profileTimeout) {
+    clearTimeout(profileTimeout);
+  }
+
+  profileTimeout = setTimeout(() => {
+    profileMessage.value = '';
+  }, 5000);
+}
+
+function showPasswordMessage(text) {
+  passwordMessage.value = text;
+
+  if (passwordTimeout) {
+    clearTimeout(passwordTimeout);
+  }
+
+  passwordTimeout = setTimeout(() => {
+    passwordMessage.value = '';
+  }, 5000);
+}
+
+function showError(text) {
+  errorMessage.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    errorMessage.value = '';
+  }, 5000);
 }
 
 onMounted(loadProfile);
@@ -350,7 +351,7 @@ onMounted(loadProfile);
             <div class="profile-meta">
 
               <span class="role-badge">
-                {{ profile.role }}
+                {{ ROLE_LABELS[profile.role] || profile.role }}
               </span>
 
               <span>

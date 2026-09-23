@@ -28,17 +28,6 @@ const form = ref({
   saturdayClose: '',
 });
 
-const loading = ref(true);
-const saving = ref(false);
-const message = ref('');
-let messageTimeout = null;
-const phoneArea = ref('');
-const phoneNumber = ref('');
-const whatsappArea = ref('');
-const whatsappNumber = ref('');
-const showProvinceResults = ref(false);
-const showCountryResults = ref(false);
-
 const provinces = [
   'Buenos Aires',
   'CABA',
@@ -73,6 +62,19 @@ const countries = [
   'Paraguay',
   'Uruguay',
 ];
+
+const loading = ref(true);
+const saving = ref(false);
+const message = ref('');
+let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
+const phoneArea = ref('');
+const phoneNumber = ref('');
+const whatsappArea = ref('');
+const whatsappNumber = ref('');
+const showProvinceResults = ref(false);
+const showCountryResults = ref(false);
 
 async function load() {
   try {
@@ -126,24 +128,19 @@ async function load() {
 }
 
 async function save() {
-
   saving.value = true;
 
   try {
-
     const dto = {
 
       name: form.value.name,
-
       address: form.value.address,
-
       city: form.value.city,
       province: form.value.province,
       country: form.value.country,
 
       phone: `${phoneArea.value}${phoneNumber.value}`,
       whatsapp: `${whatsappArea.value}${whatsappNumber.value}`,
-
       email: form.value.email,
 
       instagram: form.value.instagram,
@@ -151,45 +148,31 @@ async function save() {
 
       morningOpen: form.value.morningOpen,
       morningClose: form.value.morningClose,
-
       afternoonOpen: form.value.afternoonOpen,
       afternoonClose: form.value.afternoonClose,
-
       saturdayOpen: form.value.saturdayOpen,
       saturdayClose: form.value.saturdayClose,
     };
 
     console.log('Enviando:', dto);
-
     await businessService.update(dto);
-
     showMessage('Datos actualizados correctamente');
-
     setTimeout(() => {
       router.push({ name: 'admin-home' });
     }, 1200);
 
-  } catch (error) {
+  } catch (e) {
+    showError(
+      'No se pudieron guardar los datos del negocio'
+    );
 
-    console.error('Error guardando datos:', error);
+    setTimeout(() => {
+      router.push({ name: 'admin-home' });
+    }, 5000);
 
   } finally {
-
     saving.value = false;
-
   }
-}
-
-function showMessage(text) {
-  message.value = text;
-
-  if (messageTimeout) {
-    clearTimeout(messageTimeout);
-  }
-
-  messageTimeout = setTimeout(() => {
-    message.value = '';
-  }, 3000);
 }
 
 function selectProvince(province) {
@@ -201,6 +184,31 @@ function selectCountry(country) {
   form.value.country = country;
   showCountryResults.value = false;
 }
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 5000);
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
+}
+
 onMounted(load);
 </script>
 
@@ -501,6 +509,22 @@ onMounted(load);
     </div>
   </Transition>
 
+  <Transition name="error-toast">
+    <div
+      v-if="error"
+      class="error-toast"
+    >
+      <div class="error-toast-icon">
+        !
+      </div>
+
+      <div class="error-toast-content">
+        <strong>{{ error }}</strong>
+        <span>No se pudieron guardar los cambios.</span>
+      </div>
+    </div>
+  </Transition>
+
   <div class="form-actions">
 
     <RouterLink
@@ -759,6 +783,75 @@ onMounted(load);
 
 .success-toast-enter-from,
 .success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #f5c2c7;
+  border-left: 4px solid #b42318;
+  border-radius: 14px;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #b42318;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fdecec;
+
+  font-weight: 700;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #7a4a4a;
+  font-size: 0.78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }

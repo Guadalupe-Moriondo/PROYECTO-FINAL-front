@@ -9,18 +9,17 @@ import Pagination from '../components/Pagination.vue';
 const route = useRoute();
 const router = useRouter();
 
-const products = ref([]);
-const categories = ref([]);
-const loading = ref(true);
-const error = ref('');
-let errorTimeout = null;
-
 const filters = ref({
   name: route.query.search || '',
   categoryId: route.query.categoryId || '',
   available: route.query.available === 'true',
 });
 
+const products = ref([]);
+const categories = ref([]);
+const loading = ref(true);
+const error = ref('');
+let errorTimeout = null;
 const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(1);
 const limit = 12;
@@ -40,15 +39,7 @@ async function loadProducts() {
     totalPages.value = response.data.totalPages;
   } catch (e) {
     console.error('Error al cargar el catálogo:', e);
-    error.value = 'No se pudo cargar el catálogo. Intentá nuevamente.';
-
-    if (errorTimeout) {
-      clearTimeout(errorTimeout);
-    }
-
-    errorTimeout = setTimeout(() => {
-      error.value = '';
-    }, 3000);
+    showError('No se pudo cargar el catálogo.');
   } finally {
     loading.value = false;
   }
@@ -69,6 +60,18 @@ function changePage(newPage) {
   page.value = newPage;
   router.replace({ query: { ...route.query, page: newPage } });
   loadProducts();
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
 }
 
 onMounted(() => {

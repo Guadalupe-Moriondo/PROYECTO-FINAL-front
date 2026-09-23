@@ -5,38 +5,12 @@ import stockService from '../../services/stock.service';
 import InventoryTag from '../../components/InventoryTag.vue';
 import Pagination from '../../components/Pagination.vue';
 
-const alerts = ref([]);
-const loadingAlerts = ref(true);
-const form = ref({ productId: '', type: 'entry', quantity: 1, reason: '' });
-const products = ref([]);
-const productSearch = ref('');
-const showProductResults = ref(false);
-const showTypeResults = ref(false);
-const error = ref('');
-const message = ref('');
-let messageTimeout = null;
-let errorTimeout = null;
-const page = ref(1);
-const totalPages = ref(1);
-
-
-async function loadAlerts() {
-  loadingAlerts.value = true;
-  const response = await stockService.alerts(page.value, 10);
-  alerts.value = response.data.data;
-  totalPages.value = response.data.totalPages;
-  loadingAlerts.value = false;
-}
-
-function changePage(newPage) {
-  page.value = newPage;
-  loadAlerts();
-}
-
-async function loadProducts() {
-  const response = await productsService.list(1, 100);
-  products.value = response.data.data;
-}
+const form = ref({ 
+  productId: '', 
+  type: 'entry', 
+  quantity: 1, 
+  reason: '' 
+});
 
 const filteredProducts = computed(() => {
   const search = productSearch.value.toLowerCase().trim();
@@ -50,6 +24,50 @@ const filteredProducts = computed(() => {
     product.code.toLowerCase().includes(search)
   );
 });
+
+const alerts = ref([]);
+const loadingAlerts = ref(true);
+const products = ref([]);
+const productSearch = ref('');
+const showProductResults = ref(false);
+const showTypeResults = ref(false);
+const message = ref('');
+let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
+const page = ref(1);
+const totalPages = ref(1);
+
+
+async function loadProducts() {
+  const response = await productsService.list(1, 100);
+  products.value = response.data.data;
+}
+
+async function loadAlerts() {
+  loadingAlerts.value = true;
+
+  try {
+    const response = await stockService.alerts(page.value, 10);
+
+    alerts.value = response.data.data;
+    totalPages.value = response.data.totalPages;
+  } catch (e) {
+    console.error('Error cargando stock:', e);
+
+    alerts.value = [];
+    totalPages.value = 1;
+
+    showError('No se pudo cargar el stock');
+  } finally {
+    loadingAlerts.value = false;
+  }
+}
+
+function changePage(newPage) {
+  page.value = newPage;
+  loadAlerts();
+}
 
 function selectProduct(product) {
   form.value.productId = product.id;
@@ -66,12 +84,12 @@ async function registerMovement() {
   error.value = '';
 
   if (!form.value.productId) {
-    showErrorMessage('Debes seleccionar un producto');
+    showError('Debes seleccionar un producto');
     return;
   }
 
   if (!['in', 'out'].includes(form.value.type)) {
-    showErrorMessage('El tipo de movimiento debe ser Entrada o Salida');
+    showError('El tipo de movimiento debe ser Entrada o Salida');
     return;
   }
 
@@ -86,7 +104,7 @@ async function registerMovement() {
     showMessage('Movimiento registrado correctamente');
 
   } catch (e) {
-    showError(e);
+    showError('No se pudo registrar el movimiento');
   }
 }
 
@@ -99,10 +117,10 @@ function showMessage(text) {
 
   messageTimeout = setTimeout(() => {
     message.value = '';
-  }, 3000);
+  }, 5000);
 }
 
-function showErrorMessage(text) {
+function showError(text) {
   error.value = text;
 
   if (errorTimeout) {
@@ -111,25 +129,7 @@ function showErrorMessage(text) {
 
   errorTimeout = setTimeout(() => {
     error.value = '';
-  }, 3000);
-}
-
-function showError(e) {
-  const backendMessage =
-    e.response?.data?.message ||
-    'No se pudo registrar el movimiento';
-
-  error.value = Array.isArray(backendMessage)
-    ? backendMessage.join(', ')
-    : backendMessage;
-
-  if (errorTimeout) {
-    clearTimeout(errorTimeout);
-  }
-
-  errorTimeout = setTimeout(() => {
-    error.value = '';
-  }, 3000);
+  }, 5000);
 }
 
 onMounted(() => {
@@ -299,7 +299,7 @@ onMounted(() => {
 
           <div class="error-toast-content">
             <strong>{{ error }}</strong>
-            <span>No se pudieron guardar los cambios.</span>
+            <span>Ocurrió un error al cargar la información.</span>
           </div>
         </div>
       </Transition>

@@ -2,8 +2,7 @@
 import { computed } from 'vue';
 import { useBusiness } from '../composables/useBusiness';
 
-const { business } = useBusiness();
-const year = new Date().getFullYear();
+
 const mailLink = computed(() => (business.value?.email ? `mailto:${business.value.email}` : null));
 
 const instagramLink = computed(() => {
@@ -17,6 +16,10 @@ const facebookLink = computed(() => {
   const handle = business.value.facebook;
   return handle.startsWith('http') ? handle : `https://facebook.com/${handle}`;
 });
+
+const year = new Date().getFullYear();
+const { business } = useBusiness();
+
 </script>
 
 

@@ -790,6 +790,7 @@ button, input, select, textarea {
   display: block;
   color: var(--color-ink);
   font-size: 0.87rem;
+  font-weight: 600;
 }
 .detail-subtotal {
   margin-left: auto;

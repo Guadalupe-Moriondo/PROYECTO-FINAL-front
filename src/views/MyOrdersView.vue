@@ -7,8 +7,23 @@ import Pagination from '../components/Pagination.vue';
 const route = useRoute();
 const router = useRouter();
 
+const STATUS_LABELS = {
+  pending: 'Pendiente',
+  confirmed: 'Confirmado',
+  in_preparation: 'En preparación',
+  withdraw: 'Retirar',
+  delivered: 'Entregado',
+};
+
+const hasOrders = computed(() => {
+  return pendingOrders.value.length > 0 || deliveredOrders.value.length > 0;
+});
+
 const loading = ref(true);
-const showSuccessMessage = ref(false);
+const message = ref('');
+let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
 
 const activeTab = ref('pending'); 
 const pendingOrders = ref([]);
@@ -23,50 +38,49 @@ const deliveredTotalPages = ref(1);
 const deliveredLoaded = ref(false);
 const deliveredTotal = ref(0);
 
-const hasOrders = computed(() => {
-  return pendingOrders.value.length > 0 || deliveredOrders.value.length > 0;
-});
-
-const STATUS_LABELS = {
-  pending: 'Pendiente',
-  confirmed: 'Confirmado',
-  in_preparation: 'En preparación',
-  withdraw: 'Retirar',
-  delivered: 'Entregado',
-};
 
 async function loadPending() {
   loading.value = true;
 
-  const response = await ordersService.myOrders(
-    pendingPage.value,
-    10,
-    'pending'
-  );
+  try {
+    const response = await ordersService.myOrders(
+      pendingPage.value,
+      10,
+      'pending'
+    );
 
-  pendingOrders.value = response.data.data;
-  pendingTotalPages.value = response.data.totalPages;
-  pendingTotal.value = response.data.total;
-  pendingLoaded.value = true;
+    pendingOrders.value = response.data.data;
+    pendingTotalPages.value = response.data.totalPages;
+    pendingTotal.value = response.data.total;
+    pendingLoaded.value = true;
 
-  loading.value = false;
+  } catch (e) {
+    showError('No se pudieron cargar los pedidos');
+  } finally {
+    loading.value = false;
+  }
 }
 
 async function loadDelivered() {
   loading.value = true;
 
-  const response = await ordersService.myOrders(
-    deliveredPage.value,
-    10,
-    'delivered'
-  );
+  try {
+    const response = await ordersService.myOrders(
+      deliveredPage.value,
+      10,
+      'delivered'
+    );
 
-  deliveredOrders.value = response.data.data;
-  deliveredTotalPages.value = response.data.totalPages;
-  deliveredTotal.value = response.data.total;
-  deliveredLoaded.value = true;
+    deliveredOrders.value = response.data.data;
+    deliveredTotalPages.value = response.data.totalPages;
+    deliveredTotal.value = response.data.total;
+    deliveredLoaded.value = true;
 
-  loading.value = false;
+  } catch (e) {
+    showError('No se pudieron cargar los pedidos');
+  } finally {
+    loading.value = false;
+  }
 }
 
 function selectTab(tab) {
@@ -85,9 +99,43 @@ function changeDeliveredPage(newPage) {
   loadDelivered();
 }
 
+function formatDate(date) {
+  if (!date) return '—';
+
+  return new Date(date).toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
 function imageUrl(product) {
   if (!product?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
+}
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 5000);
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
 }
 
 onMounted(async () => {
@@ -97,11 +145,9 @@ onMounted(async () => {
   ]);
 
   if (route.query.created) {
-    showSuccessMessage.value = true;
-
-    setTimeout(() => {
-      showSuccessMessage.value = false;
-    }, 3000);
+    showMessage(
+      `Tu pedido #${route.query.created} fue realizado correctamente.`
+    );
 
     router.replace({
       path: route.path,
@@ -148,7 +194,7 @@ onMounted(async () => {
 
     <Transition name="success-toast">
       <div
-        v-if="showSuccessMessage"
+        v-if="message"
         class="success-toast"
       >
         <div class="success-toast-icon">
@@ -168,9 +214,25 @@ onMounted(async () => {
 
         <div class="success-toast-content">
           <strong>¡Pedido confirmado!</strong>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>{{ error }}</strong>
 
           <span>
-            Tu pedido #{{ route.query.created }} fue realizado correctamente.
+            Ocurrió un error al cargar la información.
           </span>
         </div>
       </div>
@@ -245,6 +307,10 @@ onMounted(async () => {
 
                   <span class="order-number">
                     #{{ order.orderNumber }}
+                  </span>
+
+                  <span class="order-date">
+                    Pedido: {{ formatDate(order.createdAt) }}
                   </span>
 
                 </div>
@@ -387,6 +453,18 @@ onMounted(async () => {
                     #{{ order.orderNumber }}
                   </span>
 
+                  <div class="order-dates">
+                    <span class="order-date">
+                      Pedido: {{ formatDate(order.createdAt) }}
+                    </span>
+
+                    <span
+                      v-if="order.deliveredAt"
+                      class="order-date"
+                    >
+                      Entrega: {{ formatDate(order.deliveredAt) }}
+                    </span>
+                  </div>
                 </div>
 
                 <span class="order-status order-status-delivered">
@@ -890,6 +968,84 @@ onMounted(async () => {
   transform: translateY(-10px);
 }
 
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  max-width: 380px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1px solid #e5b8b8;
+  border-radius: 14px;
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #a33a32;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fbeaea;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #70504d;
+  font-size: 0.78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.order-dates {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+.order-date {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
 @media (max-width: 900px) {
 
   .orders-view {
@@ -954,7 +1110,8 @@ onMounted(async () => {
     font-size: 0.82rem;
   }
 
-  .success-toast {
+  .success-toast,
+  .error-toast {
     top: 20px;
     right: 15px;
     left: 15px;

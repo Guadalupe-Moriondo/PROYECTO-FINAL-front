@@ -10,16 +10,6 @@ import AvailabilityTag from '@/components/AvailabilityTag.vue';
 const route = useRoute();
 const router = useRouter();
 
-const authStore = useAuthStore();
-const cartStore = useCartStore();
-
-const product = ref(null);
-const loading = ref(true);
-const error = ref('');
-const quantity = ref(1);
-const cartMessage = ref('');
-const business = ref(null);
-
 const imageUrl = computed(() => {
   if (!product.value?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.value.imageUrl}`;
@@ -34,6 +24,16 @@ const whatsappUrl = computed(() => {
   
   return `https://wa.me/${number}?text=${text}`;
 });
+
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+const product = ref(null);
+const loading = ref(true);
+const error = ref('');
+const quantity = ref(1);
+const cartMessage = ref('');
+const business = ref(null);
+
 
 async function loadProduct() {
   loading.value = true;
@@ -69,7 +69,7 @@ async function addToCart() {
   cartMessage.value = 'Se agregó al carrito.';
   setTimeout(() => {
   cartMessage.value = '';
-  }, 3000);
+  }, 5000);
 }
 
 onMounted(() => {
@@ -277,14 +277,9 @@ onMounted(() => {
   text-align:center;
   padding:3rem;
   font-family:
-    var(--font-mono);
+    var(--font-body);
   color:
     var(--color-ink-soft);
-}
-
-.page-state-error {
-  color:
-    var(--color-rust);
 }
 
 .product-back {

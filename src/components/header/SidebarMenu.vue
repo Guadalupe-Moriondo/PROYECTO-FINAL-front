@@ -6,13 +6,13 @@ import { useCartStore } from '../../stores/cart';
 import categoriesService from '../../services/categories.service';
 import { useOrderNotificationsStore } from '../../stores/orderNotifications';
 
+const router = useRouter();
+
 const props = defineProps({
   open: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['close']);
-
-const router = useRouter();
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();

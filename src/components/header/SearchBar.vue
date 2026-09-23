@@ -2,8 +2,8 @@
 import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-const router = useRouter();
 const route = useRoute();
+const router = useRouter();
 
 const query = ref(route.name === 'catalog' ? route.query.search || '' : '');
 

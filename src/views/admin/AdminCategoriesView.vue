@@ -16,21 +16,11 @@ const editForm = ref({
   description: '',
 });
 
-const error = ref('');
 const message = ref('');
 let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
 
-function showMessage(text) { 
-  message.value = text;
-
-  if (messageTimeout) { 
-    clearTimeout(messageTimeout);
-  }
-
-  messageTimeout = setTimeout(() => { 
-    message.value = ''; 
-  }, 3000); 
-}
 
 async function load() {
   loading.value = true;
@@ -41,7 +31,8 @@ async function load() {
     categories.value = response.data.data;
     totalPages.value = response.data.totalPages;
   } catch (e) {
-    error.value = 'No se pudieron cargar las categorías';
+    showError('No se pudieron cargar las categorías');
+ 
   } finally {
     loading.value = false;
   }
@@ -64,9 +55,10 @@ async function create() {
     await load();
     showMessage('¡Categoría creada correctamente!');
   } catch (e) {
-    error.value =
+    showError(
       e.response?.data?.message ||
-      'No se pudo crear la categoría';
+      'No se pudo crear la categoría'
+    );
   }
 }
 
@@ -90,9 +82,10 @@ async function saveEdit(id) {
     await load();
     showMessage('Categoría actualizada correctamente');
   } catch (e) {
-    error.value =
+    showError(
       e.response?.data?.message ||
-      'No se pudo actualizar la categoría';
+      'No se pudo actualizar la categoría'
+    );
   }
 }
 
@@ -108,15 +101,40 @@ async function remove(category) {
     await load();
     showMessage('Categoría dada de baja correctamente');
   } catch (e) {
-    error.value =
+    showError(
       e.response?.data?.message ||
-      'No se pudo dar de baja la categoría';
+      'No se pudo dar de baja la categoría'
+    );
   }
 }
 
 function changePage(newPage) {
   page.value = newPage;
   load();
+}
+
+function showMessage(text) { 
+  message.value = text;
+
+  if (messageTimeout) { 
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => { 
+    message.value = ''; 
+  }, 5000); 
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
 }
 
 onMounted(load);

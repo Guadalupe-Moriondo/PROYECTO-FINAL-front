@@ -4,10 +4,24 @@ import usersService from '../../services/users.service';
 import Pagination from '../../components/Pagination.vue';
 import { useAuthStore } from '../../stores/auth.js';
 
+const statistics = ref({
+  totalUsers: 0,
+  totalAdmins: 0,
+  totalCustomers: 0,
+});
+
+const totalPages = computed(() => {
+
+  return Math.ceil(
+    total.value / limit
+  );
+});
+
 const users = ref([]);
 const loading = ref(true);
 const saving = ref(false);
 const message = ref('');
+let messageTimeout = null;
 const error = ref('');
 let errorTimeout = null;
 const authStore = useAuthStore();
@@ -17,18 +31,6 @@ const page = ref(1);
 const limit = 10;
 const total = ref(0);
 
-const totalPages = computed(() => {
-
-  return Math.ceil(
-    total.value / limit
-  );
-});
-
-const statistics = ref({
-  totalUsers: 0,
-  totalAdmins: 0,
-  totalCustomers: 0,
-});
 
 async function loadUsers() {
 
@@ -61,16 +63,9 @@ async function loadUsers() {
       err
     );
 
-    error.value =
-      'No se pudieron cargar los usuarios.';
-
-    if (errorTimeout) {
-      clearTimeout(errorTimeout);
-    }
-
-    errorTimeout = setTimeout(() => {
-      error.value = '';
-    }, 3000);
+    showError(
+      'No se pudieron cargar los usuarios.'
+    );
 
   } finally {
     loading.value = false;
@@ -124,11 +119,9 @@ async function changeRole(user, event) {
     event.target.value = previousRole;
     return;
   }
-
+  
   saving.value = true;
-  message.value = '';
-  error.value = '';
-
+ 
   try {
 
     await usersService.updateRole(
@@ -138,12 +131,9 @@ async function changeRole(user, event) {
 
     user.role = newRole;
 
-    message.value =
-      'Se ha actualizado el rol correctamente.';
-
-    setTimeout(() => {
-      message.value = '';
-    }, 3000);
+    showMessage(
+      'Se ha actualizado el rol correctamente.'
+    );
 
   } catch (err) {
 
@@ -154,17 +144,10 @@ async function changeRole(user, event) {
 
     event.target.value = previousRole;
 
-    error.value =
+    showError(
       err.response?.data?.message ||
-      'No se pudo actualizar el rol.';
-
-    if (errorTimeout) {
-      clearTimeout(errorTimeout);
-    }
-
-    errorTimeout = setTimeout(() => {
-      error.value = '';
-    }, 3000);
+      'No se pudo actualizar el rol.'
+    );
 
     loadUsers();
 
@@ -187,6 +170,30 @@ function roleLabel(role) {
   return role === 'admin'
     ? 'Administrador'
     : 'Cliente';
+}
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 5000);
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
 }
 
 onMounted(() => {
@@ -282,8 +289,10 @@ onMounted(() => {
         </div>
 
         <div class="error-toast-content">
-          <strong>Error</strong>
-          <span>{{ error }}</span>
+          <strong>{{ error }}</strong>
+          <span>
+            Ocurrió un error al cargar la información.
+          </span>
         </div>
       </div>
     </Transition>

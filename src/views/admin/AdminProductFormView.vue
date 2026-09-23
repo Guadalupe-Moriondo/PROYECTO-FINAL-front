@@ -7,8 +7,8 @@ import categoriesService from '../../services/categories.service';
 const route = useRoute();
 const router = useRouter();
 
-const isEditing = computed(() => !!route.params.id);
 const categories = ref([]);
+
 const form = ref({
   code: '',
   name: '',
@@ -19,14 +19,18 @@ const form = ref({
   minStock: 5,
   categoryId: '',
 });
-const loading = ref(isEditing.value);
+
+const loading = ref(false);
 const saving = ref(false);
 const error = ref('');
+let errorTimeout = null;
 const selectedImage = ref(null);
 const imagePreview = ref(null);
 const imageInput = ref(null);
 const showCategoryResults = ref(false);
 const categorySearch = ref('');
+
+const isEditing = computed(() => !!route.params.id);
 
 const filteredCategories = computed(() => {
   const search = categorySearch.value.toLowerCase().trim();
@@ -51,7 +55,7 @@ async function loadProduct() {
     name: p.name,
     description: p.description || '',
     machineryCompatibility: p.machineryCompatibility || '',
-    price: Number (p.price),
+    price: Number(p.price),
     stock: p.stock,
     minStock: p.minStock,
     categoryId: p.category?.id || '',
@@ -99,13 +103,20 @@ async function save() {
     });
 
   } catch (e) {
-    error.value =
+    showError(
       e.response?.data?.message ||
-      'No se pudo guardar el producto';
-
+      'No se pudo guardar el producto'
+    );
+    
   } finally {
     saving.value = false;
   }
+}
+
+function selectCategory(category) {
+  form.value.categoryId = category.id;
+  categorySearch.value = category.name;
+  showCategoryResults.value = false;
 }
 
 function onImageSelected(event) {
@@ -118,19 +129,35 @@ function onImageSelected(event) {
   imagePreview.value = URL.createObjectURL(file);
 }
 
-function selectCategory(category) {
-  form.value.categoryId = category.id;
-  categorySearch.value = category.name;
-  showCategoryResults.value = false;
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    router.push({
+      name: 'admin-products',
+      query: {
+        page: route.query.page || undefined,
+      },
+    });
+  }, 5000);
 }
 
 onMounted(async () => {
+  loading.value = isEditing.value;
+
   await loadCategories();
+
   if (isEditing.value) {
     await loadProduct();
+
     const category = categories.value.find(
       cat => cat.id === form.value.categoryId
     );
+
     categorySearch.value = category?.name || '';
   }
 });
@@ -141,7 +168,11 @@ onMounted(async () => {
   <Transition name="toast">
     <div v-if="error" class="toast toast-error">
       <span class="toast-icon">!</span>
-      <span>{{ error }}</span>
+
+      <div class="toast-content">
+        <strong>No se pudo guardar el producto</strong>
+        <span>No se pudieron guardar los cambios.</span>
+      </div>
     </div>
   </Transition>
   
@@ -705,6 +736,24 @@ onMounted(async () => {
   color: #b42318;
 
   font-weight: 700;
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.toast-content strong {
+  color: #b42318;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.toast-content span {
+  color: #7a2e2e;
+  font-size: .82rem;
+  font-weight: 500;
 }
 
 /* Entrada */

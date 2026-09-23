@@ -12,25 +12,6 @@ const totalPages = ref(1);
 const yearStats = ref({ orders: 0, total: 0 });
 const expandedOrderId = ref(null);
 
-function currentYear() {
-  return String(new Date().getFullYear());
-}
-
-function toggleDetail(order) {
-  expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
-}
-
-function lineSubtotal(detail) {
-  const unitPrice = detail.unitPrice ?? detail.product?.price;
-  if (unitPrice == null) return null;
-  return Number(unitPrice) * Number(detail.quantity);
-}
-
-function imageUrl(product) {
-  if (!product?.imageUrl) return null;
-  return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
-}
-
 async function load() {
   loading.value = true;
   try {
@@ -60,6 +41,25 @@ function search() {
 function changePage(newPage) {
   page.value = newPage;
   load();
+}
+
+function currentYear() {
+  return String(new Date().getFullYear());
+}
+
+function lineSubtotal(detail) {
+  const unitPrice = detail.unitPrice ?? detail.product?.price;
+  if (unitPrice == null) return null;
+  return Number(unitPrice) * Number(detail.quantity);
+}
+
+function toggleDetail(order) {
+  expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
+}
+
+function imageUrl(product) {
+  if (!product?.imageUrl) return null;
+  return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 
 onMounted(load);
@@ -105,7 +105,8 @@ onMounted(load);
             <tr>
               <th>N° orden</th>
               <th>Cliente</th>
-              <th>Fecha</th>
+              <th>Fecha pedido</th>
+              <th>Fecha entrega</th>
               <th>Total</th>
               <th>Detalle</th>
             </tr>
@@ -119,6 +120,7 @@ onMounted(load);
                   <span class="table-subtext table-subtext--period">{{ order.user?.email }}</span>
                 </td>
                 <td>{{ new Date(order.createdAt).toLocaleDateString('es-AR') }}</td>
+                <td>{{ order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString('es-AR') : '—' }}</td>
                 <td class="table-mono table-mono--period">$ {{ Number(order.total).toLocaleString('es-AR') }}</td>
                 <td class="detail-column">
                   <button
@@ -146,7 +148,7 @@ onMounted(load);
                 </td>
               </tr>
               <tr v-if="expandedOrderId === order.id" class="detail-row">
-                <td colspan="5">
+                <td colspan="6">
                   <ul v-if="order.details?.length" class="detail-list detail-list--period">
                     <li v-for="detail in order.details" :key="detail.id">
                       <div class="detail-image-wrapper detail-image-wrapper--admin">
@@ -244,7 +246,9 @@ onMounted(load);
 .history-table th:nth-child(4),
 .history-table td:nth-child(4),
 .history-table th:nth-child(5),
-.history-table td:nth-child(5) {
+.history-table td:nth-child(5),
+.history-table th:nth-child(6),
+.history-table td:nth-child(6) {
   text-align: center;
 }
 

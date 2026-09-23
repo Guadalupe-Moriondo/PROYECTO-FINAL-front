@@ -33,8 +33,7 @@ const brands = [
 const heroImages = [
  Hero1,
  Hero2,
- Hero3,
- 
+ Hero3
 ];
 
 const currentHeroImage = ref(0);

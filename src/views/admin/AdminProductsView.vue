@@ -13,6 +13,9 @@ const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
+let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
 const search = ref('');
 let searchTimeout = null;
 
@@ -34,10 +37,12 @@ async function load() {
 
     products.value = response.data.data;
     totalPages.value = response.data.totalPages;
-  } catch (error) {
-    console.error('Error cargando productos:', error);
+  } catch (e) {
+    console.error('Error cargando productos:', e);
     products.value = [];
     totalPages.value = 1;
+    showError('No se pudo cargar el catálogo');
+    
   } finally {
     loading.value = false;
   }
@@ -67,14 +72,46 @@ function clearSearch() {
 async function remove(product) {
   if (!confirm(`¿Dar de baja "${product.name}"?`)) return;
 
-  await productsService.remove(product.id);
-  load();
+  try {
+    await productsService.remove(product.id);
+    await load();
+    showMessage('Producto dado de baja correctamente');
+  } catch (e) {
+    showError(
+      e.response?.data?.message ||
+      'No se pudo dar de baja el producto'
+    );
+  }
 }
 
 function imageUrl(product) {
   if (!product.imageUrl) return null;
 
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
+}
+
+function showMessage(text) {
+  message.value = text;
+
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+  }
+
+  messageTimeout = setTimeout(() => {
+    message.value = '';
+  }, 5000);
+}
+
+function showError(text) {
+  error.value = text;
+
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  errorTimeout = setTimeout(() => {
+    error.value = '';
+  }, 5000);
 }
 
 onMounted(async () => {
@@ -87,11 +124,11 @@ onMounted(async () => {
   await load();
 
   if (route.query.success === 'created') {
-    message.value = '¡Producto creado correctamente!';
+    showMessage('¡Producto creado correctamente!');
   }
 
   if (route.query.success === 'updated') {
-    message.value = '¡Producto actualizado correctamente!';
+    showMessage('¡Producto actualizado correctamente!');
   }
 
   if (route.query.success) {
@@ -101,12 +138,9 @@ onMounted(async () => {
         success: undefined,
       },
     });
-
-    setTimeout(() => {
-      message.value = '';
-    }, 3000);
   }
 });
+
 </script>
 
 <template>
@@ -198,6 +232,25 @@ onMounted(async () => {
 
           <span>
             Los cambios se guardaron correctamente.
+          </span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>{{ error }}</strong>
+
+          <span>
+            Ocurrió un error al cargar la información.
           </span>
         </div>
       </div>
@@ -552,6 +605,77 @@ onMounted(async () => {
   transform: translateY(-10px);
 }
 
+.error-toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #f0c2c2;
+  border-radius: 14px;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+
+  color: #b42318;
+}
+
+.error-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fdecec;
+
+  color: #b42318;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.error-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.error-toast-content strong {
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.error-toast-content span {
+  color: #765050;
+  font-size: .78rem;
+}
+
+.error-toast-enter-active,
+.error-toast-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.error-toast-enter-from,
+.error-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
 .products-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -767,11 +891,11 @@ onMounted(async () => {
     padding: 40px 14px 60px;
   }
 
-  .success-toast {
+  .success-toast,
+  .error-toast {
     top: 20px;
     right: 15px;
     left: 15px;
-
     min-width: auto;
     max-width: none;
   }
