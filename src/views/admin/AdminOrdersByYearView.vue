@@ -5,12 +5,13 @@ import Pagination from '../../components/Pagination.vue';
 
 const selectedYear = ref(currentYear());
 
-const loading = ref(true);
 const orders = ref([]);
+const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const yearStats = ref({ orders: 0, total: 0 });
 const expandedOrderId = ref(null);
+
 
 async function load() {
   loading.value = true;
@@ -21,12 +22,11 @@ async function load() {
     ]);
 
     const empty = { orders: 0, total: 0 };
-    // Igual que en el mes: el total/cantidad sale del agregado del backend,
-    // no de la pagina actual de "orders" (que puede ser solo una parte).
-    yearStats.value = statsResponse.data.yearly?.[selectedYear.value] ?? empty;
 
+    yearStats.value = statsResponse.data.yearly?.[selectedYear.value] ?? empty;
     orders.value = historyResponse.data.data;
     totalPages.value = historyResponse.data.totalPages;
+
   } finally {
     loading.value = false;
   }
@@ -89,10 +89,12 @@ onMounted(load);
 
     <template v-else>
       <div class="statistics-grid statistics-grid--period">
+        
         <div class="stat-card--period">
           <span class="stat-label stat-label--period">Pedidos de {{ selectedYear }}</span>
           <span class="stat-value stat-value--period">{{ yearStats.orders }}</span>
         </div>
+        
         <div class="stat-card--period stat-card--accent">
           <span class="stat-label stat-label--period">Facturación de {{ selectedYear }}</span>
           <span class="stat-value stat-value--period">$ {{ Number(yearStats.total).toLocaleString('es-AR') }}</span>

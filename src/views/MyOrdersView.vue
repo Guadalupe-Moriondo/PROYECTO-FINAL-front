@@ -40,9 +40,11 @@ const deliveredTotal = ref(0);
 
 
 async function loadPending() {
+
   loading.value = true;
 
   try {
+
     const response = await ordersService.myOrders(
       pendingPage.value,
       10,
@@ -62,9 +64,11 @@ async function loadPending() {
 }
 
 async function loadDelivered() {
+
   loading.value = true;
 
   try {
+
     const response = await ordersService.myOrders(
       deliveredPage.value,
       10,
@@ -115,6 +119,7 @@ function imageUrl(product) {
 }
 
 function showMessage(text) {
+
   message.value = text;
 
   if (messageTimeout) {
@@ -127,6 +132,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -159,15 +165,10 @@ onMounted(async () => {
 
 <template>
   <div class="container orders-view">
-
     <div class="orders-header">
-
       <div>
-        <h1>
-          Mis pedidos
-        </h1>
+        <h1>Mis pedidos</h1>
       </div>
-
     </div>
 
     <div class="orders-tabs" v-if="hasOrders">
@@ -192,52 +193,6 @@ onMounted(async () => {
       </button>
     </div>
 
-    <Transition name="success-toast">
-      <div
-        v-if="message"
-        class="success-toast"
-      >
-        <div class="success-toast-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <path
-              d="M5 12.5l4 4L19 7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-
-        <div class="success-toast-content">
-          <strong>¡Pedido confirmado!</strong>
-          <span>{{ message }}</span>
-        </div>
-      </div>
-    </Transition>
-
-    <Transition name="error-toast">
-      <div
-        v-if="error"
-        class="error-toast"
-      >
-        <div class="error-toast-icon">
-          !
-        </div>
-
-        <div class="error-toast-content">
-          <strong>{{ error }}</strong>
-
-          <span>
-            Ocurrió un error al cargar la información.
-          </span>
-        </div>
-      </div>
-    </Transition>
-   
     <p
       v-if="loading"
       class="loading-state"
@@ -262,13 +217,9 @@ onMounted(async () => {
 
       </div>
 
-      <h2>
-        Todavía no hiciste ningún pedido
-      </h2>
+      <h2>Todavía no hiciste ningún pedido</h2>
 
-      <p>
-        Cuando realices una compra, tus pedidos aparecerán aquí.
-      </p>
+      <p>Cuando realices una compra, tus pedidos aparecerán aquí.</p>
 
     </div>
 
@@ -283,9 +234,7 @@ onMounted(async () => {
         <div class="group-header">
 
           <div>
-            <h2>
-              Pedidos en proceso
-            </h2>
+            <h2>Pedidos en proceso</h2>
           </div>
         </div>
 
@@ -301,9 +250,7 @@ onMounted(async () => {
 
                 <div>
 
-                  <span class="order-label">
-                    Pedido
-                  </span>
+                  <span class="order-label">Pedido</span>
 
                   <span class="order-number">
                     #{{ order.orderNumber }}
@@ -390,9 +337,7 @@ onMounted(async () => {
 
                 <div class="order-total-block">
 
-                  <span class="footer-label">
-                    Total del pedido
-                  </span>
+                  <span class="footer-label">Total del pedido</span>
 
                   <strong class="order-total">
                     $
@@ -424,10 +369,7 @@ onMounted(async () => {
         <div class="group-header">
 
           <div>
-            <h2>
-              Pedidos entregados
-            </h2>
-
+            <h2>Pedidos entregados</h2>
           </div>
 
         </div>
@@ -445,9 +387,7 @@ onMounted(async () => {
 
                 <div>
 
-                  <span class="order-label">
-                    Pedido
-                  </span>
+                  <span class="order-label">Pedido</span>
 
                   <span class="order-number">
                     #{{ order.orderNumber }}
@@ -541,9 +481,7 @@ onMounted(async () => {
 
                 <div class="order-total-block">
 
-                  <span class="footer-label">
-                    Total del pedido
-                  </span>
+                  <span class="footer-label">Total del pedido</span>
 
                   <strong class="order-total">
                     $
@@ -568,6 +506,52 @@ onMounted(async () => {
 
       </section>
     </div>
+
+    <Transition name="success-toast">
+      <div
+        v-if="message"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div class="success-toast-content">
+          <strong>¡Pedido confirmado!</strong>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>{{ error }}</strong>
+
+          <span>
+            Ocurrió un error al cargar la información.
+          </span>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 

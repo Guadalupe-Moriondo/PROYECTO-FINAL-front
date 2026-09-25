@@ -36,15 +36,16 @@ const heroImages = [
  Hero3
 ];
 
+const products = ref([]);
 const currentHeroImage = ref(0);
 const heroImageFailed = ref(false);
-const products = ref([]);
 const productsLoading = ref(true);
-
 let heroInterval = null;
+
 
 async function loadProducts() {
   try {
+
     const response = await productsService.list(1, 10);
 
     products.value =
@@ -52,6 +53,7 @@ async function loadProducts() {
       response.data?.data ||
       response.data ||
       [];
+
   } catch (e) {
     console.error('Error al cargar productos destacados:', e);
     products.value = [];
@@ -61,6 +63,7 @@ async function loadProducts() {
 }
 
 onMounted(() => {
+
   loadProducts();
 
   heroInterval = setInterval(() => {
@@ -79,6 +82,7 @@ onUnmounted(() => {
     <section class="hero">
 
       <div class="hero-image">
+
         <img
           v-if="!heroImageFailed"
           :src="heroImages[currentHeroImage]"
@@ -101,9 +105,7 @@ onUnmounted(() => {
 
       <div class="hero-content container">
 
-        <h1 class="hero-title">
-          Repuestos Agrícolas
-        </h1>
+        <h1 class="hero-title">Repuestos Agrícolas</h1>
 
         <p class="hero-description">
           Calidad, confianza y el respaldo que tu maquinaria
@@ -117,7 +119,6 @@ onUnmounted(() => {
             class="button button-hero-primary"
           >
             Ver catálogo
-      
           </RouterLink>
 
         </div>
@@ -136,9 +137,7 @@ onUnmounted(() => {
             </div>
 
             <div>
-              <h3>
-                Repuestos de calidad
-              </h3>
+              <h3>Repuestos de calidad</h3>
 
               <p>
                 Trabajamos con las mejores marcas
@@ -156,9 +155,7 @@ onUnmounted(() => {
             </div>
 
             <div>
-              <h3>
-                Confianza y respaldo
-              </h3>
+              <h3>Confianza y respaldo</h3>
 
               <p>
                 Acompañamos tu trabajo
@@ -176,9 +173,7 @@ onUnmounted(() => {
             </div>
 
             <div>
-              <h3>
-                Para todas las máquinas
-              </h3>
+              <h3>Para todas las máquinas</h3>
 
               <p>
                 Soluciones para cada necesidad
@@ -196,9 +191,7 @@ onUnmounted(() => {
             </div>
 
             <div>
-              <h3>
-                Atención personalizada
-              </h3>
+              <h3>Atención personalizada</h3>
 
               <p>
                 Estamos para ayudarte
@@ -216,13 +209,10 @@ onUnmounted(() => {
 
         <div class="products-section-header">
 
-          <p class="section-kicker">
-            Conocé nuestros
-          </p>
+          <p class="section-kicker">Conocé nuestros</p>
 
-          <h2>
-            Productos
-          </h2>
+          <h2>Productos</h2>
+
         </div>
 
         <div
@@ -272,13 +262,9 @@ onUnmounted(() => {
 
         <div class="brands-header">
 
-          <p class="section-kicker">
-            Marcas con las que trabajamos
-          </p>
+          <p class="section-kicker">Marcas con las que trabajamos</p>
 
-          <h2>
-            Calidad y confianza en cada marca
-          </h2>
+          <h2>Calidad y confianza en cada marca</h2>
 
         </div>
 

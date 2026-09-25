@@ -24,9 +24,12 @@ const page = ref(Number(route.query.page) || 1);
 const totalPages = ref(1);
 const limit = 12;
 
+
 async function loadProducts() {
+
   loading.value = true;
   error.value = '';
+
   try {
     const response = await productsService.search({
       name: filters.value.name || undefined,
@@ -35,8 +38,10 @@ async function loadProducts() {
       page: page.value,
       limit,
     });
+
     products.value = response.data.data;
     totalPages.value = response.data.totalPages;
+
   } catch (e) {
     console.error('Error al cargar el catálogo:', e);
     showError('No se pudo cargar el catálogo.');
@@ -63,6 +68,7 @@ function changePage(newPage) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -112,13 +118,9 @@ watch(
     <section class="catalog-header">
       <div class="container catalog-header-inner">
 
-        <p class="section-eyebrow">
-          Repuestos y accesorios
-        </p>
+        <p class="section-eyebrow">Repuestos y accesorios</p>
+        <h1 class="catalog-title">Catálogo</h1>
 
-        <h1 class="catalog-title">
-          Catálogo
-        </h1>
       </div>
     </section>
 
@@ -127,10 +129,7 @@ watch(
         <aside class="filters-sidebar">
 
           <div class="filters-header">
-            <h2>
-              Buscá tu repuesto
-            </h2>
-
+            <h2>Buscá tu repuesto</h2>
           </div>
 
           <form
@@ -153,9 +152,7 @@ watch(
 
             <div class="field">
 
-              <label for="category">
-                Categoría
-              </label>
+              <label for="category">Categoría</label>
 
               <select
                 id="category"
@@ -183,9 +180,7 @@ watch(
                 v-model="filters.available"
               />
 
-              <span>
-                Solo disponibles
-              </span>
+              <span>Solo disponibles</span>
 
             </label>
 
@@ -233,13 +228,9 @@ watch(
               v-if="products.length === 0"
               class="empty-state"
             >
-              <h3>
-                No encontramos productos
-              </h3>
+              <h3>No encontramos productos</h3>
 
-              <p>
-                Probá cambiar los filtros de búsqueda.
-              </p>
+              <p>Probá cambiar los filtros de búsqueda.</p>
             </div>
 
             <div
@@ -251,18 +242,10 @@ watch(
                 :key="product.id"
                 :product="product"
               />
-
             </div>
 
-            <div class="pagination-wrapper">
-
-              <Pagination
-                :page="page"
-                :total-pages="totalPages"
-                @change-page="changePage"
-              />
-            </div>
-
+            <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
+            
           </template>
         </main>
       </div>
@@ -454,12 +437,6 @@ watch(
 .empty-state p {
   margin: 0;
   font-size: 0.95rem;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 45px;
 }
 
 .error-toast {

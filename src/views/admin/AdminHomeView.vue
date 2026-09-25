@@ -6,7 +6,7 @@ const sections = [
   { to: 'admin-categories', title: 'Categorías', description: 'Organizar el catálogo por marca.' },
   { to: 'admin-products', title: 'Productos', description: 'Cargar, editar y dar de baja repuestos del catálogo.' },
   { to: 'admin-orders', title: 'Pedidos', description: 'Ver y actualizar el estado de los pedidos recibidos.' },
-  { to: 'admin-stock', title: 'Stock', description: 'Registrar movimientos y ver alertas de stock bajo.' },
+  { to: 'admin-stock', title: 'Stock', description: 'Registrar movimientos, ver alertas de stock bajo y historial de movimientos.' },
   { to: 'admin-business', title: 'Datos del negocio', description: 'Dirección, teléfono, horarios y redes sociales.' },
   { to: 'admin-order-history',title: 'Historial de pedidos',description: 'Estadísticas de ventas.'},
   { to:'admin-users',title:'Usuarios',description:'Gestión de clientes y administradores.'}
@@ -18,7 +18,9 @@ const orderNotificationsStore = useOrderNotificationsStore();
 
 <template>
   <div class="container admin-home-view">
+
     <h1>Panel de administración</h1>
+
     <div class="admin-grid">
       <RouterLink v-for="s in sections" :key="s.to" :to="{ name: s.to }" class="admin-card">
         <div class="admin-card-header">

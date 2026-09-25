@@ -23,27 +23,31 @@ let errorTimeout = null;
 
 
 async function load() {
+
   loading.value = true;
 
   try {
-    const response = await categoriesService.list(page.value, 10);
+
+    const response = await categoriesService.list(page.value, 5);
 
     categories.value = response.data.data;
     totalPages.value = response.data.totalPages;
+
   } catch (e) {
     showError('No se pudieron cargar las categorías');
- 
   } finally {
     loading.value = false;
   }
 }
 
 async function create() {
+
   error.value = '';
 
   if (!newName.value.trim()) return;
 
   try {
+
     await categoriesService.create({
       name: newName.value,
       description: newDescription.value || undefined,
@@ -63,6 +67,7 @@ async function create() {
 }
 
 function startEditing(category) {
+
   editingId.value = category.id;
 
   editForm.value = {
@@ -72,13 +77,12 @@ function startEditing(category) {
 }
 
 async function saveEdit(id) {
+
   error.value = '';
 
   try {
     await categoriesService.update(id, editForm.value);
-
     editingId.value = null;
-
     await load();
     showMessage('Categoría actualizada correctamente');
   } catch (e) {
@@ -90,6 +94,7 @@ async function saveEdit(id) {
 }
 
 async function remove(category) {
+
   if (!confirm(`¿Dar de baja la categoría "${category.name}"?`)) {
     return;
   }
@@ -114,6 +119,7 @@ function changePage(newPage) {
 }
 
 function showMessage(text) { 
+
   message.value = text;
 
   if (messageTimeout) { 
@@ -126,6 +132,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -140,18 +147,217 @@ function showError(text) {
 onMounted(load);
 </script>
 
+
 <template>
   <div class="container admin-categories-view">
-    <!-- ================= HEADER ================= -->
-    <header class="page-header">
 
-      <div>
-        <h1>
-          Categorías
-        </h1>
-      </div>
+    <header class="page-header">
+      <h1>Categorías</h1>
     </header>
-    <!-- ================= MENSAJE ÉXITO ================= -->
+
+    <div class="categories-layout">
+
+      <section class="category-card">
+
+        <h2 class="section-title">Nueva categoría</h2>
+
+        <form
+          class="category-form"
+          @submit.prevent="create"
+        >
+          <div class="field">
+
+            <label for="name">Marca</label>
+
+            <input
+              id="name"
+              v-model="newName"
+              type="text"
+              placeholder="Ej: Apache"
+              required
+            />
+          </div>
+
+          <div class="field">
+
+            <label for="description">Descripción</label>
+
+            <input
+              id="description"
+              v-model="newDescription"
+              type="text"
+              placeholder="Descripción opcional"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="button button-primary"
+          >
+            Agregar
+          </button>
+        </form>
+
+      </section>
+
+      <section
+        v-if="!loading"
+        class="table-card"
+      >
+
+        <div class="table-header">
+          <h2>Categorías existentes</h2>
+        </div>
+
+        <div class="table-scroll">
+
+          <table class="admin-table admin-table--basic">
+
+            <thead>
+              <tr>
+                <th>Marca</th>
+                <th>Descripción</th>
+                <th>Productos</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr
+                v-for="cat in categories"
+                :key="cat.id"
+              >
+
+                <template v-if="editingId === cat.id">
+
+                  <td>
+                    <input
+                      v-model="editForm.name"
+                      type="text"
+                      class="input-edit-row"
+                    />
+                  </td>
+
+                  <td>
+                    <input
+                      v-model="editForm.description"
+                      type="text"
+                      class="input-edit-row"
+                    />
+                  </td>
+
+                  <td>
+                    {{ cat.productCount ?? "—" }}
+                  </td>
+
+                  <td class="table-actions">
+
+                    <button
+                      type="button"
+                      class="icon-button success"
+                      @click="saveEdit(cat.id)"
+                      title="Guardar"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="m9.2 16.6-4-4L3.8 14l5.4 5.4L21 7.6 19.6 6.2 9.2 16.6Z"
+                        />
+                      </svg>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="icon-button danger"
+                      @click="editingId = null"
+                      title="Cancelar"
+                    >
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
+                        />
+                      </svg>
+                    </button>
+
+                  </td>
+
+                </template>
+
+                <template v-else>
+
+                  <td class="table-name">
+                    {{ cat.name }}
+                  </td>
+
+                  <td class="table-description">
+                    {{ cat.description || "—" }}
+                  </td>
+
+                  <td>
+                    {{ cat.productCount ?? "—" }}
+                  </td>
+
+                  <td class="table-actions">
+
+                    <button
+                      class="icon-button edit-button"
+                      @click="startEditing(cat)"
+                      title="Editar"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path d="M12 20h9"/>
+                        <path
+                          d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+                        />
+                      </svg>
+                    </button>
+
+                    <button
+                      class="icon-button delete-button"
+                      @click="remove(cat)"
+                      title="Dar de baja"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14H6L5 6"/>
+                        <path d="M10 11v6"/>
+                        <path d="M14 11v6"/>
+                        <path d="M9 6V4h6v2"/>
+                      </svg>
+                    </button>
+
+                  </td>
+
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
+
+      </section>
+      
+      <p
+        v-if="loading"
+        class="loading-state"
+      >
+        Cargando categorías...
+      </p>
+
+    </div>
+
     <Transition name="success-toast">
       <div
         v-if="message"
@@ -159,21 +365,22 @@ onMounted(load);
       >
         <div class="success-toast-icon">
           <svg
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
             stroke-width="2.5"
           >
-            <path 
-              d="M5 12.5l4 4L19 7" 
-              stroke-linecap="round" 
-              stroke-linejoin="round" 
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             />
           </svg>
         </div>
+
         <div class="success-toast-content">
-          <strong> {{ message }} </strong>
-          <span> Los cambios se guardaron correctamente. </span>
+          <strong>{{ message }}</strong>
+          <span>Los cambios se guardaron correctamente.</span>
         </div>
       </div>
     </Transition>
@@ -196,197 +403,8 @@ onMounted(load);
         </div>
       </div>
     </Transition>
-    <!-- ================= NUEVA CATEGORÍA ================= -->
-    <section class="category-card">
-
-      <h2 class="section-title">
-        Nueva categoría
-      </h2>
-
-      <form
-        class="category-form"
-        @submit.prevent="create"
-      >
-        <div class="field field--categories">
-
-          <label for="name">
-            Marca
-          </label>
-
-          <input
-            id="name"
-            v-model="newName"
-            type="text"
-            placeholder="Ej: Apache"
-            required
-          />
-        </div>
-
-        <div class="field field--categories">
-
-          <label for="description">
-            Descripción
-          </label>
-
-          <input
-            id="description"
-            v-model="newDescription"
-            type="text"
-            placeholder="Descripción opcional"
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="button button-primary"
-        >
-          Agregar 
-        </button>
-      </form>
-    </section>
-
-    <p
-      v-if="loading"
-      class="loading-state"
-    >
-      Cargando categorías...
-    </p>
-    <!-- ================= TABLA ================= -->
-    <section
-      v-else
-      class="table-card"
-    >
-      <div class="table-header">
-        <h2>
-          Categorías existentes
-        </h2>
-      </div>
-
-      <div class="table-scroll">
-        <table class="admin-table admin-table--basic">
-          <thead>
-            <tr>
-
-              <th>Marca</th>
-
-              <th>Descripción</th>
-
-              <th>Productos</th>
-
-              <th></th>
-
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr
-              v-for="cat in categories"
-              :key="cat.id"
-            >
-              <!-- ================= EDICIÓN ================= -->
-              <template v-if="editingId === cat.id">
-                <td>
-                  <input
-                    v-model="editForm.name"
-                    type="text"
-                    class="input-edit-row"
-                  />
-                </td>
-
-                <td>
-                  <input
-                    v-model="editForm.description"
-                    type="text"
-                    class="input-edit-row"
-                  />
-                </td>
-
-                <td>
-                  {{ cat.productCount ?? "—" }}
-                </td>
-
-                <td class="table-actions">
-                  <button
-                    type="button"
-                    class="icon-button success"
-                    @click="saveEdit(cat.id)"
-                    title="Guardar"
-                  >
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="m9.2 16.6-4-4L3.8 14l5.4 5.4L21 7.6 19.6 6.2 9.2 16.6Z"
-                      />
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="icon-button danger"
-                    @click="editingId = null"
-                    title="Cancelar"
-                  >
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                         d="m7.4 5.9-1.5 1.5 4.6 4.6-4.6 4.6 1.5 1.5 4.6-4.6 4.6 4.6 1.5-1.5-4.6-4.6 4.6-4.6-1.5-1.5-4.6 4.6-4.6-4.6Z"
-                      />
-                    </svg>
-                  </button>
-                </td>
-              </template>
-              <!-- ================= NORMAL ================= -->
-              <template v-else>
-
-                <td class="table-name">
-                  {{ cat.name }}
-                </td>
-
-                <td class="table-description">
-                  {{ cat.description || "—" }}
-                </td>
-
-                <td>
-                  {{ cat.productCount ?? "—" }}
-                </td>
-
-                <td class="table-actions">
-
-                  <button
-                    class="icon-button edit-button"
-                    @click="startEditing(cat)"
-                    title="Editar"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
-                      <path d="M12 20h9"/>
-                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-                    </svg>
-                  </button>
-
-                  <button
-                    class="icon-button delete-button"
-                    @click="remove(cat)"
-                    title="Dar de baja"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
-                      <polyline points="3 6 5 6 21 6"/>
-                      <path d="M19 6l-1 14H6L5 6"/>
-                      <path d="M10 11v6"/>
-                      <path d="M14 11v6"/>
-                      <path d="M9 6V4h6v2"/>
-                    </svg>
-                  </button>
-                </td>
-              </template>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
-
   </div>
 </template>
-
 
 <style scoped>
 
@@ -409,7 +427,7 @@ onMounted(load);
 
 .page-header h1 {
   margin: 0;
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   color: var(--color-steel);
 }
 
@@ -418,40 +436,251 @@ onMounted(load);
   max-width: 620px;
 }
 
+/* ================= LAYOUT ================= */
+
+.categories-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+
+/* ================= CARDS ================= */
+
 .category-card,
 .table-card {
   background: #fff;
   border: 1px solid var(--color-line);
   border-radius: 24px;
-  box-shadow: 0 15px 40px rgba(15,23,42,.08);
+  box-shadow:
+    0 15px 40px rgba(15, 23, 42, .08);
 }
 
 .category-card {
   padding: 2rem;
-  margin-bottom: 2rem;
+  position: sticky;
+  top: 25px;
 }
 
 .table-card {
   overflow: hidden;
 }
 
+/* ================= FORMULARIO ================= */
+
 .section-title {
-  margin: 0 0 1.8rem;
-  color: var(--color-steel);
+  margin: 0 0 2rem;
   font-size: 1.35rem;
+  color: var(--color-steel);
 }
 
 .category-form {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem;
-  align-items: end;
-  
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
 }
 
-.category-form button[type="submit"] {
-  grid-column: 1 / -1;   
-  justify-self: center;   
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: .55rem;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.field input {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 0 1rem;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: .95rem;
+  outline: none;
+  transition:
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+.field input::placeholder {
+  color: var(--color-ink-soft);
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow:
+    0 0 0 4px rgba(185, 28, 28, .12);
+}
+
+.category-form .button {
+  width: 100%;
+  margin: .3rem 0 0;
+}
+
+.button.button-primary {
+  width: 100%;
+  padding: .9rem 2rem;
+  border: none;
+  border-radius: 14px;
+  background: var(--color-rust);
+  color: white;
+  font-family: var(--font-body);
+  font-size: .95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition:
+    background .25s ease,
+    transform .25s ease,
+    box-shadow .25s ease;
+}
+
+.button.button-primary:hover {
+  background: var(--color-rust-dark);
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 20px rgba(183, 53, 45, .20);
+}
+
+/* ================= TABLA ================= */
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-ink);
+}
+
+.table-header span {
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  background: #f6f6f3;
+  color: var(--color-ink-soft);
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-ink);
+  font-size: .9rem;
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:hover {
+  background:
+    rgba(48, 47, 47, .025);
+}
+
+.admin-table--basic th:first-child,
+.admin-table--basic td:first-child,
+.admin-table--basic th:nth-child(2),
+.admin-table--basic td:nth-child(2) {
+  text-align: left;
+}
+
+.admin-table--basic th:nth-child(3),
+.admin-table--basic td:nth-child(3),
+.admin-table--basic th:nth-child(4),
+.admin-table--basic td:nth-child(4) {
+  text-align: center;
+}
+
+.admin-table--basic tr {
+  min-width: 750px;
+}
+
+.admin-table--basic td {
+  height: 76px;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.table-name {
+  font-weight: 700;
+  color: var(--color-steel);
+}
+
+.table-description {
+  color: var(--color-ink-soft);
+}
+
+.product-code {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-ink-soft);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+}
+
+/* ================= ACCIONES ================= */
+
+.table-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ================= EDICIÓN ================= */
+
+.input-edit-row {
+  width: 100%;
+  height: 34px;
+  padding: 0 .7rem;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: #fff;
+  font-size: .88rem;
+  color: var(--color-ink);
+  transition: .2s;
+  box-sizing: border-box;
+}
+
+.input-edit-row:focus {
+  outline: none;
+  border-color: var(--color-rust);
+  box-shadow:
+    0 0 0 3px rgba(188, 34, 34, .12);
 }
 
 .admin-table input {
@@ -472,71 +701,96 @@ onMounted(load);
 .admin-table select:focus {
   outline: none;
   border-color: var(--color-rust);
-  box-shadow: 0 0 0 4px rgba(188,34,34,.12);
+  box-shadow:
+    0 0 0 4px rgba(188, 34, 34, .12);
 }
 
-.success-toast { 
-  position: fixed; 
-  top: 30px; 
+/* ================= LOADING ================= */
+
+.loading-state,
+.empty-state {
+  padding: 30px 20px;
+  margin: 0;
+  color: var(--color-ink-soft);
+  text-align: center;
+}
+
+
+/* ================= TOAST ÉXITO ================= */
+
+.success-toast {
+  position: fixed;
+  top: 30px;
   right: 30px;
-  z-index: 9999; 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  min-width: 300px; 
-  max-width: 380px; 
-  padding: 14px 18px; 
-  background: #ffffff; 
-  border: 1px solid #b8dfc4; 
-  border-radius: 14px; 
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12); 
-  color: #207a3c; 
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: 380px;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+  border: 1px solid #b8dfc4;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, .12);
+
+  color: #207a3c;
 }
 
-.success-toast-icon { 
-  width: 36px; 
-  height: 36px; 
-  flex-shrink: 0; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+.success-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 50%;
-   background: #e8f7ec; 
-  }
+  background: #e8f7ec;
+}
 
 .success-toast-icon svg {
-  width: 20px; 
-  height: 20px; 
-} 
-
-.success-toast-content { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 3px; 
+  width: 20px;
+  height: 20px;
 }
 
-.success-toast-content strong { 
-  font-size: 0.88rem; 
-  font-weight: 700; 
-} 
-
-.success-toast-content span { 
-  color: #4d6655; 
-  font-size: 0.78rem; 
+.success-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.success-toast-enter-active, 
+.success-toast-content strong {
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.success-toast-content span {
+  color: #4d6655;
+  font-size: .78rem;
+}
+
+.success-toast-enter-active,
 .success-toast-leave-active {
-    transition: 
-    opacity 0.25s ease, 
-    transform 0.25s ease; 
-} 
-
-.success-toast-enter-from, 
-.success-toast-leave-to { 
-  opacity: 0; 
-  transform: translateY(-10px); 
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
 }
+
+.success-toast-enter-from,
+.success-toast-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* ================= TOAST ERROR ================= */
 
 .error-toast {
   position: fixed;
@@ -554,12 +808,13 @@ onMounted(load);
   padding: 14px 18px;
 
   background: #ffffff;
-  border: 1px solid #f0c2c2;
+  border: 1px solid #efb8b8;
   border-radius: 14px;
 
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, .12);
 
-  color: #b42318;
+  color: #b42323;
 }
 
 .error-toast-icon {
@@ -592,15 +847,15 @@ onMounted(load);
 }
 
 .error-toast-content span {
-  color: #765050;
+  color: #7a4d4d;
   font-size: .78rem;
 }
 
 .error-toast-enter-active,
 .error-toast-leave-active {
   transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
+    opacity .25s ease,
+    transform .25s ease;
 }
 
 .error-toast-enter-from,
@@ -609,131 +864,25 @@ onMounted(load);
   transform: translateY(-10px);
 }
 
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.6rem 2rem;
-  border-bottom: 1px solid var(--color-line);
-}
+/* ================= RESPONSIVE ================= */
 
-.table-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
-}
+@media (max-width: 1000px) {
 
-.table-header span {
-  padding: .45rem .9rem;
-  border-radius: 999px;
-  background: #f3f4f6;
-  color: var(--color-ink-soft);
-  font-size: .85rem;
-  font-weight: 600;
-}
-
-.table-scroll {
-  overflow-x: auto;
-}
-
-.table-name {
-  font-weight: 700;
-  color: var(--color-steel);
-}
-
-.table-description {
-  color: var(--color-ink-soft);
-}
-
-.machine-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: .45rem .9rem;
-  border-radius: 999px;
-  color: rgb(49, 49, 49);
-  font-size: .82rem;
-  
-}
-
-.input-edit-row {
-  width: 100%;
-  height: 34px;
-  padding: 0 0.7rem;
-  border: 1px solid var(--color-line);
-  border-radius: 10px;
-  background: #fff;
-  font-size: .88rem;
-  color: var(--color-ink);
-  transition: .2s;
-  box-sizing: border-box;
-}
-
-.input-edit-row:focus {
-  outline: none;
-  border-color: var(--color-rust);
-  box-shadow: 0 0 0 3px rgba(188, 34, 34, .12);
-}
-
-/* ================= TABLA ================= */
-
-.admin-table--basic th:first-child,
-.admin-table--basic td:first-child,
-.admin-table--basic th:nth-child(2),
-.admin-table--basic td:nth-child(2) {
-  text-align: left;
-}
-
-.admin-table--basic th:nth-child(3),
-.admin-table--basic td:nth-child(3),
-.admin-table--basic th:nth-child(4),
-.admin-table--basic td:nth-child(4) {
-  text-align: center;
-}
-
-.admin-table--basic td {
-  vertical-align: middle;
-}
-
-.table-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.admin-table--basic tr {
-  height: 76px;
-}
-
-.admin-table--basic td {
-  height: 76px;
-  vertical-align: middle;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1200px) {
-
-  .category-form {
-    grid-template-columns: 1fr 1fr;
+  .categories-layout {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 22px;
   }
 
 }
 
 @media (max-width: 900px) {
 
-  .category-card,
-  .table-card {
-    padding: 1.2rem;
-  }
-
-  .table-card {
-    padding: 0;
-  }
-
-  .category-form {
+  .categories-layout {
     grid-template-columns: 1fr;
   }
 
-  .category-form button[type="submit"] {
-    width: 100%;
+  .category-card {
+    position: static;
   }
 
   .table-header {
@@ -741,5 +890,44 @@ onMounted(load);
     align-items: flex-start;
     gap: 1rem;
   }
+
 }
+
+@media (max-width: 600px) {
+
+  .admin-categories-view {
+    padding: 40px 14px 60px;
+  }
+
+  .page-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2.1rem;
+  }
+
+  .category-card {
+    padding: 1.5rem;
+  }
+
+  .table-header {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .admin-table {
+    min-width: 650px;
+  }
+
+  .success-toast,
+  .error-toast {
+    top: 20px;
+    right: 15px;
+    left: 15px;
+    min-width: auto;
+    max-width: none;
+  }
+
+}
+
 </style>

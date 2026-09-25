@@ -7,8 +7,6 @@ import categoriesService from '../../services/categories.service';
 const route = useRoute();
 const router = useRouter();
 
-const categories = ref([]);
-
 const form = ref({
   code: '',
   name: '',
@@ -20,6 +18,7 @@ const form = ref({
   categoryId: '',
 });
 
+const categories = ref([]);
 const loading = ref(false);
 const saving = ref(false);
 const error = ref('');
@@ -42,14 +41,17 @@ const filteredCategories = computed(() => {
   );
 });
 
+
 async function loadCategories() {
   const response = await categoriesService.list();
   categories.value = response.data.data;
 }
 
-async function loadProduct() {
+async function loadProduct() { 
+
   const response = await productsService.getById(route.params.id);
   const p = response.data;
+
   form.value = {
     code: p.code,
     name: p.name,
@@ -70,6 +72,7 @@ async function loadProduct() {
 }
 
 async function save() {
+
   error.value = '';
   saving.value = true;
 
@@ -107,7 +110,6 @@ async function save() {
       e.response?.data?.message ||
       'No se pudo guardar el producto'
     );
-    
   } finally {
     saving.value = false;
   }
@@ -120,6 +122,7 @@ function selectCategory(category) {
 }
 
 function onImageSelected(event) {
+
   const file = event.target.files[0];
 
   if (!file) return;
@@ -130,6 +133,7 @@ function onImageSelected(event) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -147,6 +151,7 @@ function showError(text) {
 }
 
 onMounted(async () => {
+
   loading.value = isEditing.value;
 
   await loadCategories();
@@ -164,25 +169,11 @@ onMounted(async () => {
 </script>
 
 <template>
-
-  <Transition name="toast">
-    <div v-if="error" class="toast toast-error">
-      <span class="toast-icon">!</span>
-
-      <div class="toast-content">
-        <strong>No se pudo guardar el producto</strong>
-        <span>No se pudieron guardar los cambios.</span>
-      </div>
-    </div>
-  </Transition>
-  
   <div class="container admin-form-view">
 
     <header class="page-header">
       <div>
-        <h1>
-          {{ isEditing ? 'Editar producto' : 'Nuevo producto' }}
-        </h1>
+        <h1>{{ isEditing ? 'Editar producto' : 'Nuevo producto' }}</h1>
       </div>
     </header>
 
@@ -197,9 +188,7 @@ onMounted(async () => {
     >
       <section class="form-section">
 
-        <h2 class="section-title">
-          Información general
-        </h2>
+        <h2 class="section-title">Información general</h2>
 
         <div class="form-grid">
 
@@ -224,9 +213,7 @@ onMounted(async () => {
           </div>
 
           <div class="field">
-            <label for="categoryId">
-              Categoría
-            </label>
+            <label for="categoryId">Categoría</label>
 
             <div class="category-search">
               <input
@@ -257,9 +244,7 @@ onMounted(async () => {
           </div>
 
           <div class="field">
-            <label for="price">
-              Precio
-            </label>
+            <label for="price">Precio</label>
 
             <input
               id="price"
@@ -272,10 +257,7 @@ onMounted(async () => {
           </div>
 
           <div class="field">
-
-            <label for="stock">
-              Stock inicial
-            </label>
+            <label for="stock">Stock inicial</label>
 
             <input
               id="stock"
@@ -294,10 +276,7 @@ onMounted(async () => {
           </div>
 
           <div class="field">
-
-            <label for="minStock">
-              Stock mínimo
-            </label>
+            <label for="minStock">Stock mínimo</label>
 
             <input
               id="minStock"
@@ -310,16 +289,10 @@ onMounted(async () => {
       </section>
 
       <section class="form-section">
-
-        <h2 class="section-title">
-          Descripción
-        </h2>
+        <h2 class="section-title">Descripción</h2>
 
         <div class="field">
-
-          <label for="description">
-            Descripción del producto
-          </label>
+          <label for="description">Descripción del producto</label>
 
           <textarea
             id="description"
@@ -330,16 +303,10 @@ onMounted(async () => {
       </section>
 
       <section class="form-section">
-
-        <h2 class="section-title">
-          Compatibilidad
-        </h2>
+        <h2 class="section-title">Compatibilidad</h2>
 
         <div class="field">
-
-          <label for="machineryCompatibility">
-            Maquinaria compatible
-          </label>
+          <label for="machineryCompatibility">Maquinaria compatible</label>
 
           <textarea
             id="machineryCompatibility"
@@ -350,10 +317,7 @@ onMounted(async () => {
       </section>
 
       <section class="form-section">
-
-        <h2 class="section-title">
-          Imagen del producto
-        </h2>
+        <h2 class="section-title">Imagen del producto</h2>
 
         <div class="image-upload-card">
 
@@ -422,6 +386,17 @@ onMounted(async () => {
       </div>
     </form>
   </div>
+
+  <Transition name="toast">
+    <div v-if="error" class="toast toast-error">
+      <span class="toast-icon">!</span>
+
+      <div class="toast-content">
+        <strong>No se pudo guardar el producto</strong>
+        <span>No se pudieron guardar los cambios.</span>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 

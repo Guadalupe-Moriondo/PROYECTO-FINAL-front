@@ -11,13 +11,19 @@ const paymentMethod = ref('cash');
 const submitting = ref(false);
 const error = ref('');
 
+
 async function confirmOrder() {
+
   error.value = '';
   submitting.value = true;
+
   try {
+
     const response = await ordersService.createFromCart(paymentMethod.value);
+
     cartStore.clearLocal();
     router.push({ name: 'my-orders', query: { created: response.data.orderNumber } });
+
   } catch (e) {
     error.value = e.response?.data?.message || 'No se pudo confirmar el pedido';
   } finally {
@@ -45,9 +51,7 @@ onMounted(() => {
     >
       <h2>Tu carrito está vacío</h2>
 
-      <p>
-        Agregá productos antes de continuar.
-      </p>
+      <p>Agregá productos antes de continuar.</p>
 
       <RouterLink
         :to="{ name: 'catalog' }"
@@ -64,9 +68,7 @@ onMounted(() => {
       <section class="summary-card">
 
         <div class="card-header">
-
           <h2>Resumen del pedido</h2>
-
         </div>
 
         <div class="summary-list">
@@ -108,9 +110,7 @@ onMounted(() => {
           <span>Total</span>
 
           <strong>
-
             $ {{ cartStore.total.toLocaleString('es-AR') }}
-
           </strong>
 
         </div>
@@ -157,9 +157,7 @@ onMounted(() => {
 
             <strong>Transferencia</strong>
 
-            <small>
-              Recibirás los datos luego de confirmar.
-            </small>
+            <small>Recibirás los datos luego de confirmar.</small>
 
           </div>
 

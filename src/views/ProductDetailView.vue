@@ -36,7 +36,9 @@ const business = ref(null);
 
 
 async function loadProduct() {
+
   loading.value = true;
+
   try {
     const response = await productsService.getById(route.params.id);
     product.value = response.data;
@@ -60,11 +62,14 @@ async function loadBusiness() {
 }
 
 async function addToCart() {
+
   cartMessage.value = '';
+
   if (!authStore.isLoggedIn) {
     router.push({ name: 'login', query: { redirect: route.fullPath } });
     return;
   }
+
   await cartStore.addProduct(product.value.id, quantity.value);
   cartMessage.value = 'Se agregó al carrito.';
   setTimeout(() => {
@@ -102,9 +107,7 @@ onMounted(() => {
               :alt="product.name"
             />
 
-            <span v-else>
-              Sin imagen disponible
-            </span>
+            <span v-else>Sin imagen disponible</span>
 
           </div>
         </section>
@@ -120,9 +123,7 @@ onMounted(() => {
               {{ product.category.name }}
             </p>
 
-            <h1>
-              {{ product.name }}
-            </h1>
+            <h1>{{ product.name }}</h1>
 
             <AvailabilityTag
               :code="product.code"
@@ -131,22 +132,16 @@ onMounted(() => {
           </div>
 
           <div class="product-price">
-
             $ {{ Number(product.price).toLocaleString('es-AR') }}
-
           </div>
 
           <div
             v-if="product.description"
             class="product-description"
           >
-            <h3>
-              Descripción
-            </h3>
+            <h3>Descripción</h3>
 
-            <p>
-              {{ product.description }}
-            </p>
+            <p>{{ product.description }}</p>
 
           </div>
 
@@ -154,31 +149,41 @@ onMounted(() => {
             v-if="product.machineryCompatibility"
             class="product-description"
           >
-            <h3>
-              Compatibilidad maquinaria
-            </h3>
+            <h3>Compatibilidad maquinaria</h3>
 
-            <p>
-              {{ product.machineryCompatibility }}
-            </p>
+            <p>{{ product.machineryCompatibility }}</p>
+
           </div>
 
           <div class="purchase-box">
 
             <div class="quantity-control">
 
-              <label for="quantity">
-                Cantidad
-              </label>
+              <label for="quantity">Cantidad</label>
 
-              <input
-                id="quantity"
-                type="number"
-                min="1"
-                :max="product.stock"
-                v-model.number="quantity"
-                :disabled="product.stock === 0"
-              />
+              <div class="quantity-selector">
+
+                <button
+                  type="button"
+                  :disabled="quantity <= 1 || product.stock === 0"
+                  @click="quantity--"
+                >
+                  −
+                </button>
+
+                <span>
+                  {{ quantity }}
+                </span>
+
+                <button
+                  type="button"
+                  :disabled="quantity >= product.stock || product.stock === 0"
+                  @click="quantity++"
+                >
+                  +
+                </button>
+
+              </div>
             </div>
 
             <button
@@ -229,13 +234,9 @@ onMounted(() => {
           >
             <div>
 
-              <strong>
-                ¿Necesitás ayuda?
-              </strong>
+              <strong>¿Necesitás ayuda?</strong>
 
-              <p>
-                Consultanos por compatibilidad o disponibilidad.
-              </p>
+              <p>Consultanos por compatibilidad o disponibilidad.</p>
 
             </div>
 
@@ -253,9 +254,7 @@ onMounted(() => {
               >
                 <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
               </svg>
-
               WhatsApp
-
             </a>
           </div>
         </section>
@@ -341,6 +340,7 @@ onMounted(() => {
     var(--color-rust);
 
   margin:0;
+
 }
 
 .product-heading h1 {
@@ -395,12 +395,50 @@ onMounted(() => {
 }
 
 .quantity-control {
-  display:flex;
-  gap:1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.quantity-control input {
-  max-width:100px;
+.quantity-control label {
+  text-align: left;
+  margin: 0;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .8rem;
+}
+
+.quantity-selector button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-bg);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: .2s;
+}
+
+.quantity-selector button:hover:not(:disabled) {
+  background: var(--color-rust);
+  color: white;
+}
+
+.quantity-selector button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.quantity-selector span {
+  min-width: 36px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
 .purchase-button {

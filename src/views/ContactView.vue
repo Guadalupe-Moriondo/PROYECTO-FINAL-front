@@ -6,8 +6,11 @@ import ubicacionImg from '../assets/local.jpg';
 const business = ref(null);
 
 const whatsappLink = computed(() => {
+
   if (!business.value?.whatsapp) return null;
+
   const number = business.value.whatsapp.replace(/\D/g, '');
+
   const text = encodeURIComponent(
     'Hola! Quisiera realizar una consulta.'
   );
@@ -48,10 +51,15 @@ const mapsUrl = computed(() => {
   return `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 });
 
+
 async function loadBusiness() {
+
   try {
+
     const response = await businessService.get();
+
     business.value = response.data;
+
   } catch (e) {
     console.error('Error al cargar los datos del negocio:', e);
     business.value = null;
@@ -59,6 +67,7 @@ async function loadBusiness() {
 }
 
 function formatPhone(phone) {
+
   if (!phone) return '';
 
   const number = String(phone).replace(/\D/g, '');
@@ -80,13 +89,9 @@ onMounted(loadBusiness);
     <section class="contact-header">
       <div class="container contact-header-inner">
 
-        <p class="section-eyebrow">
-          Estamos para ayudarte
-        </p>
+        <p class="section-eyebrow">Estamos para ayudarte</p>
 
-        <h1 class="contact-title">
-          Contacto
-        </h1>
+        <h1 class="contact-title">Contacto</h1>
 
       </div>
     </section>
@@ -99,9 +104,7 @@ onMounted(loadBusiness);
         <div class="contact-cta-card">
           <div class="contact-cta-content">
 
-            <h2>
-              ¿Tenés alguna consulta?
-            </h2>
+            <h2>¿Tenés alguna consulta?</h2>
 
             <p>
               Escribinos por WhatsApp o correo electrónico
@@ -152,13 +155,10 @@ onMounted(loadBusiness);
           <div class="location-card">
             <div class="map-header">
 
-              <p class="section-kicker">
-                Encontranos
-              </p>
+              <p class="section-kicker">Encontranos</p>
 
-              <h2>
-                Nuestra ubicación
-              </h2>
+              <h2>Nuestra ubicación</h2>
+
             </div>
 
             <div class="location-content">
@@ -188,13 +188,9 @@ onMounted(loadBusiness);
 
           <div class="business-card">
 
-            <p class="section-kicker">
-              Información
-            </p>
+            <p class="section-kicker">Información</p>
 
-            <h2 class="business-name">
-              {{ business.name }}
-            </h2>
+            <h2 class="business-name">{{ business.name }}</h2>
 
             <div class="info-item">
 
@@ -206,22 +202,16 @@ onMounted(loadBusiness);
 
               <div>
 
-                <span class="info-label">
-                  Dirección
-                </span>
+                <span class="info-label">Dirección</span>
 
-                <p>
-                  {{ business.address }}
-                </p>
+                <p>{{ business.address }}</p>
 
                 <p v-if="business.city">
                   {{ business.city }},
                   {{ business.province }}
                 </p>
 
-                <p v-if="business.country">
-                  {{ business.country }}
-                </p>
+                <p v-if="business.country">{{ business.country }}</p>
 
               </div>
 
@@ -239,13 +229,9 @@ onMounted(loadBusiness);
 
               <div>
 
-                <span class="info-label">
-                  Teléfono
-                </span>
+                <span class="info-label">Teléfono</span>
 
-                <p>
-                  {{ formatPhone(business.phone) }}
-                </p>
+                <p>{{ formatPhone(business.phone) }}</p>
 
               </div>
 
@@ -267,9 +253,7 @@ onMounted(loadBusiness);
                   </svg>
                 </div>
 
-                <h3>
-                  Horarios de atención
-                </h3>
+                <h3>Horarios de atención</h3>
 
               </div>
 
@@ -282,15 +266,9 @@ onMounted(loadBusiness);
                   "
                   class="hours-row"
                 >
-                  <span>
-                    Lunes a Viernes
-                  </span>
+                  <span>Lunes a Viernes</span>
 
-                  <strong>
-                    {{ business.morningOpen }}
-                    -
-                    {{ business.morningClose }}
-                  </strong>
+                  <strong> {{ business.morningOpen }} - {{ business.morningClose }} </strong>
 
                 </div>
 
@@ -301,15 +279,9 @@ onMounted(loadBusiness);
                   "
                   class="hours-row"
                 >
-                  <span>
-                    Tarde
-                  </span>
+                  <span>Tarde</span>
 
-                  <strong>
-                    {{ business.afternoonOpen }}
-                    -
-                    {{ business.afternoonClose }}
-                  </strong>
+                  <strong> {{ business.afternoonOpen }} - {{ business.afternoonClose }} </strong>
 
                 </div>
 
@@ -320,15 +292,9 @@ onMounted(loadBusiness);
                   "
                   class="hours-row"
                 >
-                  <span>
-                    Sábados
-                  </span>
+                  <span>Sábados</span>
 
-                  <strong>
-                    {{ business.saturdayOpen }}
-                    -
-                    {{ business.saturdayClose }}
-                  </strong>
+                  <strong> {{ business.saturdayOpen }} - {{ business.saturdayClose }} </strong>
 
                 </div>
               </div>

@@ -43,14 +43,20 @@ const phoneDirty = ref(false);
 const emailValue = ref('');
 const emailDirty = ref(false);
 
+
 async function loadProfile() {
+
   loading.value = true;
 
   try {
+
     const response = await usersService.getProfile();
+
     profile.value = response.data;
     loadPhone(profile.value.phone);
+
     emailValue.value = profile.value.email || '';
+
   } catch (error) {
     console.error('Error al cargar el perfil:', error);
     showError('No se pudo cargar el perfil');
@@ -60,6 +66,7 @@ async function loadProfile() {
 }
 
 async function saveField(field, value) {
+
   if (!value.trim()) return;
 
   savingField.value = true;
@@ -76,13 +83,13 @@ async function saveField(field, value) {
   } catch (error) {
     console.error('Error al actualizar el perfil:', error);
     showError('No se pudo actualizar el perfil');
-
   } finally {
     savingField.value = false;
   }
 }
 
 async function changePassword() {
+
   passwordMessage.value = '';
 
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
@@ -152,6 +159,7 @@ function formatDate(date) {
 }
 
 function showMessage(text) {
+
   profileMessage.value = text;
 
   if (profileTimeout) {
@@ -164,6 +172,7 @@ function showMessage(text) {
 }
 
 function showPasswordMessage(text) {
+
   passwordMessage.value = text;
 
   if (passwordTimeout) {
@@ -176,6 +185,7 @@ function showPasswordMessage(text) {
 }
 
 function showError(text) {
+
   errorMessage.value = text;
 
   if (errorTimeout) {
@@ -193,65 +203,9 @@ onMounted(loadProfile);
 <template>
   <div class="container profile-view">
 
-    <Transition name="success-toast">
-      <div
-        v-if="profileMessage || passwordMessage"
-        class="success-toast"
-      >
-        <div class="success-toast-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <path
-              d="M5 12.5l4 4L19 7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-
-        <div class="success-toast-content">
-          <strong>
-            {{ profileMessage || passwordMessage }}
-          </strong>
-
-          <span>
-            Los cambios se guardaron correctamente.
-          </span>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- Toast de error -->
-    <Transition name="error-toast">
-      <div
-        v-if="errorMessage"
-        class="error-toast"
-      >
-        <div class="error-toast-icon">
-          !
-        </div>
-
-        <div class="error-toast-content">
-          <strong>
-            {{ errorMessage }}
-          </strong>
-
-          <span>
-            No se pudieron guardar los cambios.
-          </span>
-        </div>
-      </div>
-    </Transition>
-
     <div class="profile-page-header">
       <div>
-        <h1>
-          Mi perfil
-        </h1>
+        <h1>Mi perfil</h1>
       </div>
     </div>
 
@@ -267,15 +221,13 @@ onMounted(loadProfile);
       class="profile-layout"
     >
       <section class="profile-card">
-
         <div class="profile-card-header">
 
           <div class="avatar">
             <svg
               viewBox="0 0 24 24 "
               fill="none"
-              stroke="currentColor"
-                      
+              stroke="currentColor"        
             >
               <path d="M20 21a8 8 0 0 0-16 0"/>
               <circle cx="12" cy="7" r="4"/>
@@ -288,9 +240,7 @@ onMounted(loadProfile);
 
               <div class="name-row">
 
-                <h2 class="profile-name">
-                  {{ profile.name }}
-                </h2>
+                <h2 class="profile-name">{{ profile.name }}</h2>
 
                 <button
                   type="button"
@@ -363,15 +313,11 @@ onMounted(loadProfile);
         </div>
 
         <div class="profile-divider"></div>
-
         <div class="profile-field">
 
-          <label>
-            Email
-          </label>
+          <label>Email</label>
 
           <div class="field-box editable">
-
             <div class="field-icon">
 
               <svg
@@ -404,12 +350,9 @@ onMounted(loadProfile);
 
         <div class="profile-field">
 
-          <label>
-            Teléfono
-          </label>
+          <label>Teléfono</label>
 
           <div class="field-box editable">
-
             <div class="field-icon">
 
               <svg
@@ -454,9 +397,7 @@ onMounted(loadProfile);
       </section>
 
       <section class="profile-card security-card">
-
         <div class="security-header">
-
           <div class="security-icon">
 
             <svg
@@ -471,13 +412,9 @@ onMounted(loadProfile);
           </div>
 
           <div>
-            <h2>
-              Seguridad
-            </h2>
+            <h2>Seguridad</h2>
 
-            <p>
-              Actualizá tu contraseña para mantener tu cuenta segura.
-            </p>
+            <p>Actualizá tu contraseña para mantener tu cuenta segura.</p>
 
           </div>
 
@@ -485,9 +422,7 @@ onMounted(loadProfile);
 
         <div class="form-group">
 
-          <label>
-            Contraseña actual
-          </label>
+          <label>Contraseña actual</label>
 
           <div class="password-box password-box--profile">
 
@@ -528,7 +463,6 @@ onMounted(loadProfile);
                   v-else
                   d="m4.2 3.8-1.4 1.4 3 3C4.2 9.5 2.9 11 2.5 12c1.5 2 4.7 6.5 9.5 6.5 1.6 0 3-.4 4.2-1l2 2 1.4-1.4L4.2 3.8ZM12 16.5c-3.1 0-5.4-2.5-7.2-4.5.6-.7 1.3-1.5 2.1-2.2l1.5 1.5a3.8 3.8 0 0 0 5.3 5.3l1 1c-.8.3-1.7.5-2.7.5Zm.2-7.9a3.8 3.8 0 0 1 3.2 3.2l-1.6-1.6a1.9 1.9 0 0 0-1.6-1.6V8.6Z"
                 />
-
               </svg>
 
             </button>
@@ -537,9 +471,7 @@ onMounted(loadProfile);
 
         <div class="form-group">
 
-          <label>
-            Nueva contraseña
-          </label>
+          <label>Nueva contraseña</label>
 
           <div class="password-box password-box--profile">
 
@@ -583,9 +515,7 @@ onMounted(loadProfile);
 
         <div class="form-group">
 
-          <label>
-            Confirmar contraseña
-          </label>
+          <label>Confirmar contraseña</label>
 
           <div class="password-box password-box--profile">
 
@@ -623,7 +553,6 @@ onMounted(loadProfile);
               </svg>
 
             </button>
-
           </div>
         </div>
 
@@ -641,12 +570,65 @@ onMounted(loadProfile);
               d="M7 10V8a5 5 0 1 1 10 0v2h1a2 2 0 0 1 2 2v7H4v-7a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 0 0-6 0v2Zm-3 2v5h12v-5H6Z"
             />
           </svg>
-
+  
           Cambiar contraseña
 
         </button>
       </section>
     </div>
+
+    <Transition name="success-toast">
+      <div
+        v-if="profileMessage || passwordMessage"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div class="success-toast-content">
+          <strong>
+            {{ profileMessage || passwordMessage }}
+          </strong>
+
+          <span>
+            Los cambios se guardaron correctamente.
+          </span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="errorMessage"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>
+            {{ errorMessage }}
+          </strong>
+
+          <span>
+            No se pudieron guardar los cambios.
+          </span>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -911,12 +893,15 @@ onMounted(loadProfile);
   flex: 1;
   min-width: 0;
   display: flex;
-  gap: 8px;
+  align-items: center;
 }
 
 .phone-inputs input:first-child {
   width: 90px;
   flex: 0 0 90px;
+  padding-right: 12px;
+  margin-right: 12px;
+  border-right: 1px solid var(--color-line);
 }
 
 .phone-inputs input:last-child {

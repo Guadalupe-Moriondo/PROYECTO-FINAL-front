@@ -10,6 +10,7 @@ const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
 
+
 function changeQuantity(item, newQuantity) {
   if (newQuantity < 1) {
     cartStore.removeItem(item.id);
@@ -164,9 +165,7 @@ onMounted(() => {
                 </div>
 
                 <div class="product-price">
-
                   $ {{ (Number(item.product.price) * item.quantity).toLocaleString('es-AR') }}
-
                 </div>
 
               </div>
@@ -175,7 +174,6 @@ onMounted(() => {
         </section>
 
         <aside class="cart-summary">
-
           <h2>Resumen</h2>
 
           <div class="summary-row">

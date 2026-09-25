@@ -76,8 +76,10 @@ const whatsappNumber = ref('');
 const showProvinceResults = ref(false);
 const showCountryResults = ref(false);
 
+
 async function load() {
   try {
+    
     const response = await businessService.get();
 
     console.log('Datos negocio:', response.data);
@@ -91,12 +93,10 @@ async function load() {
       country: response.data.country || '',
 
       whatsapp: response.data.whatsapp || '',
-
       email: response.data.email || '',
 
       instagram: response.data.instagram || '',
       facebook: response.data.facebook || '',
-
 
       morningOpen: response.data.morningOpen || '',
       morningClose: response.data.morningClose || '',
@@ -110,13 +110,11 @@ async function load() {
 
     const phone = String(response.data.phone || '')
       .replace(/\D/g, '');
-
     phoneArea.value = phone.slice(0, 4);
     phoneNumber.value = phone.slice(4);
 
     const whatsapp = String(response.data.whatsapp || '')
       .replace(/\D/g, '');
-
     whatsappArea.value = whatsapp.slice(0, 4);
     whatsappNumber.value = whatsapp.slice(4);
 
@@ -128,6 +126,7 @@ async function load() {
 }
 
 async function save() {
+
   saving.value = true;
 
   try {
@@ -162,10 +161,7 @@ async function save() {
     }, 1200);
 
   } catch (e) {
-    showError(
-      'No se pudieron guardar los datos del negocio'
-    );
-
+    showError('No se pudieron guardar los datos del negocio');
     setTimeout(() => {
       router.push({ name: 'admin-home' });
     }, 5000);
@@ -186,6 +182,7 @@ function selectCountry(country) {
 }
 
 function showMessage(text) {
+
   message.value = text;
 
   if (messageTimeout) {
@@ -198,6 +195,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -213,337 +211,329 @@ onMounted(load);
 </script>
 
 <template>
+  <div class="container admin-business-view">
 
-<div class="container admin-business-view">
+    <header class="page-header">
+      <h1>Datos del negocio</h1>
+    </header>
 
-  <header class="page-header">
-    <h1>
-      Datos del negocio
-    </h1>
-  </header>
+    <p
+      v-if="loading"
+      class="loading-state"
+    >
+      Cargando...
+    </p>
 
-  <p
-    v-if="loading"
-    class="loading-state"
-  >
-    Cargando...
-  </p>
+    <form
+      v-else
+      class="business-form"
+      @submit.prevent="save"
+    >
 
-  <form
-  v-else
-  class="business-form"
-  @submit.prevent="save"
->
-  <!-- ================= INFORMACIÓN GENERAL ================= -->
-  <section class="form-card">
+      <section class="form-card">
 
-    <div class="card-header">
-      <h2>Información general</h2>
-    </div>
+        <div class="card-header">
+          <h2>Información general</h2>
+        </div>
 
-    <div class="form-grid">
+        <div class="form-grid">
 
-      <div class="field field--business">
-        <label>Nombre del negocio</label>
-        <input
-          v-model="form.name"
-          type="text"
-        >
-      </div>
-
-      <div class="field field--business">
-        <label>Dirección</label>
-        <input
-          v-model="form.address"
-          type="text"
-        >
-      </div>
-
-      <div class="field field--business">
-        <label>Ciudad</label>
-        <input
-          v-model="form.city"
-          type="text"
-          placeholder="Ej: San Francisco"
-        >
-      </div>
-
-      <div class="field field--business">
-        <label>Provincia</label>
-
-        <div class="product-search">
-          <input
-            v-model="form.province"
-            type="text"
-            placeholder="Seleccionar provincia"
-            readonly
-            @click="showProvinceResults = !showProvinceResults"
-          >
-
-          <div
-            v-if="showProvinceResults"
-            class="product-results"
-          >
-            <button
-              v-for="province in provinces"
-              :key="province"
-              type="button"
-              class="product-result"
-              @click="selectProvince(province)"
+          <div class="field field--business">
+            <label>Nombre del negocio</label>
+            <input
+              v-model="form.name"
+              type="text"
             >
-              <span>{{ province }}</span>
-            </button>
           </div>
 
-        </div>
-      </div>
+          <div class="field field--business">
+            <label>Dirección</label>
 
-      <div class="field field--business">
-
-        <label>País</label>
-
-        <div class="product-search">
-          <input
-            v-model="form.country"
-            type="text"
-            placeholder="Seleccionar país"
-            readonly
-            @click="showCountryResults = !showCountryResults"
-          >
-
-          <div
-            v-if="showCountryResults"
-            class="product-results"
-          >
-            <button
-              v-for="country in countries"
-              :key="country"
-              type="button"
-              class="product-result"
-              @click="selectCountry(country)"
+            <input
+              v-model="form.address"
+              type="text"
             >
-              <span>{{ country }}</span>
-            </button>
+          </div>
+
+          <div class="field field--business">
+            <label>Ciudad</label>
+            
+            <input
+              v-model="form.city"
+              type="text"
+              placeholder="Ej: San Francisco"
+            >
+          </div>
+
+          <div class="field field--business">
+            <label>Provincia</label>
+
+            <div class="product-search">
+              <input
+                v-model="form.province"
+                type="text"
+                placeholder="Seleccionar provincia"
+                readonly
+                @click="showProvinceResults = !showProvinceResults"
+              >
+
+              <div
+                v-if="showProvinceResults"
+                class="product-results"
+              >
+                <button
+                  v-for="province in provinces"
+                  :key="province"
+                  type="button"
+                  class="product-result"
+                  @click="selectProvince(province)"
+                >
+                <span>{{ province }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field field--business">
+            <label>País</label>
+
+            <div class="product-search">
+              <input
+                v-model="form.country"
+                type="text"
+                placeholder="Seleccionar país"
+                readonly
+                @click="showCountryResults = !showCountryResults"
+              >
+              <div
+                v-if="showCountryResults"
+                class="product-results"
+              >
+                <button
+                  v-for="country in countries"
+                  :key="country"
+                  type="button"
+                  class="product-result"
+                  @click="selectCountry(country)"
+                >
+                  <span>{{ country }}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-  <!-- ================= CONTACTO ================= -->
-  <section class="form-card">
+      </section>
 
-    <div class="card-header">
-      <h2>Información de contacto</h2>
-    </div>
+      <section class="form-card">
 
-    <div class="form-grid">
-
-      <div class="field field--business">
-        <label>Teléfono</label>
-        <div class="phone-fields">
-          <input
-            v-model="phoneArea"
-            type="tel"
-            placeholder="Código"
-            maxlength="4"
-          >
-
-          <input
-            v-model="phoneNumber"
-            type="tel"
-            placeholder="Número"
-            maxlength="6"
-          >
+        <div class="card-header">
+          <h2>Información de contacto</h2>
         </div>
-      </div>
 
-      <div class="field field--business">
-        <label>WhatsApp</label>
-        <div class="phone-fields">
-          <input
-            v-model="whatsappArea"
-            type="tel"
-            placeholder="Código"
-            maxlength="4"
-          >
+        <div class="form-grid">
 
-          <input
-            v-model="whatsappNumber"
-            type="tel"
-            placeholder="Número"
-            maxlength="6"
-          >
+          <div class="field field--business">
+            <label>Teléfono</label>
+
+            <div class="phone-fields">
+              <input
+                v-model="phoneArea"
+                type="tel"
+                placeholder="Código"
+                maxlength="4"
+              >
+              <input
+                v-model="phoneNumber"
+                type="tel"
+                placeholder="Número"
+                maxlength="6"
+              >
+            </div>
+          </div>
+
+          <div class="field field--business">
+            <label>WhatsApp</label>
+
+            <div class="phone-fields">
+              <input
+                v-model="whatsappArea"
+                type="tel"
+                placeholder="Código"
+                maxlength="4"
+              >
+              <input
+                v-model="whatsappNumber"
+                type="tel"
+                placeholder="Número"
+                maxlength="6"
+              >
+            </div>
+          </div>
+
+          <div class="field field--business">
+            <label>Email</label>
+
+            <input
+              v-model="form.email"
+              type="email"
+            >
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="field field--business">
-        <label>Email</label>
-        <input
-          v-model="form.email"
-          type="email"
+      <section class="form-card">
+
+        <div class="card-header">
+          <h2>Horarios de atención</h2>
+        </div>
+
+        <div class="hours-grid">
+          <div class="hours-box">
+
+            <h3>Lunes a Viernes (Mañana)</h3>
+
+            <div class="hours-row">
+              <input
+                type="time"
+                v-model="form.morningOpen"
+              >
+              <span>a</span>
+              <input
+                type="time"
+                v-model="form.morningClose"
+              >
+            </div>
+          </div>
+
+          <div class="hours-box">
+
+            <h3>Lunes a Viernes (Tarde)</h3>
+
+            <div class="hours-row">
+              <input
+                type="time"
+                v-model="form.afternoonOpen"
+              >
+              <span>a</span>
+              <input
+                type="time"
+                v-model="form.afternoonClose"
+              >
+            </div>
+          </div>
+
+          <div class="hours-box">
+
+            <h3>Sábados</h3>
+
+            <div class="hours-row">
+              <input
+                type="time"
+                v-model="form.saturdayOpen"
+              >
+              <span>a</span>
+              <input
+                type="time"
+                v-model="form.saturdayClose"
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card">
+
+        <div class="card-header">
+          <h2>Redes sociales</h2>
+        </div>
+
+        <div class="form-grid">
+          <div class="field field--business">
+
+            <label>Instagram</label>
+
+            <input
+              v-model="form.instagram"
+              type="text"
+              placeholder="https://www.instagram.com/..."
+            >
+          </div>
+
+          <div class="field field--business">
+
+            <label>Facebook</label>
+
+            <input
+              v-model="form.facebook"
+              type="text"
+              placeholder="https://www.facebook.com/..."
+            >
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+
+        <RouterLink
+          :to="{ name: 'admin-home' }"
+          class="button button-secondary"
         >
-      </div>
-    </div>
-  </section>
-    <!-- ================= HORARIOS ================= -->
-  <section class="form-card">
+          Cancelar
+        </RouterLink>
 
-    <div class="card-header">
-      <h2>Horarios de atención</h2>
-    </div>
-
-    <div class="hours-grid">
-
-      <div class="hours-box">
-
-        <h3>Lunes a Viernes (Mañana)</h3>
-
-        <div class="hours-row">
-
-          <input
-            type="time"
-            v-model="form.morningOpen"
-          >
-          <span>a</span>
-          <input
-            type="time"
-            v-model="form.morningClose"
-          >
-        </div>
-      </div>
-
-      <div class="hours-box">
-
-        <h3>Lunes a Viernes (Tarde)</h3>
-
-        <div class="hours-row">
-
-          <input
-            type="time"
-            v-model="form.afternoonOpen"
-          >
-          <span>a</span>
-          <input
-            type="time"
-            v-model="form.afternoonClose"
-          >
-        </div>
-      </div>
-
-      <div class="hours-box">
-
-        <h3>Sábados</h3>
-
-        <div class="hours-row">
-
-          <input
-            type="time"
-            v-model="form.saturdayOpen"
-          >
-          <span>a</span>
-          <input
-            type="time"
-            v-model="form.saturdayClose"
-          >
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- ================= REDES SOCIALES ================= -->
-  <section class="form-card">
-
-    <div class="card-header">
-      <h2>Redes sociales</h2>
-    </div>
-
-    <div class="form-grid">
-
-      <div class="field field--business">
-
-        <label>Instagram</label>
-
-        <input
-          v-model="form.instagram"
-          type="text"
-          placeholder="https://www.instagram.com/..."
+        <button
+          type="submit"
+          class="button button-primary"
+          :disabled="saving"
         >
+          {{ saving ? 'Guardando cambios...' : 'Guardar' }}
+        </button>
       </div>
 
-      <div class="field field--business">
-
-        <label>Facebook</label>
-
-        <input
-          v-model="form.facebook"
-          type="text"
-          placeholder="https://www.facebook.com/..."
+      <Transition name="success-toast">
+        <div
+          v-if="message"
+          class="success-toast"
         >
-      </div>
-    </div>
-  </section>
+          <div class="success-toast-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                d="M5 12.5l4 4L19 7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
 
-  <Transition name="success-toast">
-    <div
-      v-if="message"
-      class="success-toast"
-    >
-      <div class="success-toast-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
+          <div class="success-toast-content">
+            <strong>{{ message }}</strong>
+            <span>Los cambios se guardaron correctamente.</span>
+          </div>
+        </div>
+      </Transition>
+
+      <Transition name="error-toast">
+        <div
+          v-if="error"
+          class="error-toast"
         >
-          <path
-            d="M5 12.5l4 4L19 7"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </div>
+          <div class="error-toast-icon">
+            !
+          </div>
 
-      <div class="success-toast-content">
-        <strong>{{ message }}</strong>
-        <span>Los cambios se guardaron correctamente.</span>
-      </div>
-    </div>
-  </Transition>
-
-  <Transition name="error-toast">
-    <div
-      v-if="error"
-      class="error-toast"
-    >
-      <div class="error-toast-icon">
-        !
-      </div>
-
-      <div class="error-toast-content">
-        <strong>{{ error }}</strong>
-        <span>No se pudieron guardar los cambios.</span>
-      </div>
-    </div>
-  </Transition>
-
-  <div class="form-actions">
-
-    <RouterLink
-      :to="{ name: 'admin-home' }"
-      class="button button-secondary"
-    >
-      Cancelar
-    </RouterLink>
-
-    <button
-      type="submit"
-      class="button button-primary"
-      :disabled="saving"
-    >
-      {{ saving ? 'Guardando cambios...' : 'Guardar' }}
-    </button>
+          <div class="error-toast-content">
+            <strong>{{ error }}</strong>
+            <span>No se pudieron guardar los cambios.</span>
+          </div>
+        </div>
+      </Transition>
+    </form>
   </div>
-</form>
-</div>
 </template>
 
 

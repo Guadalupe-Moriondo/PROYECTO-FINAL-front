@@ -57,16 +57,13 @@ async function loadUsers() {
     };
 
   } catch (err) {
-
     console.error(
       'Error cargando usuarios:',
       err
     );
-
     showError(
       'No se pudieron cargar los usuarios.'
     );
-
   } finally {
     loading.value = false;
   }
@@ -123,7 +120,6 @@ async function changeRole(user, event) {
   saving.value = true;
  
   try {
-
     await usersService.updateRole(
       user.id,
       newRole
@@ -136,7 +132,6 @@ async function changeRole(user, event) {
     );
 
   } catch (err) {
-
     console.error(
       'Error cambiando rol:',
       err
@@ -173,6 +168,7 @@ function roleLabel(role) {
 }
 
 function showMessage(text) {
+
   message.value = text;
 
   if (messageTimeout) {
@@ -185,6 +181,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -251,51 +248,6 @@ onMounted(() => {
       </button>
 
     </div>
-
-    <Transition name="success-toast">
-      <div
-        v-if="message"
-        class="success-toast"
-      >
-        <div class="success-toast-icon">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <path
-              d="M5 12.5l4 4L19 7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-
-        <div class="success-toast-content">
-          <strong>¡Rol actualizado correctamente!</strong>
-          <span>{{ message }}</span>
-        </div>
-      </div>
-    </Transition>
-
-    <Transition name="error-toast">
-      <div
-        v-if="error"
-        class="error-toast"
-      >
-        <div class="error-toast-icon">
-          !
-        </div>
-
-        <div class="error-toast-content">
-          <strong>{{ error }}</strong>
-          <span>
-            Ocurrió un error al cargar la información.
-          </span>
-        </div>
-      </div>
-    </Transition>
 
     <p
       v-if="loading"
@@ -434,6 +386,51 @@ onMounted(() => {
     >
       No se encontraron usuarios.
     </div>
+
+    <Transition name="success-toast">
+      <div
+        v-if="message"
+        class="success-toast"
+      >
+        <div class="success-toast-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M5 12.5l4 4L19 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div class="success-toast-content">
+          <strong>¡Rol actualizado correctamente!</strong>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="error"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          !
+        </div>
+
+        <div class="error-toast-content">
+          <strong>{{ error }}</strong>
+          <span>
+            Ocurrió un error al cargar la información.
+          </span>
+        </div>
+      </div>
+    </Transition>
 
     <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
 

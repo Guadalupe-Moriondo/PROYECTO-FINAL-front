@@ -10,15 +10,18 @@ const MONTH_NAMES = [
 
 const selectedMonth = ref(currentMonthKey());
 
-const loading = ref(true);
 const orders = ref([]);
+const loading = ref(true);
 const page = ref(1);
 const totalPages = ref(1);
 const monthStats = ref({ orders: 0, total: 0 });
 const expandedOrderId = ref(null);
 
+
 async function load() {
+
   loading.value = true;
+
   try {
     const [statsResponse, historyResponse] = await Promise.all([
       ordersService.statistics(),
@@ -26,13 +29,11 @@ async function load() {
     ]);
 
     const empty = { orders: 0, total: 0 };
-    // El total/cantidad del mes sale del agregado del backend (statsResponse),
-    // no de la pagina actual de "orders" — asi es correcto aunque haya
-    // mas de una pagina de resultados para ese mes.
-    monthStats.value = statsResponse.data.monthly?.[selectedMonth.value] ?? empty;
 
+    monthStats.value = statsResponse.data.monthly?.[selectedMonth.value] ?? empty;
     orders.value = historyResponse.data.data;
     totalPages.value = historyResponse.data.totalPages;
+
   } finally {
     loading.value = false;
   }
@@ -94,10 +95,12 @@ onMounted(load);
 
     <template v-else>
       <div class="statistics-grid statistics-grid--period">
+        
         <div class="stat-card--period">
           <span class="stat-label stat-label--period">Pedidos de {{ monthLabel(selectedMonth) }}</span>
           <span class="stat-value stat-value--period">{{ monthStats.orders }}</span>
         </div>
+
         <div class="stat-card--period stat-card--accent">
           <span class="stat-label stat-label--period">Facturación de {{ monthLabel(selectedMonth) }}</span>
           <span class="stat-value stat-value--period">$ {{ Number(monthStats.total).toLocaleString('es-AR') }}</span>
@@ -133,7 +136,6 @@ onMounted(load);
                   class="detail-toggle"
                   @click="toggleDetail(order)"
                 >
-
                   <svg
                     viewBox="0 0 24 24"
                     fill="currentColor"
@@ -149,7 +151,6 @@ onMounted(load);
                       : 'Ver detalle'
                     }}
                   </span>
-
                 </button>
                 </td>
               </tr>

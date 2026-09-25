@@ -9,7 +9,9 @@ const statistics = ref({
 
 const loading = ref(true);
 
+
 async function load() {
+
   loading.value = true;
 
   try {
@@ -51,7 +53,6 @@ onMounted(load);
     </p>
 
     <template v-else>
-
       <div class="statistics-grid statistics-grid--dashboard">
 
         <router-link 

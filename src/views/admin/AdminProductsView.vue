@@ -19,7 +19,9 @@ let errorTimeout = null;
 const search = ref('');
 let searchTimeout = null;
 
+
 async function load() {
+
   loading.value = true;
 
   try {
@@ -37,12 +39,12 @@ async function load() {
 
     products.value = response.data.data;
     totalPages.value = response.data.totalPages;
+
   } catch (e) {
     console.error('Error cargando productos:', e);
     products.value = [];
     totalPages.value = 1;
     showError('No se pudo cargar el catálogo');
-    
   } finally {
     loading.value = false;
   }
@@ -55,6 +57,7 @@ function changePage(newPage) {
 }
 
 function handleSearch() {
+
   clearTimeout(searchTimeout);
 
   searchTimeout = setTimeout(() => {
@@ -70,6 +73,7 @@ function clearSearch() {
 }
 
 async function remove(product) {
+
   if (!confirm(`¿Dar de baja "${product.name}"?`)) return;
 
   try {
@@ -91,6 +95,7 @@ function imageUrl(product) {
 }
 
 function showMessage(text) {
+
   message.value = text;
 
   if (messageTimeout) {
@@ -103,6 +108,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -145,12 +151,12 @@ onMounted(async () => {
 
 <template>
   <div class="container admin-products-view">
-    <!-- ================= HEADER ================= -->
+    
     <header class="products-page-header">
       <div class="products-title-section">
         <h1>Productos</h1>
       </div>
-      <!-- BUSCADOR + BOTÓN -->
+      
       <div class="products-tools">
         <div class="products-search">
           <div class="search-input-wrapper">
@@ -206,7 +212,139 @@ onMounted(async () => {
         </RouterLink>
       </div>
     </header>
-    <!-- ================= MENSAJE ================= -->
+    
+    <p
+      v-if="loading"
+      class="loading-state"
+    >
+      Cargando productos...
+    </p>
+    
+    <div
+      v-else
+      class="products-table-wrapper"
+    >
+      <table class="admin-table admin-table--detailed">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th class="actions-column"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            v-for="product in products"
+            :key="product.id"
+            class="product-row"
+          >
+            <td>
+              <div class="product-info">
+                <div class="product-thumbnail">
+
+                  <img
+                    v-if="imageUrl(product)"
+                    :src="imageUrl(product)"
+                    :alt="product.name"
+                  />
+
+                  <div
+                    v-else
+                    class="product-thumbnail-empty"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h14V6H5Zm2 2h4v4H7V8Zm6 0h4v2h-4V8Zm0 4h4v2h-4v-2ZM7 14h4v2H7v-2Z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="product-text">
+
+                  <strong class="product-name">
+                    {{ product.name }}
+                  </strong>
+
+                  <span
+                    v-if="product.category"
+                    class="product-brand"
+                  >
+                    {{ product.category.name }}
+                  </span>
+
+                  <span class="product-code">
+                    Código: {{ product.code }}
+                  </span>
+
+                </div>
+              </div>
+            </td>
+            
+            <td>
+              <InventoryTag
+                :code="product.code"
+                :stock="product.stock"
+                :min-stock="product.minStock"
+              />
+            </td>
+            
+            <td>
+              <span class="table-price">
+                $
+                {{
+                  Number(product.price)
+                    .toLocaleString('es-AR')
+                }}
+              </span>
+            </td>
+            
+            <td>
+              <div class="table-actions">
+
+                <RouterLink
+                  :to="{
+                    name: 'admin-product-edit',
+                    params: {id: product.id},
+                    query: { page }
+                  }"
+                  class="icon-button edit-button"
+                  title="Editar producto"
+                  
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                  </svg>
+                </RouterLink>
+
+                <button
+                  type="button"
+                  class="icon-button delete-button"
+                  @click="remove(product)"
+                  title="Dar de baja"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14H6L5 6"/>
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                    <path d="M9 6V4h6v2"/>
+                  </svg>
+
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <Transition name="success-toast">
       <div
         v-if="message"
@@ -255,152 +393,6 @@ onMounted(async () => {
         </div>
       </div>
     </Transition>
-    <!-- ================= LOADING ================= -->
-    <p
-      v-if="loading"
-      class="loading-state"
-    >
-      Cargando productos...
-    </p>
-    <!-- ================= TABLA ================= -->
-    <div
-      v-else
-      class="products-table-wrapper"
-    >
-      <table class="admin-table admin-table--detailed">
-        <thead>
-          <tr>
-
-            <th>
-              Producto
-            </th>
-
-            <th>
-              Stock
-            </th>
-
-            <th>
-              Precio
-            </th>
-
-            <th class="actions-column"></th>
-
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            v-for="product in products"
-            :key="product.id"
-            class="product-row"
-          >
-            <td>
-
-              <div class="product-info">
-                <div class="product-thumbnail">
-
-                  <img
-                    v-if="imageUrl(product)"
-                    :src="imageUrl(product)"
-                    :alt="product.name"
-                  />
-
-                  <div
-                    v-else
-                    class="product-thumbnail-empty"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h14V6H5Zm2 2h4v4H7V8Zm6 0h4v2h-4V8Zm0 4h4v2h-4v-2ZM7 14h4v2H7v-2Z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <div class="product-text">
-
-                  <strong class="product-name">
-                    {{ product.name }}
-                  </strong>
-
-                  <span
-                    v-if="product.category"
-                    class="product-brand"
-                  >
-                    {{ product.category.name }}
-                  </span>
-
-                  <span class="product-code">
-                    Código: {{ product.code }}
-                  </span>
-
-                </div>
-              </div>
-            </td>
-            <!-- ================= STOCK ================= -->
-            <td>
-              <InventoryTag
-                :code="product.code"
-                :stock="product.stock"
-                :min-stock="product.minStock"
-              />
-            </td>
-            <!-- ================= PRECIO ================= -->
-            <td>
-
-              <span class="table-price">
-                $
-                {{
-                  Number(product.price)
-                    .toLocaleString('es-AR')
-                }}
-              </span>
-
-            </td>
-            <!-- ================= ACCIONES ================= -->
-            <td>
-              <div class="table-actions">
-
-                <RouterLink
-                  :to="{
-                    name: 'admin-product-edit',
-                    params: {id: product.id},
-                    query: { page }
-                  }"
-                  class="icon-button edit-button"
-                  title="Editar producto"
-                  
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
-                    <path d="M12 20h9"/>
-                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
-                  </svg>
-                </RouterLink>
-
-                <button
-                  type="button"
-                  class="icon-button delete-button"
-                  @click="remove(product)"
-                  title="Dar de baja"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6l-1 14H6L5 6"/>
-                    <path d="M10 11v6"/>
-                    <path d="M14 11v6"/>
-                    <path d="M9 6V4h6v2"/>
-                  </svg>
-
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
     
     <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
 

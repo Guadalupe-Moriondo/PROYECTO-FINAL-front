@@ -16,11 +16,14 @@ const showPassword = ref(false);
 const error = ref('');
 const submitting = ref(false);
 
+
 async function submit() {
+  
   error.value = '';
   submitting.value = true;
 
   try {
+
     await authStore.login(email.value, password.value);
     await cartStore.loadCart();
 

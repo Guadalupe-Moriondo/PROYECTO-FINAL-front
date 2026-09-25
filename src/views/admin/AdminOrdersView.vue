@@ -36,18 +36,20 @@ let messageTimeout = null;
 const error = ref('');
 let errorTimeout = null;
 const expandedOrderId = ref(null);
-
 const { business, loadBusiness } = useBusiness();
 const orderNotificationsStore = useOrderNotificationsStore();
 
+
 async function load() {
+
   loading.value = true;
 
   try {
-    const response = await ordersService.listAll(page.value, 10);
+    const response = await ordersService.listAll(page.value, 5);
 
     orders.value = response.data.data;
     totalPages.value = response.data.totalPages;
+
   } catch (e) {
     console.error('Error cargando pedidos:', e);
 
@@ -72,7 +74,6 @@ async function changeStatus(order, newStatus) {
 
     order.status = newStatus;
 
-    // Mostrar mensaje cuando el pedido fue entregado
     if (newStatus === 'delivered') {
       showMessage(`Pedido #${order.orderNumber} entregado correctamente`);
 
@@ -93,18 +94,17 @@ async function changeStatus(order, newStatus) {
       'No se pudo cambiar el estado del pedido.'
     );
 
-    // Volvemos a dejar el select en el estado real
     await load();
   }
 }
 
 async function sendWhatsapp(order) {
-  if (!order.user?.phone) {
-    alert('Este cliente no tiene un teléfono cargado.');
-    return;
-  }
-
+ 
   const phone = order.user.phone.replace(/\D/g, '');
+
+  const hours = `Lunes a viernes: ${business.value.morningOpen || 'Consultar horario'} a ${business.value.morningClose || 'Consultar horario'}
+                                  ${business.value.afternoonOpen || 'Consultar horario'} a ${business.value.afternoonClose || 'Consultar horario'}
+  Sábados: ${business.value.saturdayOpen || 'Consultar horario'} a ${business.value.saturdayClose || 'Consultar horario'}`;
 
   const text = encodeURIComponent(
     `¡Hola ${order.user.name}!
@@ -113,9 +113,10 @@ async function sendWhatsapp(order) {
     #${order.orderNumber} 
     ya está preparado y listo para retirar.
 
-    📍 Dirección: ${business.value.address || 'Consultar ubicación.'}
+    Dirección: ${business.value.address || 'Consultar ubicación.'}
 
-    🕒 Horarios: ${business.value.hours || 'Consultar horarios.'}
+    Horarios:
+    ${hours}
 
     Muchas gracias por confiar en 
     DM Repuestos Agrícolas.
@@ -188,6 +189,7 @@ function imageUrl(product) {
 }
 
 function showMessage(text) {
+
   message.value = text;
 
   if (messageTimeout) {
@@ -200,6 +202,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+
   error.value = text;
 
   if (errorTimeout) {
@@ -220,6 +223,279 @@ onMounted(async () => {
 
 <template>
   <div class="container admin-orders-view">
+    
+    <div class="orders-header">
+      <div>
+        <h1>Pedidos</h1>
+      </div>
+    </div>
+
+    <p
+      v-if="loading"
+      class="loading-state"
+    >
+      Cargando pedidos...
+    </p>
+
+    <div
+      v-else
+      class="orders-table-wrapper"
+    >
+      <table class="admin-table admin-table--detailed">
+
+        <thead>
+          <tr>
+            <th>N° orden</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Pago</th>
+            <th>Estado</th>
+            <th class="detail-column">Detalle</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <template
+            v-for="order in orders"
+            :key="order.id"
+          >
+            <tr class="order-row">
+              <td>
+                <span class="order-number">
+                  #{{ order.orderNumber }}
+                </span>
+              </td>
+              
+              <td>
+                <div class="customer-cell">
+                  <div class="customer-avatar">
+                    <svg
+                      viewBox="0 0 24 24 "
+                      fill="none"
+                      stroke="currentColor"
+                      
+                    >
+                      <path d="M20 21a8 8 0 0 0-16 0"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </div>
+
+                  <div>
+                    <strong class="customer-name">
+                      {{ order.user?.name || 'Cliente' }}
+                    </strong>
+
+                    <span class="table-subtext">
+                      {{ order.user?.email }}
+                    </span>
+
+                    <span class="table-subtext">
+                      {{ order.user?.phone }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+              
+              <td class="date-cell">
+                <div class="date-content">
+
+                  <span class="date">
+                  {{ formatDate(order.createdAt) }}
+                  </span>
+
+                  <span class="time">
+                    {{ formatTime(order.createdAt) }}
+                  </span>
+
+                </div>
+              </td>
+              
+              <td>
+                <span class="order-total">
+                  $ {{ Number(order.total).toLocaleString('es-AR') }}
+                </span>
+              </td>
+              
+              <td>
+                <span class="payment-badge">
+                  {{ PAYMENT_LABELS[order.paymentMethod] || 'No especificado' }}
+                </span>
+              </td>
+              
+              <td class="notification-cell">
+                <div
+                  class="status-control"
+                  :class="`status-${order.status}`"
+                >
+                  <select
+                    :value="order.status"
+                    @change="
+                      changeStatus(
+                        order,
+                        $event.target.value
+                      )
+                    "
+                  >
+                    <option
+                      v-for="status in STATUSES"
+                      :key="status"
+                      :value="status"
+                      :disabled="!canChangeTo(order, status)"
+                    >
+                      {{ STATUS_LABELS[status] }}
+                    </option>
+                  </select>
+                </div>
+
+                <div v-if="canNotify(order)" class="notification-actions">
+                  <div v-if="!order.customerNotified" class="notify-buttons">
+
+                    <button
+                      class="notify-icon whatsapp"
+                      @click="sendWhatsapp(order)"
+                      title="Avisar por Whatsapp"
+                    >
+                      <svg
+                         viewBox="0 0 24 24"
+                        fill="currentColor"
+                       >
+                         <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
+                      </svg>
+                      <span>Notificar</span>
+                    </button>
+
+                  </div>
+                  <div v-else class="notification-success">
+                    <strong>
+                      ✔ Cliente notificado
+                    </strong>
+                  </div>                   
+                </div>
+              </td>
+              
+              <td class="detail-column">
+                <div class="actions-column">
+                  
+                  <button
+                    type="button"
+                    class="detail-toggle"
+                    @click="toggleDetail(order)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                      />
+                    </svg>
+
+                    <span>
+                      {{ expandedOrderId === order.id
+                        ? 'Ocultar'
+                        : 'Ver detalle'
+                      }}
+                    </span>
+
+                  </button>
+                </div>
+              </td>
+            </tr>
+            
+            <tr
+              v-if="expandedOrderId === order.id"
+              class="detail-row"
+            >
+              <td colspan="7">
+                <div class="detail-container">
+  
+                  <ul
+                    v-if="order.details?.length"
+                    class="detail-list detail-list--admin"
+                  >
+                    <li
+                      v-for="detail in order.details"
+                      :key="detail.id"
+                      class="detail-item"
+                    >
+                      <div class="detail-image-wrapper detail-image-wrapper--admin">
+
+                        <img
+                          v-if="imageUrl(detail.product)"
+                          :src="imageUrl(detail.product)"
+                          :alt="detail.product?.name || 'Producto'"
+                          class="detail-image detail-image--admin"
+                        />
+
+                        <div
+                          v-else
+                          class="detail-image-placeholder detail-image-placeholder--admin"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path
+                              d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm2 0v14h12V5H6Zm2 2h8v2H8V7Zm0 4h8v2H8v-2Zm0 4h5v2H8v-2Z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      
+                      <div class="detail-product">
+
+                        <span class="detail-qty detail-qty--admin">
+                          {{ detail.quantity }} ×
+                        </span>
+
+                        <div class="detail-product-info">
+                          <strong class="detail-name detail-name--admin">
+                            {{
+                              detail.product?.name ||
+                              'Producto eliminado'
+                            }}
+                          </strong>
+
+                          <span
+                            v-if="detail.product?.code"
+                            class="detail-code"
+                          >
+                            Código:
+                            {{ detail.product.code }}
+                          </span>
+
+                        </div>
+                      </div>
+                      
+                      <div
+                        v-if="lineSubtotal(detail) != null"
+                        class="detail-price detail-price--admin"
+                      >
+                        $
+                        {{
+                          lineSubtotal(detail)
+                            .toLocaleString('es-AR')
+                        }}
+                      </div>
+                    </li>
+                  </ul>
+
+                  <p
+                    v-else
+                    class="empty-detail"
+                  >
+                    Este pedido no tiene productos cargados.
+                  </p>
+
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
     <Transition name="success-toast">
       <div
         v-if="message"
@@ -265,317 +541,6 @@ onMounted(async () => {
         </div>
       </div>
     </Transition>
-    <!-- ================= HEADER ================= -->
-    <div class="orders-header">
-
-      <div>
-        <h1>
-          Pedidos
-        </h1>
-      </div>
-
-    </div>
-    <!-- ================= LOADING ================= -->
-    <p
-      v-if="loading"
-      class="loading-state"
-    >
-      Cargando pedidos...
-    </p>
-    <!-- ================= TABLA ================= -->
-    <div
-      v-else
-      class="orders-table-wrapper"
-    >
-      <table class="admin-table admin-table--detailed">
-
-        <thead>
-          <tr>
-
-            <th>
-              N° orden
-            </th>
-
-            <th>
-              Cliente
-            </th>
-
-            <th>
-              Fecha
-            </th>
-
-            <th>
-              Total
-            </th>
-
-            <th>
-              Pago
-            </th>
-
-            
-            <th>
-              Estado
-            </th>
-
-            <th class="detail-column">
-              Detalle
-            </th>
-
-          </tr>
-        </thead>
-
-        <tbody>
-          <template
-            v-for="order in orders"
-            :key="order.id"
-          >
-            <!-- ================= PEDIDO ================= -->
-            <tr class="order-row">
-              <!-- Orden -->
-              <td>
-
-                <span class="order-number">
-                  #{{ order.orderNumber }}
-                </span>
-
-              </td>
-              <!-- Cliente -->
-              <td>
-                <div class="customer-cell">
-                  <div class="customer-avatar">
-                    <svg
-                      viewBox="0 0 24 24 "
-                      fill="none"
-                      stroke="currentColor"
-                      
-                    >
-                      <path d="M20 21a8 8 0 0 0-16 0"/>
-                      <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                  </div>
-
-                  <div>
-
-                    <strong class="customer-name">
-                      {{ order.user?.name || 'Cliente' }}
-                    </strong>
-
-                    <span class="table-subtext">
-                      {{ order.user?.email }}
-                    </span>
-
-                    <span class="table-subtext">
-                      {{ order.user?.phone }}
-                    </span>
-
-                  </div>
-                </div>
-              </td>
-              <!-- Fecha -->
-              <td class="date-cell">
-                <div class="date-content">
-
-                  <span class="date">
-                  {{ formatDate(order.createdAt) }}
-                  </span>
-
-                  <span class="time">
-                    {{ formatTime(order.createdAt) }}
-                  </span>
-
-                </div>
-              </td>
-              <!-- Total -->
-              <td>
-
-                <span class="order-total">
-                  $ {{ Number(order.total).toLocaleString('es-AR') }}
-                </span>
-
-              </td>
-              <!-- Pago -->
-              <td>
-
-                <span class="payment-badge">
-                  {{ PAYMENT_LABELS[order.paymentMethod] || 'No especificado' }}
-                </span>
-
-              </td>
-              <!-- Estado -->
-              <td class="notification-cell">
-                <div
-                  class="status-control"
-                  :class="`status-${order.status}`"
-                >
-                  <select
-                    :value="order.status"
-                    @change="
-                      changeStatus(
-                        order,
-                        $event.target.value
-                      )
-                    "
-                  >
-                    <option
-                      v-for="status in STATUSES"
-                      :key="status"
-                      :value="status"
-                      :disabled="!canChangeTo(order, status)"
-                    >
-                      {{ STATUS_LABELS[status] }}
-                    </option>
-
-                  </select>
-                </div>
-
-                <div v-if="canNotify(order)" class="notification-actions">
-                  <div v-if="!order.customerNotified" class="notify-buttons">
-
-                    <button
-                      class="notify-icon whatsapp"
-                      @click="sendWhatsapp(order)"
-                      title="Avisar por Whatsapp"
-                    >
-                      <svg
-                         viewBox="0 0 24 24"
-                        fill="currentColor"
-                       >
-                         <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.2.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
-                      </svg>
-                      <span>Notificar</span>
-                    </button>
-
-                  </div>
-                  <div v-else class="notification-success">
-                    <strong>
-                      ✔ Cliente notificado
-                    </strong>
-                  </div>                   
-                </div>
-              </td>
-              <!-- Detalle -->
-              <td class="detail-column">
-                <div class="actions-column">
-                  <!-- Ver detalle -->
-                  <button
-                    type="button"
-                    class="detail-toggle"
-                    @click="toggleDetail(order)"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
-                      />
-                    </svg>
-
-                    <span>
-                      {{ expandedOrderId === order.id
-                        ? 'Ocultar'
-                        : 'Ver detalle'
-                      }}
-                    </span>
-
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <!-- ================= DETALLE ================= -->
-            <tr
-              v-if="expandedOrderId === order.id"
-              class="detail-row"
-            >
-              <td colspan="7">
-                <div class="detail-container">
-  
-                  <ul
-                    v-if="order.details?.length"
-                    class="detail-list detail-list--admin"
-                  >
-                    <li
-                      v-for="detail in order.details"
-                      :key="detail.id"
-                      class="detail-item"
-                    >
-                      <div class="detail-image-wrapper detail-image-wrapper--admin">
-
-                        <img
-                          v-if="imageUrl(detail.product)"
-                          :src="imageUrl(detail.product)"
-                          :alt="detail.product?.name || 'Producto'"
-                          class="detail-image detail-image--admin"
-                        />
-
-                        <div
-                          v-else
-                          class="detail-image-placeholder detail-image-placeholder--admin"
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path
-                              d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm2 0v14h12V5H6Zm2 2h8v2H8V7Zm0 4h8v2H8v-2Zm0 4h5v2H8v-2Z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                      <!-- Información -->
-                      <div class="detail-product">
-
-                        <span class="detail-qty detail-qty--admin">
-                          {{ detail.quantity }} ×
-                        </span>
-
-                        <div class="detail-product-info">
-                          <strong class="detail-name detail-name--admin">
-                            {{
-                              detail.product?.name ||
-                              'Producto eliminado'
-                            }}
-                          </strong>
-
-                          <span
-                            v-if="detail.product?.code"
-                            class="detail-code"
-                          >
-                            Código:
-                            {{ detail.product.code }}
-                          </span>
-
-                        </div>
-                      </div>
-                      <!-- Subtotal -->
-                      <div
-                        v-if="lineSubtotal(detail) != null"
-                        class="detail-price detail-price--admin"
-                      >
-                        $
-                        {{
-                          lineSubtotal(detail)
-                            .toLocaleString('es-AR')
-                        }}
-                      </div>
-
-                    </li>
-                  </ul>
-
-                  <p
-                    v-else
-                    class="empty-detail"
-                  >
-                    Este pedido no tiene productos cargados.
-                  </p>
-
-                </div>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
 
     <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
       
@@ -679,14 +644,17 @@ onMounted(async () => {
 }
 
 .order-total {
-  color: var(--color-ink);
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  font-weight: 600;
-  background-color: #bddbc5;
-  border:6px solid #bddbc5;
-  border-radius: 50px;
-  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 75px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: .90rem;
+  font-weight: 700;
+  background: #e8f7ec;
+  color: #207a3c;
+
 }
 
 .payment-badge {

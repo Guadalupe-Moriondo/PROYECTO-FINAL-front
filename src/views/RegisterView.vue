@@ -17,7 +17,9 @@ const phoneNumber = ref('');
 const error = ref('');
 const submitting = ref(false);
 
+
 async function submit() {
+
   error.value = '';
   submitting.value = true;
 
@@ -142,9 +144,7 @@ async function submit() {
             </div>
 
             <div class="field field--auth">
-              <label for="phone">
-                Teléfono
-              </label>
+              <label for="phone">Teléfono</label>
 
               <div class="phone-fields">
                 <input
