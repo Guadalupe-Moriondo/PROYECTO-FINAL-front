@@ -495,10 +495,6 @@ onMounted(async () => {
   font-size: 0.8rem;
 }
 
-.search-clear:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--color-rust);
-}
 
 .new-product-button {
   display: inline-flex;

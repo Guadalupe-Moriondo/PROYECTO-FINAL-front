@@ -1,15 +1,19 @@
 <script setup>
-import { ref, onMounted, computed} from 'vue';
+
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
 import productsService from '../../services/products.service';
 import stockService from '../../services/stock.service';
 import InventoryTag from '../../components/InventoryTag.vue';
-import Pagination from '../../components/Pagination.vue';
 
-const form = ref({ 
-  productId: '', 
-  type: 'in', 
-  quantity: 1, 
-  reason: '' 
+const router = useRouter();
+
+const form = ref({
+  productId: '',
+  type: 'in',
+  quantity: 1,
+  reason: ''
 });
 
 const filteredProducts = computed(() => {
@@ -25,12 +29,14 @@ const filteredProducts = computed(() => {
   );
 });
 
+const selectedProduct = computed(() => {
+  return products.value.find(
+    product => product.id === form.value.productId
+  );
+});
+
 const alerts = ref([]);
 const loadingAlerts = ref(true);
-const movements = ref([]);
-const loadingMovements = ref(true);
-const movementPage = ref(1);
-const movementTotalPages = ref(1);
 const products = ref([]);
 const productSearch = ref('');
 const showProductResults = ref(false);
@@ -39,30 +45,29 @@ const message = ref('');
 let messageTimeout = null;
 const error = ref('');
 let errorTimeout = null;
-const page = ref(1);
-const totalPages = ref(1);
-
 
 async function loadProducts() {
-  const response = await productsService.list(1, 100);
-  products.value = response.data.data;
+  try {
+    const response = await productsService.list(1, 100);
+    products.value = response.data.data;
+  } catch (e) {
+    console.error('Error cargando productos:', e);
+    products.value = [];
+    showError('No se pudo cargar los productos');
+  }
 }
 
 async function loadAlerts() {
-
   loadingAlerts.value = true;
 
   try {
-    const response = await stockService.alerts(page.value, 5);
+    const response = await stockService.alerts(1, 100);
 
     alerts.value = response.data.data;
-    totalPages.value = response.data.totalPages;
-
   } catch (e) {
     console.error('Error cargando stock:', e);
 
     alerts.value = [];
-    totalPages.value = 1;
 
     showError('No se pudo cargar el stock');
   } finally {
@@ -70,30 +75,7 @@ async function loadAlerts() {
   }
 }
 
-async function loadMovements() {
-
-  loadingMovements.value = true;
-
-  try {
-    const response = await stockService.history(movementPage.value, 5);
-
-    movements.value = response.data.data;
-    movementTotalPages.value = response.data.totalPages;
-
-  } catch (e) {
-    console.error('Error cargando movimientos:', e);
-
-    movements.value = [];
-    movementTotalPages.value = 1;
-
-    showError('No se pudo cargar el historial');
-  } finally {
-    loadingMovements.value = false;
-  }
-}
-
 async function registerMovement() {
-
   error.value = '';
 
   if (!form.value.productId) {
@@ -106,30 +88,42 @@ async function registerMovement() {
     return;
   }
 
+  if (form.value.quantity < 1) {
+    showError('La cantidad debe ser mayor a 0');
+    return;
+  }
+
+  if (form.value.type === 'out' && selectedProduct.value) {
+    if (form.value.quantity > selectedProduct.value.stock) {
+      showError(
+        `No hay suficiente stock. Disponible: ${selectedProduct.value.stock}`
+      );
+      return;
+    }
+  }
+
   try {
     await stockService.registerMovement(form.value);
 
     form.value.quantity = 1;
     form.value.reason = '';
 
-    await loadMovements();
+    productSearch.value = '';
+    form.value.productId = '';
+
     await loadAlerts();
 
     showMessage('Movimiento registrado correctamente');
-
   } catch (e) {
+    console.error('Error registrando movimiento:', e);
+
     showError('No se pudo registrar el movimiento');
   }
 }
 
-function changePage(newPage) {
-  page.value = newPage;
-  loadAlerts();
-}
-
-function changeMovementPage(newPage) {
-  movementPage.value = newPage;
-  loadMovements();
+function handleProductInput() {
+  form.value.productId = '';
+  showProductResults.value = true;
 }
 
 function selectProduct(product) {
@@ -140,22 +134,16 @@ function selectProduct(product) {
 
 function selectType(type) {
   form.value.type = type;
+
   showTypeResults.value = false;
 }
 
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('es-AR');
+function goToHistory() {
+  router.push('/admin-stock-history');
 }
 
-function formatTime(date) {
-  return new Date(date).toLocaleTimeString('es-AR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
 
 function showMessage(text) {
-
   message.value = text;
 
   if (messageTimeout) {
@@ -168,7 +156,6 @@ function showMessage(text) {
 }
 
 function showError(text) {
-
   error.value = text;
 
   if (errorTimeout) {
@@ -182,13 +169,13 @@ function showError(text) {
 
 onMounted(() => {
   loadAlerts();
-  loadMovements();
   loadProducts();
 });
+
 </script>
 
-
 <template>
+
   <div class="container admin-stock-view">
 
     <header class="page-header">
@@ -196,6 +183,9 @@ onMounted(() => {
     </header>
 
     <div class="stock-layout">
+
+      <!-- REGISTRAR MOVIMIENTO -->
+
       <section class="stock-card movement-card">
 
         <h2 class="section-title">
@@ -209,7 +199,9 @@ onMounted(() => {
 
           <div class="field">
 
-            <label for="productId">Producto</label>
+            <label for="productId">
+              Producto
+            </label>
 
             <div class="product-search">
 
@@ -219,7 +211,8 @@ onMounted(() => {
                 type="text"
                 placeholder="Buscar producto..."
                 autocomplete="off"
-                @click="showProductResults = !showProductResults"
+                @click="showProductResults = true"
+                @input="handleProductInput"
               />
 
               <div
@@ -234,19 +227,37 @@ onMounted(() => {
                   class="product-result"
                   @click="selectProduct(product)"
                 >
-                  <strong>{{ product.code }}</strong>
 
-                  <span>{{ product.name }}</span>
+                  <strong>
+                    {{ product.code }}
+                  </strong>
+
+                  <span>
+                    {{ product.name }}
+                  </span>
 
                 </button>
 
               </div>
+
             </div>
+            <div
+              v-if="selectedProduct"
+              class="stock-available"
+            >
+              Stock disponible:
+              <strong>{{ selectedProduct.stock }}</strong>
+              unidades
+            </div>
+
           </div>
+
 
           <div class="field">
 
-            <label for="type">Tipo</label>
+            <label for="type">
+              Tipo
+            </label>
 
             <div class="product-search">
 
@@ -268,7 +279,9 @@ onMounted(() => {
                   class="product-result"
                   @click="selectType('in')"
                 >
-                  <span>Entrada</span>
+                  <span>
+                    Entrada
+                  </span>
                 </button>
 
                 <button
@@ -276,30 +289,41 @@ onMounted(() => {
                   class="product-result"
                   @click="selectType('out')"
                 >
-                  <span>Salida</span>
+                  <span>
+                    Salida
+                  </span>
                 </button>
 
               </div>
+
             </div>
+
           </div>
+
 
           <div class="field">
 
-            <label for="quantity">Cantidad</label>
+            <label for="quantity">
+              Cantidad
+            </label>
 
             <input
               id="quantity"
               v-model.number="form.quantity"
               type="number"
               min="1"
+              :max="form.type === 'out' && selectedProduct
+                ? selectedProduct.stock
+                : undefined"
               required
             />
-
           </div>
 
           <div class="field">
 
-            <label for="reason">Motivo</label>
+            <label for="reason">
+              Motivo
+            </label>
 
             <input
               id="reason"
@@ -310,6 +334,7 @@ onMounted(() => {
 
           </div>
 
+
           <button
             type="submit"
             class="button button-primary"
@@ -318,7 +343,11 @@ onMounted(() => {
           </button>
 
         </form>
+
       </section>
+
+
+      <!-- ALERTAS -->
 
       <div class="stock-content">
 
@@ -326,9 +355,12 @@ onMounted(() => {
 
           <div class="table-header">
 
-            <h2>Alertas de stock bajo</h2>
+            <h2>
+              Alertas de stock bajo
+            </h2>
 
           </div>
+
 
           <p
             v-if="loadingAlerts"
@@ -337,6 +369,7 @@ onMounted(() => {
             Cargando...
           </p>
 
+
           <p
             v-else-if="alerts.length === 0"
             class="empty-state"
@@ -344,18 +377,30 @@ onMounted(() => {
             No hay productos con stock bajo.
           </p>
 
+
           <div
             v-else
-            class="table-scroll"
+            class="table-scroll alerts-scroll"
           >
+
             <table class="admin-table admin-table--basic">
 
               <thead>
+
                 <tr>
-                  <th>Producto</th>
-                  <th>Estado</th>
+
+                  <th>
+                    Producto
+                  </th>
+
+                  <th>
+                    Estado
+                  </th>
+
                 </tr>
+
               </thead>
+
 
               <tbody>
 
@@ -365,9 +410,17 @@ onMounted(() => {
                 >
 
                   <td>
-                    <strong>{{ product.name }}</strong>
-                    <span class="product-code">{{ product.code }}</span>
+
+                    <strong>
+                      {{ product.name }}
+                    </strong>
+
+                    <span class="product-code">
+                      Código: {{ product.code }}
+                    </span>
+
                   </td>
+
 
                   <td>
 
@@ -380,112 +433,36 @@ onMounted(() => {
                   </td>
 
                 </tr>
+
               </tbody>
+
             </table>
+
           </div>
 
-          <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
+
+          <!-- BOTÓN HISTORIAL -->
+
+          <div class="history-button-wrapper">
+
+            <button
+              type="button"
+              class="history-button"
+              @click="goToHistory"
+            >
+              Historial de movimientos
+            </button>
+
+          </div>
 
         </section>
 
-        <section class="table-card stock-section">
-
-          <div class="table-header">
-
-            <h2>Historial de movimientos</h2>
-
-          </div>
-
-          <p
-            v-if="loadingMovements"
-            class="loading-state"
-          >
-            Cargando...
-          </p>
-
-          <p
-            v-else-if="movements.length === 0"
-            class="empty-state"
-          >
-            No hay movimientos registrados.
-          </p>
-
-          <div
-            v-else
-            class="table-scroll"
-          >
-
-            <table class="admin-table admin-table--basic movements-table">
-
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Tipo</th>
-                  <th>Cantidad</th>
-                  <th>Motivo</th>
-                  <th>Fecha</th>
-                </tr>
-              </thead>
-
-              <tbody>
-
-                <tr
-                  v-for="movement in movements"
-                  :key="movement.id"
-                >
-
-                  <td>
-
-                    <strong>{{ movement.product?.name || '-' }}</strong>
-
-                    <span
-                      v-if="movement.product?.code"
-                      class="product-code"
-                    >
-                      {{ movement.product.code }}
-                    </span>
-
-                  </td>
-
-                  <td>
-
-                    <span
-                      class="movement-type"
-                      :class="{
-                        'movement-type--in': movement.type === 'in',
-                        'movement-type--out': movement.type === 'out'
-                      }"
-                    >
-                      {{ movement.type === 'in' ? 'Entrada' : 'Salida' }}
-                    </span>
-
-                  </td>
-
-                  <td>{{ movement.quantity }}</td>
-
-                  <td>{{ movement.reason || '-' }}</td>
-
-                  <td class="date-cell">
-                    <div class="date-content">
-                      <span class="date">
-                        {{ formatDate(movement.createdAt) }}
-                      </span>
-                      <span class="time">
-                        {{ formatTime(movement.createdAt) }}
-                      </span>
-                    </div>
-                  </td>
-
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <Pagination :page="movementPage" :total-pages="movementTotalPages" @change-page="changeMovementPage"/>
-
-        </section>
       </div>
+
     </div>
+
+
+    <!-- SUCCESS TOAST -->
 
     <Transition name="success-toast">
 
@@ -510,18 +487,28 @@ onMounted(() => {
             />
 
           </svg>
+
         </div>
+
 
         <div class="success-toast-content">
 
-          <strong>{{ message }}</strong>
+          <strong>
+            {{ message }}
+          </strong>
 
-          <span>Los cambios se guardaron correctamente.</span>
+          <span>
+            Los cambios se guardaron correctamente.
+          </span>
 
         </div>
 
       </div>
+
     </Transition>
+
+
+    <!-- ERROR TOAST -->
 
     <Transition name="error-toast">
 
@@ -534,19 +521,26 @@ onMounted(() => {
           !
         </div>
 
+
         <div class="error-toast-content">
 
-          <strong>{{ error }}</strong>
+          <strong>
+            {{ error }}
+          </strong>
 
-          <span> Ocurrió un error al cargar la información.</span>
+          <span>
+            Ocurrió un error al cargar la información.
+          </span>
 
         </div>
 
       </div>
-    </Transition>
-  </div>
-</template>
 
+    </Transition>
+
+  </div>
+
+</template>
 
 <style scoped>
 
@@ -564,24 +558,46 @@ onMounted(() => {
   color: var(--color-steel);
 }
 
+
+/* =========================
+   LAYOUT
+========================= */
+
 .stock-layout {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
   gap: 30px;
-  align-items: start;
+  align-items: stretch;
+}
+
+.movement-card {
+  position: sticky;
+  top: 25px;
+  align-self: start;
 }
 
 .stock-content {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  min-height: 0;
 }
 
 .stock-section {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 .stock-section:last-child {
   margin-bottom: 0;
 }
+
+
+/* =========================
+   CARDS
+========================= */
 
 .stock-card,
 .table-card {
@@ -605,6 +621,11 @@ onMounted(() => {
   top: 25px;
 }
 
+
+/* =========================
+   FORMULARIO
+========================= */
+
 .section-title {
   margin: 0 0 2rem;
   font-size: 1.35rem;
@@ -614,7 +635,6 @@ onMounted(() => {
 .movement-form {
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
 }
 
 .field {
@@ -658,6 +678,11 @@ onMounted(() => {
   box-shadow:
     0 0 0 4px rgba(185, 28, 28, .12);
 }
+
+
+/* =========================
+   BUSCADOR DE PRODUCTOS
+========================= */
 
 .product-search {
   position: relative;
@@ -711,6 +736,21 @@ onMounted(() => {
   color: var(--color-ink-soft);
 }
 
+.stock-available {
+  margin-top: 8px;
+  color: var(--color-ink-soft);
+  font-size: 0.82rem;
+}
+
+.stock-available strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+/* =========================
+   BOTÓN REGISTRAR
+========================= */
+
 .button.button-primary {
   width: 100%;
   margin: .3rem 0 0;
@@ -738,6 +778,11 @@ onMounted(() => {
     0 8px 20px rgba(183, 53, 45, .20);
 }
 
+
+/* =========================
+   TABLA DE ALERTAS
+========================= */
+
 .table-header {
   display: flex;
   justify-content: space-between;
@@ -761,41 +806,44 @@ onMounted(() => {
   font-weight: 600;
 }
 
-.table-scroll {
+
+/* =========================
+   SCROLL ALERTAS
+========================= */
+
+.alerts-scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
   overflow-x: auto;
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
+.alerts-scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
 }
 
-.admin-table th {
-  padding: 15px 18px;
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-ink-soft);
-  font-family: var(--font-mono);
-  font-size: .7rem;
-  font-weight: 700;
-  text-align: left;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  white-space: nowrap;
+.alerts-scroll::-webkit-scrollbar-track {
+  background: #f5f5f2;
+  border-radius: 10px;
 }
 
-.admin-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-ink);
-  font-size: .9rem;
-  vertical-align: middle;
+.alerts-scroll::-webkit-scrollbar-thumb {
+  background: #c9c9c3;
+  border-radius: 10px;
+}
+
+.alerts-scroll::-webkit-scrollbar-thumb:hover {
+  background: #aaa9a3;
 }
 
 
+/* =========================
+   TABLA
+========================= */
 
-.admin-table tbody tr:hover {
-  background:
-    rgba(48, 47, 47, .025);
+.table-scroll {
+  overflow-x: auto;
 }
 
 .admin-table--basic th:nth-child(2),
@@ -808,72 +856,50 @@ onMounted(() => {
   margin-top: 3px;
   color: var(--color-ink-soft);
   font-family: var(--font-mono);
-  font-size: .75rem;
+  font-size: .8rem;
 }
 
-.movements-table {
-  min-width: 750px;
-}
 
-.movements-table th:nth-child(2),
-.movements-table td:nth-child(2),
-.movements-table th:nth-child(3),
-.movements-table td:nth-child(3),
-.movements-table th:nth-child(4),
-.movements-table td:nth-child(4),
-.movements-table th:nth-child(5),
-.movements-table td:nth-child(5) {
-  text-align: center;
-}
+/* =========================
+   BOTÓN HISTORIAL
+========================= */
 
-.movement-type {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 75px;
-  padding: 5px 9px;
-  border-radius: 999px;
-  font-size: .75rem;
-  font-weight: 700;
-}
-
-.movement-type--in {
-  background: #e8f7ec;
-  color: #207a3c;
-}
-
-.movement-type--out {
-  background: #fdecec;
-  color: #b42323;
-}
-
-.center-column {
-  text-align: center;
-}
-
-.date-cell {
-  vertical-align: middle;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.date-content {
+.history-button-wrapper {
+  flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 2px;
+  padding: 1.25rem 2rem 1.5rem;
+  border-top: 1px solid var(--color-line);
 }
 
-.date {
-  font-size: 0.9rem;
-  color: #374151;
+.history-button {
+  padding: .85rem 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: white;
+  color: var(--color-steel);
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color .25s ease,
+    color .25s ease,
+    background .25s ease,
+    transform .25s ease;
 }
 
-.time {
-  font-size: 0.75rem;
-  color: #9ca3af;
+.history-button:hover {
+  border-color: var(--color-rust);
+  color: var(--color-rust);
+  background: #fffaf9;
+  transform: translateY(-1px);
 }
+
+
+/* =========================
+   ESTADOS
+========================= */
 
 .loading-state,
 .empty-state {
@@ -882,6 +908,11 @@ onMounted(() => {
   color: var(--color-ink-soft);
   text-align: center;
 }
+
+
+/* =========================
+   SUCCESS TOAST
+========================= */
 
 .success-toast {
   position: fixed;
@@ -947,6 +978,11 @@ onMounted(() => {
   transform: translateY(-10px);
 }
 
+
+/* =========================
+   ERROR TOAST
+========================= */
+
 .error-toast {
   position: fixed;
   top: 30px;
@@ -1010,6 +1046,10 @@ onMounted(() => {
 }
 
 
+/* =========================
+   TABLET
+========================= */
+
 @media (max-width: 1000px) {
 
   .stock-layout {
@@ -1019,6 +1059,10 @@ onMounted(() => {
 
 }
 
+
+/* =========================
+   MOBILE / TABLET
+========================= */
 
 @media (max-width: 900px) {
 
@@ -1046,8 +1090,25 @@ onMounted(() => {
     gap: 1rem;
   }
 
+  .stock-section {
+    height: auto;
+    min-height: auto;
+  }
+
+  .alerts-scroll {
+    flex: none;
+    min-height: 0;
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
 }
 
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 600px) {
 
@@ -1080,7 +1141,21 @@ onMounted(() => {
   }
 
   .admin-table {
-    min-width: 650px;
+    min-width: 500px;
+  }
+
+  .alerts-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  .history-button-wrapper {
+    padding: 1.1rem 1.25rem 1.35rem;
+  }
+
+  .history-button {
+    width: 100%;
   }
 
   .success-toast,
@@ -1093,5 +1168,5 @@ onMounted(() => {
   }
 
 }
-</style>
 
+</style>

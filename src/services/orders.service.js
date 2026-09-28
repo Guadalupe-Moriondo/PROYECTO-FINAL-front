@@ -12,6 +12,11 @@ export default {
   listAll(page = 1, limit = 10) {
     return api.get('/orders', { params: { page, limit } });
   },
+  search(filters) {
+    return api.get('/orders/search', {
+      params: filters
+    });
+  },
   getById(id) {
     return api.get(`/orders/${id}`);
   },

@@ -25,6 +25,12 @@ const whatsappUrl = computed(() => {
   return `https://wa.me/${number}?text=${text}`;
 });
 
+const totalPrice = computed(() => {
+  if (!product.value) return 0;
+
+  return Number(product.value.price) * quantity.value;
+});
+
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const product = ref(null);
@@ -191,12 +197,40 @@ onMounted(() => {
               :disabled="product.stock === 0"
               @click="addToCart"
             >
-              {{
-                product.stock === 0
-                ? 'Sin stock'
-                : 'Agregar al carrito'
-              }}
+              <span class="purchase-button-label">
 
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="9" cy="20" r="1" />
+                  <circle cx="19" cy="20" r="1" />
+                  <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.5L21 8H6" />
+                </svg>
+
+                <span>
+                  {{
+                    product.stock === 0
+                      ? 'Sin stock'
+                      : 'Agregar'
+                  }}
+                </span>
+
+              </span>
+
+              <span
+                v-if="product.stock > 0"
+                class="purchase-button-total"
+              >
+                $ {{ totalPrice.toLocaleString('es-AR') }}
+              </span>
             </button>
 
           </div>
@@ -404,6 +438,7 @@ onMounted(() => {
 .quantity-control label {
   text-align: left;
   margin: 0;
+  font-weight: 600;
 }
 
 .quantity-selector {
@@ -445,7 +480,32 @@ onMounted(() => {
   margin-top:
     var(--space-3);
 
-  width:100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .9rem 1.2rem;
+  text-transform: none;
+  font-weight: 400;
+}
+
+.purchase-button-label {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.purchase-button-label svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.purchase-button-total {
+  font-size: .9rem;
+  font-weight: 500;
+  opacity: .75;
+  white-space: nowrap;
 }
 
 .success-toast {

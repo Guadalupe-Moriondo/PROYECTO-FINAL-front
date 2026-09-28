@@ -29,6 +29,8 @@ const PAYMENT_LABELS = {
 
 const orders = ref([]);
 const loading = ref(true);
+const search = ref('');
+let searchTimeout = null;
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
@@ -45,7 +47,20 @@ async function load() {
   loading.value = true;
 
   try {
-    const response = await ordersService.listAll(page.value, 5);
+    let response;
+
+    if (search.value.trim()) {
+      response = await ordersService.search({
+        search: search.value.trim(),
+        page: page.value,
+        limit: 5,
+      });
+    } else {
+      response = await ordersService.listAll(
+        page.value,
+        5
+      );
+    }
 
     orders.value = response.data.data;
     totalPages.value = response.data.totalPages;
@@ -57,7 +72,7 @@ async function load() {
     totalPages.value = 1;
 
     showError('No se pudieron cargar los pedidos');
-    
+
   } finally {
     loading.value = false;
   }
@@ -65,6 +80,21 @@ async function load() {
 
 function changePage(newPage) {
   page.value = newPage;
+  load();
+}
+
+function handleSearch() {
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    page.value = 1;
+    load();
+  }, 400);
+}
+
+function clearSearch() {
+  search.value = '';
+  page.value = 1;
   load();
 }
 
@@ -224,11 +254,56 @@ onMounted(async () => {
 <template>
   <div class="container admin-orders-view">
     
-    <div class="orders-header">
-      <div>
+    <header class="orders-page-header">
+
+      <div class="orders-title-section">
         <h1>Pedidos</h1>
       </div>
-    </div>
+
+      <div class="orders-tools">
+        <div class="orders-search">
+          <div class="search-input-wrapper">
+
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+              />
+
+              <path d="m20 20-4-4"></path>
+            </svg>
+
+            <input
+              v-model="search"
+              type="text"
+              placeholder="Buscar por número de orden, cliente, fecha o estado..."
+              @input="handleSearch"
+            />
+
+            <button
+              v-if="search"
+              type="button"
+              class="search-clear"
+              title="Limpiar búsqueda"
+              @click="clearSearch"
+            >
+              ✕
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
 
     <p
       v-if="loading"
@@ -911,6 +986,98 @@ onMounted(async () => {
   color: #4d6655;
 }
 
+.orders-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.orders-title-section {
+  width: 100%;
+}
+
+.orders-page-header h1 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: clamp(2.1rem, 4vw, 2.8rem);
+  line-height: 1.05;
+}
+
+.orders-tools {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.orders-search {
+  width: 100%;
+  max-width: 700px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  height: 50px;
+  padding: 0 45px;
+  border: 1px solid var(--color-line);
+  border-radius: 50px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.search-input-wrapper input::placeholder {
+  color: var(--color-ink-soft);
+}
+
+.search-input-wrapper input:focus {
+  border-color: var(--color-rust);
+  box-shadow:
+    0 0 0 3px rgba(183, 53, 45, 0.08);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  width: 19px;
+  height: 19px;
+  color: var(--color-ink-soft);
+  pointer-events: none;
+}
+
+.search-clear {
+  position: absolute;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+
+
 .success-toast {
   position: fixed;
   top: 30px;
@@ -1049,6 +1216,22 @@ onMounted(async () => {
 
 @media (max-width:900px){
 
+  .orders-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .orders-tools {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .orders-search {
+    width: 100%;
+    transform: none;
+  }
+
   .order-actions{
     flex-direction:column;
   }
@@ -1073,14 +1256,6 @@ onMounted(async () => {
 
   .admin-orders-view {
     padding: 30px 14px 50px;
-  }
-
-  .orders-header {
-    margin-bottom: 25px;
-  }
-
-  .orders-header h1 {
-    font-size: 2rem;
   }
 
   .detail-container {

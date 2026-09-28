@@ -805,8 +805,8 @@ button, input, select, textarea {
   font-weight: 600;
 }
 .table-mono-ord--period {
-  font-family: var(--font-mono);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 90%;
 }
 .table-subtext--period {
   display: block;

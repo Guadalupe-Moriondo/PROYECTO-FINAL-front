@@ -1,12 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import categoriesService from '../../services/categories.service';
-import Pagination from '@/components/Pagination.vue';
 
 const categories = ref([]);
 const loading = ref(true);
-const page = ref(1);
-const totalPages = ref(1);
 const newName = ref('');
 const newDescription = ref('');
 const editingId = ref(null);
@@ -28,10 +25,9 @@ async function load() {
 
   try {
 
-    const response = await categoriesService.list(page.value, 5);
+    const response = await categoriesService.list();
 
     categories.value = response.data.data;
-    totalPages.value = response.data.totalPages;
 
   } catch (e) {
     showError('No se pudieron cargar las categorías');
@@ -111,11 +107,6 @@ async function remove(category) {
       'No se pudo dar de baja la categoría'
     );
   }
-}
-
-function changePage(newPage) {
-  page.value = newPage;
-  load();
 }
 
 function showMessage(text) { 
@@ -344,9 +335,6 @@ onMounted(load);
             </tbody>
           </table>
         </div>
-
-        <Pagination :page="page" :total-pages="totalPages" @change-page="changePage"/>
-
       </section>
       
       <p
@@ -459,7 +447,6 @@ onMounted(load);
 .category-card {
   padding: 2rem;
   position: sticky;
-  top: 25px;
 }
 
 .table-card {
@@ -477,7 +464,6 @@ onMounted(load);
 .category-form {
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
 }
 
 .field {
@@ -577,39 +563,33 @@ onMounted(load);
 }
 
 .table-scroll {
+  max-height: 520px;
+  overflow-y: auto;
   overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #c8c8c4 #f1f1ef;
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
+.table-scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
 }
 
-.admin-table th {
-  padding: 15px 18px;
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-ink-soft);
-  font-family: var(--font-mono);
-  font-size: .7rem;
-  font-weight: 700;
-  text-align: left;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  white-space: nowrap;
+.table-scroll::-webkit-scrollbar-track {
+  background: #f1f1ef;
+  border-radius: 999px;
 }
 
-.admin-table td {
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-ink);
-  font-size: .9rem;
-  vertical-align: middle;
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #c8c8c4;
+  border-radius: 999px;
 }
 
-.admin-table tbody tr:hover {
-  background:
-    rgba(48, 47, 47, .025);
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a9a9a5;
 }
+
 
 .admin-table--basic th:first-child,
 .admin-table--basic td:first-child,
@@ -642,14 +622,6 @@ onMounted(load);
 
 .table-description {
   color: var(--color-ink-soft);
-}
-
-.product-code {
-  display: block;
-  margin-top: 3px;
-  color: var(--color-ink-soft);
-  font-family: var(--font-mono);
-  font-size: .75rem;
 }
 
 /* ================= ACCIONES ================= */

@@ -29,17 +29,37 @@ function submit() {
 
 <template>
   <form class="search-bar" role="search" @submit.prevent="submit">
-    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="7" />
-      <path d="m21 21-4.3-4.3" stroke-linecap="round" />
-    </svg>
-    <input
-      v-model="query"
-      type="search"
-      class="search-input"
-      placeholder="Buscar repuestos..."
-      aria-label="Buscar productos"
-    />
+    <div class="search-input-wrapper">
+      <svg
+        class="search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m21 21-4.3-4.3" stroke-linecap="round" />
+      </svg>
+
+      <input
+        v-model="query"
+        type="text"
+        class="search-input"
+        placeholder="Buscar repuestos..."
+        aria-label="Buscar productos"
+      />
+
+      <button
+        v-if="query"
+        type="button"
+        class="search-clear"
+        title="Limpiar búsqueda"
+        aria-label="Limpiar búsqueda"
+        @click="query = ''"
+      >
+        ✕
+      </button>
+    </div>
   </form>
 </template>
 
@@ -62,11 +82,19 @@ function submit() {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .search-icon {
   width: 16px;
   height: 16px;
   color: #cfd3d1;
   flex-shrink: 0;
+  margin-left: 2px;
 }
 
 .search-input {
@@ -75,7 +103,7 @@ function submit() {
   border: none;
   background: transparent;
   color: #fff;
-  padding: 9px var(--space-2);
+  padding: 9px 38px 9px 8px;
   font-size: 0.9rem;
 }
 
@@ -85,6 +113,33 @@ function submit() {
 
 .search-input:focus {
   outline: none;
+}
+
+.search-clear {
+  position: absolute;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  background: transparent !important;
+  color: #9aa19d;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  box-shadow: none;
+  appearance: none;
+}
+
+.search-clear:hover,
+.search-clear:focus,
+.search-clear:active {
+  background: transparent !important;
+  color: #fff;
+  box-shadow: none;
 }
 
 @media (max-width: 900px) {

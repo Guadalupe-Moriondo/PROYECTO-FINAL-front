@@ -114,6 +114,15 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin-stock-history',
+      name: 'admin-stock-history',
+      component: () => import('../views/admin/AdminStockHistoryView.vue'),
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/admin/business',
       name: 'admin-business',
       component: AdminBusinessView,
