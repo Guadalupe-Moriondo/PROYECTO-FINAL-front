@@ -14,7 +14,9 @@ const expandedOrderId = ref(null);
 
 
 async function load() {
+
   loading.value = true;
+  
   try {
     const [statsResponse, historyResponse] = await Promise.all([
       ordersService.statistics(),

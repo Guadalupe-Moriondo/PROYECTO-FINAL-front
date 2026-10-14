@@ -10,6 +10,15 @@ import AvailabilityTag from '@/components/AvailabilityTag.vue';
 const route = useRoute();
 const router = useRouter();
 
+const authStore = useAuthStore();
+const cartStore = useCartStore();
+const product = ref(null);
+const loading = ref(true);
+const error = ref('');
+const quantity = ref(1);
+const cartMessage = ref('');
+const business = ref(null);
+
 const imageUrl = computed(() => {
   if (!product.value?.imageUrl) return null;
   return `${import.meta.env.VITE_API_URL}${product.value.imageUrl}`;
@@ -30,15 +39,6 @@ const totalPrice = computed(() => {
 
   return Number(product.value.price) * quantity.value;
 });
-
-const authStore = useAuthStore();
-const cartStore = useCartStore();
-const product = ref(null);
-const loading = ref(true);
-const error = ref('');
-const quantity = ref(1);
-const cartMessage = ref('');
-const business = ref(null);
 
 
 async function loadProduct() {
@@ -382,16 +382,6 @@ onMounted(() => {
     .5rem 0;
 
   line-height:1.15;
-}
-
-.product-code {
-  margin-top:.8rem;
-  font-family:
-    var(--font-mono);
-
-  font-size:.85rem;
-  color:
-    var(--color-ink-soft);
 }
 
 .product-price {

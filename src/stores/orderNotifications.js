@@ -21,13 +21,7 @@ export const useOrderNotificationsStore = defineStore(
     async function checkNewOrders() {
       try {
         const response = await ordersService.listAll(1, 100);
-
         const orders = response.data?.data || [];
-
-        /*
-         * Como el backend devuelve los pedidos ordenados
-         * por createdAt DESC, el primero es el más reciente.
-         */
 
         if (orders.length === 0) {
           newOrders.value = [];
@@ -36,13 +30,6 @@ export const useOrderNotificationsStore = defineStore(
 
         const latestOrderId = orders[0].id;
 
-        /*
-         * Primera consulta:
-         *
-         * Guardamos cuál era el último pedido existente.
-         * No mostramos ninguna notificación porque esos pedidos
-         * ya existían antes de que el admin empezara a controlar.
-         */
         if (!initialized.value) {
           const lastSeenId = localStorage.getItem(
             'admin_last_seen_order_id'
@@ -59,7 +46,7 @@ export const useOrderNotificationsStore = defineStore(
 
             return;
           }
-
+          
           initialized.value = true;
         }
 
@@ -67,10 +54,6 @@ export const useOrderNotificationsStore = defineStore(
           localStorage.getItem('admin_last_seen_order_id')
         );
 
-        /*
-         * Buscar solamente los pedidos posteriores
-         * al último pedido que el admin había visto.
-         */
         const newOnes = orders.filter(
           order => order.id > lastSeenId
         );
@@ -79,14 +62,14 @@ export const useOrderNotificationsStore = defineStore(
 
         if (newOnes.length > 0) {
           console.log(
-            '🔔 NUEVOS PEDIDOS:',
+            'NUEVOS PEDIDOS:',
             newOnes.length
           );
         }
 
       } catch (error) {
         console.error(
-          '❌ Error verificando nuevos pedidos:',
+          'Error verificando nuevos pedidos:',
           error
         );
       }
@@ -97,9 +80,6 @@ export const useOrderNotificationsStore = defineStore(
         return;
       }
 
-      /*
-       * Buscamos el pedido más reciente entre los nuevos.
-       */
       const newestOrderId = Math.max(
         ...newOrders.value.map(order => order.id)
       );
@@ -117,7 +97,7 @@ export const useOrderNotificationsStore = defineStore(
         return;
       }
 
-      console.log('⏱️ Polling de pedidos iniciado');
+      console.log('Polling de pedidos iniciado');
 
       checkNewOrders();
 

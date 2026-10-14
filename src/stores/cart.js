@@ -3,13 +3,9 @@ import { ref, computed } from 'vue';
 import cartService from '../services/cart.service';
 
 export const useCartStore = defineStore('cart', () => {
-  // ---- STATE ----
   const items = ref([]);
   const loading = ref(false);
 
-  // ---- GETTERS ----
-  // Total UNITS in the cart (for the little badge on the navbar icon),
-  // not the number of distinct rows.
   const itemCount = computed(() =>
     items.value.reduce((total, item) => total + item.quantity, 0),
   );
@@ -18,10 +14,6 @@ export const useCartStore = defineStore('cart', () => {
     items.value.reduce((acc, item) => acc + Number(item.product.price) * item.quantity, 0),
   );
 
-  // ---- ACTIONS ----
-
-  // Called when the user logs in, and on any view that needs to show
-  // the current cart (e.g. entering /cart)
   async function loadCart() {
     loading.value = true;
     try {
@@ -47,7 +39,6 @@ export const useCartStore = defineStore('cart', () => {
     items.value = response.data.items;
   }
 
-  // Called after confirming an order, or on logout
   function clearLocal() {
     items.value = [];
   }

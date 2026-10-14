@@ -24,11 +24,8 @@ async function load() {
   loading.value = true;
 
   try {
-
     const response = await categoriesService.list();
-
     categories.value = response.data.data;
-
   } catch (e) {
     showError('No se pudieron cargar las categorías');
   } finally {
@@ -43,7 +40,7 @@ async function create() {
   if (!newName.value.trim()) return;
 
   try {
-
+    
     await categoriesService.create({
       name: newName.value,
       description: newDescription.value || undefined,

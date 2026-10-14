@@ -115,7 +115,6 @@ async function changeStatus(order, newStatus) {
         expandedOrderId.value = null;
       }
     }
-
   } catch (error) {
     console.error('Error al cambiar el estado:', error);
 
@@ -124,6 +123,30 @@ async function changeStatus(order, newStatus) {
       'No se pudo cambiar el estado del pedido.'
     );
 
+    await load();
+  }
+}
+
+async function cancelOrder(order) {
+  const reason = window.prompt(
+    `Vas a cancelar el pedido #${order.orderNumber} y se va a devolver el stock.\n\nMotivo (opcional):`,
+  );
+
+  // Si toca "Cancelar" en el cuadro, reason es null y no hacemos nada
+  if (reason === null) return;
+
+  try {
+    await ordersService.cancel(order.id, reason.trim() || undefined);
+
+    showMessage(`Pedido #${order.orderNumber} cancelado. Stock restituido.`);
+
+    orders.value = orders.value.filter((o) => o.id !== order.id);
+
+    if (expandedOrderId.value === order.id) {
+      expandedOrderId.value = null;
+    }
+  } catch (e) {
+    showError(e.response?.data?.message || 'No se pudo cancelar el pedido.');
     await load();
   }
 }
@@ -253,7 +276,6 @@ onMounted(async () => {
 
 <template>
   <div class="container admin-orders-view">
-    
     <header class="orders-page-header">
 
       <div class="orders-title-section">
@@ -473,6 +495,14 @@ onMounted(async () => {
                       }}
                     </span>
 
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-cancel-order"
+                    @click="cancelOrder(order)"
+                  >
+                    Cancelar
                   </button>
                 </div>
               </td>
@@ -885,6 +915,22 @@ onMounted(async () => {
   flex-direction:column;
   align-items:center;
   gap:10px;
+}
+
+.btn-cancel-order {
+  padding: 8px 14px;
+  border: 1px solid #c8102e;
+  border-radius: 6px;
+  background: transparent;
+  color: #c8102e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancel-order:hover {
+  background: #c8102e;
+  color: #fff;
 }
 
 .admin-table--detailed th:nth-child(1),

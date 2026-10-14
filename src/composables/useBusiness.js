@@ -1,8 +1,6 @@
 import { ref } from 'vue';
 import businessService from '../services/business.service';
 
-// Estado a nivel de módulo: así, si el Footer y los botones flotantes
-// se montan al mismo tiempo, no disparamos dos pedidos GET /business.
 const business = ref(null);
 const loading = ref(true);
 let fetchPromise = null;

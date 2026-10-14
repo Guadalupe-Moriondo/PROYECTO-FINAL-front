@@ -1,8 +1,6 @@
 <script setup>
-
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-
 import productsService from '../../services/products.service';
 import stockService from '../../services/stock.service';
 import InventoryTag from '../../components/InventoryTag.vue';
@@ -15,6 +13,17 @@ const form = ref({
   quantity: 1,
   reason: ''
 });
+
+const alerts = ref([]);
+const loadingAlerts = ref(true);
+const products = ref([]);
+const productSearch = ref('');
+const showProductResults = ref(false);
+const showTypeResults = ref(false);
+const message = ref('');
+let messageTimeout = null;
+const error = ref('');
+let errorTimeout = null;
 
 const filteredProducts = computed(() => {
   const search = productSearch.value.toLowerCase().trim();
@@ -35,16 +44,6 @@ const selectedProduct = computed(() => {
   );
 });
 
-const alerts = ref([]);
-const loadingAlerts = ref(true);
-const products = ref([]);
-const productSearch = ref('');
-const showProductResults = ref(false);
-const showTypeResults = ref(false);
-const message = ref('');
-let messageTimeout = null;
-const error = ref('');
-let errorTimeout = null;
 
 async function loadProducts() {
   try {
@@ -58,6 +57,7 @@ async function loadProducts() {
 }
 
 async function loadAlerts() {
+
   loadingAlerts.value = true;
 
   try {
@@ -76,6 +76,7 @@ async function loadAlerts() {
 }
 
 async function registerMovement() {
+
   error.value = '';
 
   if (!form.value.productId) {
@@ -134,7 +135,6 @@ function selectProduct(product) {
 
 function selectType(type) {
   form.value.type = type;
-
   showTypeResults.value = false;
 }
 
@@ -144,6 +144,7 @@ function goToHistory() {
 
 
 function showMessage(text) {
+
   message.value = text;
 
   if (messageTimeout) {
@@ -156,6 +157,7 @@ function showMessage(text) {
 }
 
 function showError(text) {
+  
   error.value = text;
 
   if (errorTimeout) {

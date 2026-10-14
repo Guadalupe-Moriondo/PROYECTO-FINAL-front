@@ -2,7 +2,6 @@ import api from './api';
 
 export default {
   register(data) {
-    // data: { name, email, password, phone? }
     return api.post('/users', data);
   },
 
@@ -19,11 +18,9 @@ export default {
       }
     });
   },
+
   updateRole(id, role) {
     return api.put(`/users/${id}/role`, { role });
-  },
-  remove(id) {
-    return api.delete(`/users/${id}`);
   },
 
   getProfile() {
@@ -33,8 +30,8 @@ export default {
   updateProfile(data) {
     return api.patch('/users/profile', data);
   },
+  
   changePassword(data) {
   return api.patch('/users/change-password', data);
   },
- 
 };

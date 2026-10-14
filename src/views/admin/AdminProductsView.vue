@@ -57,7 +57,6 @@ function changePage(newPage) {
 }
 
 function handleSearch() {
-
   clearTimeout(searchTimeout);
 
   searchTimeout = setTimeout(() => {
@@ -90,7 +89,6 @@ async function remove(product) {
 
 function imageUrl(product) {
   if (!product.imageUrl) return null;
-
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 

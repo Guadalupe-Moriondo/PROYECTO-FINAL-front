@@ -13,11 +13,8 @@ const STATUS_LABELS = {
   in_preparation: 'En preparación',
   withdraw: 'Retirar',
   delivered: 'Entregado',
+  cancelled: 'Cancelado'
 };
-
-const hasOrders = computed(() => {
-  return pendingOrders.value.length > 0 || deliveredOrders.value.length > 0;
-});
 
 const loading = ref(true);
 const message = ref('');
@@ -38,13 +35,26 @@ const deliveredTotalPages = ref(1);
 const deliveredLoaded = ref(false);
 const deliveredTotal = ref(0);
 
+const cancelledOrders = ref([]);
+const cancelledPage = ref(1);
+const cancelledTotalPages = ref(1);
+const cancelledLoaded = ref(false);
+const cancelledTotal = ref(0);
+
+const hasOrders = computed(() => {
+  return (
+    pendingOrders.value.length > 0 ||
+    deliveredOrders.value.length > 0 ||
+    cancelledOrders.value.length > 0
+  );
+});
+
 
 async function loadPending() {
 
   loading.value = true;
 
   try {
-
     const response = await ordersService.myOrders(
       pendingPage.value,
       10,
@@ -68,7 +78,6 @@ async function loadDelivered() {
   loading.value = true;
 
   try {
-
     const response = await ordersService.myOrders(
       deliveredPage.value,
       10,
@@ -87,10 +96,41 @@ async function loadDelivered() {
   }
 }
 
+async function loadCancelled() {
+  loading.value = true;
+  try {
+    const response = await ordersService.myOrders(cancelledPage.value, 10, 'cancelled');
+    cancelledOrders.value = response.data.data;
+    cancelledTotalPages.value = response.data.totalPages;
+    cancelledTotal.value = response.data.total;
+    cancelledLoaded.value = true;
+  } catch (e) {
+    showError('No se pudieron cargar los pedidos');
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function cancelOrder(order) {
+  const confirmed = window.confirm(
+    `¿Querés cancelar el pedido #${order.orderNumber}? Esta acción no se puede deshacer.`,
+  );
+  if (!confirmed) return;
+
+  try {
+    await ordersService.cancel(order.id);
+    showMessage(`El pedido #${order.orderNumber} fue cancelado.`);
+    await Promise.all([loadPending(), loadCancelled(),]);
+  } catch (e) {
+    showError(e.response?.data?.message || 'No se pudo cancelar el pedido');
+  }
+}
+
 function selectTab(tab) {
   activeTab.value = tab;
   if (tab === 'pending' && !pendingLoaded.value) loadPending();
   if (tab === 'delivered' && !deliveredLoaded.value) loadDelivered();
+  if (tab === 'cancelled' && !cancelledLoaded.value) loadCancelled();
 }
 
 function changePendingPage(newPage) {
@@ -101,6 +141,11 @@ function changePendingPage(newPage) {
 function changeDeliveredPage(newPage) {
   deliveredPage.value = newPage;
   loadDelivered();
+}
+
+function changeCancelledPage(newPage) {
+  cancelledPage.value = newPage;
+  loadCancelled();
 }
 
 function formatDate(date) {
@@ -148,6 +193,7 @@ onMounted(async () => {
   await Promise.all([
     loadPending(),
     loadDelivered(),
+    loadCancelled(),
   ]);
 
   if (route.query.created) {
@@ -190,6 +236,16 @@ onMounted(async () => {
       >
         Entregados
         <span class="orders-tab-count">{{ deliveredTotal }}</span>
+      </button>
+
+      <button
+        type="button"
+        class="orders-tab"
+        :class="{ 'orders-tab-active': activeTab === 'cancelled' }"
+        @click="selectTab('cancelled')"
+      >
+        Cancelados
+        <span class="orders-tab-count">{{ cancelledTotal }}</span>
       </button>
     </div>
 
@@ -336,9 +392,7 @@ onMounted(async () => {
               <footer class="order-card-footer">
 
                 <div class="order-total-block">
-
                   <span class="footer-label">Total del pedido</span>
-
                   <strong class="order-total">
                     $
                     {{
@@ -346,8 +400,19 @@ onMounted(async () => {
                         .toLocaleString('es-AR')
                     }}
                   </strong>
-
                 </div>
+
+                <button
+                  v-if="order.status === 'pending'"
+                  type="button"
+                  class="btn-cancel-order"
+                  @click="cancelOrder(order)"
+                >
+                  Cancelar pedido
+                </button>
+                <span v-else class="cancel-hint">
+                  Para cancelar este pedido, contactá al negocio.
+                </span>
               </footer>
             </article>
           </div>
@@ -503,7 +568,63 @@ onMounted(async () => {
         <div v-else class="empty-section">
           <p>No tenés pedidos entregados.</p>
         </div>
+      </section>
 
+      <section v-if="activeTab === 'cancelled'" class="orders-group">
+        <div class="group-header">
+          <div><h2>Pedidos cancelados</h2></div>
+        </div>
+
+        <template v-if="cancelledOrders.length > 0">
+          <div class="orders-list">
+            <article
+              v-for="order in cancelledOrders"
+              :key="order.id"
+              class="order-card"
+            >
+              <header class="order-card-header">
+                <div>
+                  <span class="order-label">Pedido</span>
+                  <span class="order-number">#{{ order.orderNumber }}</span>
+                  <div class="order-dates">
+                    <span class="order-date">Pedido: {{ formatDate(order.createdAt) }}</span>
+                    <span class="order-date">Cancelado: {{ formatDate(order.cancelledAt) }}</span>
+                  </div>
+                </div>
+                <span class="order-status order-status-cancelled">
+                  <span class="status-dot"></span>
+                  Cancelado
+                </span>
+              </header>
+
+              <p class="cancel-hint">
+                {{
+                  order.cancelledBy === 'admin'
+                    ? 'Cancelado por el administrador'
+                    : 'Cancelado por el cliente'
+                }}
+                <template v-if="order.cancelReason">
+                  · Motivo: {{ order.cancelReason }}
+                </template>
+              </p>
+
+              <footer class="order-card-footer">
+                <div class="order-total-block">
+                  <span class="footer-label">Total del pedido</span>
+                  <strong class="order-total">
+                    $ {{ Number(order.total).toLocaleString('es-AR') }}
+                  </strong>
+                </div>
+              </footer>
+            </article>
+          </div>
+
+          <Pagination :page="cancelledPage" :total-pages="cancelledTotalPages" @change-page="changeCancelledPage"/>
+        </template>
+
+        <div v-else class="empty-section">
+          <p>No tenés pedidos cancelados.</p>
+        </div>
       </section>
     </div>
 
@@ -783,6 +904,33 @@ onMounted(async () => {
 .order-status-delivered {
   background: rgba(45, 151, 84, 0.11);
   color: #258148;
+}
+
+.order-status-cancelled {
+  background: rgba(200, 16, 46, 0.10);
+  color: #c8102e;
+}
+
+.btn-cancel-order {
+  padding: 9px 16px;
+  border: 1px solid #c8102e;
+  border-radius: 6px;
+  background: transparent;
+  color: #c8102e;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancel-order:hover {
+  background: #c8102e;
+  color: #fff;
+}
+
+.cancel-hint {
+  margin: 0;
+  padding: 0 20px 12px;
+  font-size: 0.8rem;
+  color: #6b7280;
 }
 
 .order-products {

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
-// Public views
 import HomeView from '../views/HomeView.vue';
 import CatalogView from '../views/CatalogView.vue';
 import ProductDetailView from '../views/ProductDetailView.vue';
@@ -10,12 +9,11 @@ import RegisterView from '../views/RegisterView.vue';
 import ContactView from '../views/ContactView.vue';
 import NotFoundView from '../views/NotFoundView.vue';
 
-// Views that require being logged in (customer)
 import CartView from '../views/CartView.vue';
 import CheckoutView from '../views/CheckoutView.vue';
 import MyOrdersView from '../views/MyOrdersView.vue';
 import ProfileView from '../views/ProfileView.vue'
-// Admin views (require login + admin role)
+
 import AdminHomeView from '../views/admin/AdminHomeView.vue';
 import AdminProductsView from '../views/admin/AdminProductsView.vue';
 import AdminProductFormView from '../views/admin/AdminProductFormView.vue';
@@ -34,87 +32,89 @@ const router = createRouter({
     return { top: 0 };
   },
   routes: [
-    { path: '/', name: 'home', component: HomeView,meta: {hideBack:true} },
-    { path: '/catalogo', name: 'catalog', component: CatalogView },
-    { path: '/product/:id', name: 'product-detail', component: ProductDetailView, props: true },
-    { path: '/login', name: 'login', component: LoginView },
-    { path: '/register', name: 'register', component: RegisterView },
-    { path: '/contact', name: 'contact', component: ContactView },
-
-    {
-      path: '/perfil',
+    { path: '/', 
+      name: 'home', 
+      component: HomeView,
+      meta: {hideBack:true} 
+    },
+    { path: '/catalogo', 
+      name: 'catalog', 
+      component: CatalogView 
+    },
+    { path: '/product/:id', 
+      name: 'product-detail', 
+      component: ProductDetailView, 
+      props: true 
+    },
+    { path: '/login', 
+      name: 'login', 
+      component: LoginView 
+    },
+    { path: '/register',
+      name: 'register', 
+      component: RegisterView 
+    },
+    { path: '/contact', 
+      name: 'contact', 
+      component: ContactView 
+    },
+    { path: '/perfil',
       name: 'profile',
       component: ProfileView,
       meta: {requiresAuth: true},
     },
-    
-    // "meta" is where we mark what restrictions each route has.
-    // The global guard (below) reads this object before letting anyone through.
-    {
-      path: '/cart',
+    { path: '/cart',
       name: 'cart',
       component: CartView,
       meta: { requiresAuth: true },
     },
-    {
-      path: '/checkout',
+    { path: '/checkout',
       name: 'checkout',
       component: CheckoutView,
       meta: { requiresAuth: true },
     },
-    {
-      path: '/my-orders',
+    { path: '/my-orders',
       name: 'my-orders',
       component: MyOrdersView,
       meta: { requiresAuth: true },
     },
-
-    {
-      path: '/admin',
+    { path: '/admin',
       name: 'admin-home',
       component: AdminHomeView,
       meta: { requiresAuth: true, requiresAdmin: true,hideBack:true },
     },
-    {
-      path: '/admin/products',
+    { path: '/admin/products',
       name: 'admin-products',
       component: AdminProductsView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-    {
-      path: '/admin/products/new',
+    { path: '/admin/products/new',
       name: 'admin-product-new',
       component: AdminProductFormView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-    {
-      path: '/admin/products/:id/edit',
+    { path: '/admin/products/:id/edit',
       name: 'admin-product-edit',
       component: AdminProductFormView,
       props: true,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-    {
-      path: '/admin/categories',
+    { path: '/admin/categories',
       name: 'admin-categories',
       component: AdminCategoriesView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-    {
-      path: '/admin/orders',
+    { path: '/admin/orders',
       name: 'admin-orders',
       component: AdminOrdersView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-    
-    {
-      path: '/admin/stock',
+    { path: '/admin/stock',
       name: 'admin-stock',
       component: AdminStockView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-    {
-      path: '/admin-stock-history',
+    { path: '/admin-stock-history',
       name: 'admin-stock-history',
       component: () => import('../views/admin/AdminStockHistoryView.vue'),
       meta: {
@@ -122,36 +122,27 @@ const router = createRouter({
         requiresAdmin: true
       }
     },
-    {
-      path: '/admin/business',
+    { path: '/admin/business',
       name: 'admin-business',
       component: AdminBusinessView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-
-    {
-      path: '/admin/orders/history',
+    { path: '/admin/orders/history',
       name: 'admin-order-history',
       component: AdminStatisticsView,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
-
-    {
-      path: '/admin/orders/history/month',
+    { path: '/admin/orders/history/month',
       name: 'admin-order-history-month',
       component: AdminOrdersByMonthView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-
-    {
-      path: '/admin/orders/history/year',
+    { path: '/admin/orders/history/year',
       name: 'admin-order-history-year',
       component: AdminOrdersByYearView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
-
-    {
-      path:'/admin/users',
+    { path:'/admin/users',
       name:'admin-users',
       component:AdminUsersView,
       meta:{
@@ -159,27 +150,23 @@ const router = createRouter({
         requiresAdmin:true
       }
     },
-
-    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
+    { path: '/:pathMatch(.*)*', 
+      name: 'not-found', 
+      component: NotFoundView 
+    },
   ],
 });
 
-// router.beforeEach runs BEFORE every route change, across the whole app.
-// It's the frontend equivalent of the Guards you used in NestJS:
-// it intercepts navigation and decides whether to allow it or redirect.
 router.beforeEach((to) => {
   const authStore = useAuthStore();
 
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    // Save where the user wanted to go, to send them there after login
     return { name: 'login', query: { redirect: to.fullPath } };
   }
 
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
-    // Logged in, but doesn't have the required role: send to catalog
     return { name: 'catalog' };
   }
-
   return true;
 });
 

@@ -8,10 +8,8 @@ const router = useRouter();
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-
 const open = ref(false);
 const root = ref(null);
-
 
 function toggle() {
   open.value = !open.value;
@@ -36,7 +34,6 @@ function logout() {
 
 onMounted(() => document.addEventListener('click', handleClickOutside));
 onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside));
-
 </script>
 
 <template>
@@ -58,7 +55,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
     <div v-if="open" class="user-menu-dropdown">
       <template v-if="authStore.isLoggedIn">
-         <!-- Usuario -->
+
         <RouterLink
           v-if="!authStore.isAdmin"
           :to="{ name: 'profile' }"
@@ -67,8 +64,6 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
         >
           Mi perfil
         </RouterLink>
-
-        <!-- Administrador -->
 
         <template v-else>
           <RouterLink

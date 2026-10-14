@@ -18,7 +18,6 @@ async function confirmOrder() {
   submitting.value = true;
 
   try {
-
     const response = await ordersService.createFromCart(paymentMethod.value);
 
     cartStore.clearLocal();

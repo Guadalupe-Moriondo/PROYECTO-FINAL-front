@@ -16,9 +16,6 @@ const isAuthPage = computed(() => {
   return route.path === '/login' || route.path === '/register';
 });
 
-// Iniciar o detener la comprobación de nuevos pedidos
- // dependiendo de si hay un administrador logueado.
-
  watch(
     () => [authStore.isLoggedIn, authStore.isAdmin],
     ([isLoggedIn, isAdmin]) => {

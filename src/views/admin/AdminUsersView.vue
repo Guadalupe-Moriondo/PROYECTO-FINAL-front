@@ -10,13 +10,6 @@ const statistics = ref({
   totalCustomers: 0,
 });
 
-const totalPages = computed(() => {
-
-  return Math.ceil(
-    total.value / limit
-  );
-});
-
 const users = ref([]);
 const loading = ref(true);
 const saving = ref(false);
@@ -30,6 +23,12 @@ const roleFilter = ref('all');
 const page = ref(1);
 const limit = 10;
 const total = ref(0);
+
+const totalPages = computed(() => {
+  return Math.ceil(
+    total.value / limit
+  );
+});
 
 
 async function loadUsers() {

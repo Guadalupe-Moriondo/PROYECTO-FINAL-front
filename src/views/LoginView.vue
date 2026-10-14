@@ -23,7 +23,6 @@ async function submit() {
   submitting.value = true;
 
   try {
-
     await authStore.login(email.value, password.value);
     await cartStore.loadCart();
 

@@ -63,13 +63,13 @@ defineProps({
 }
 
 .tag-stock {
-  color: var(--color-safety);
+  color: #127a4a;
   border-left: 1px dashed var(--color-line);
   padding-left: var(--space-2);
   font-weight: 600;
 }
 
 .tag-out-of-stock .tag-stock {
-  color: var(--color-danger);
+  color: #be2e3c;
 }
 </style>

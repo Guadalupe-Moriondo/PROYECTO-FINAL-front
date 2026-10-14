@@ -55,11 +55,8 @@ const mapsUrl = computed(() => {
 async function loadBusiness() {
 
   try {
-
     const response = await businessService.get();
-
     business.value = response.data;
-
   } catch (e) {
     console.error('Error al cargar los datos del negocio:', e);
     business.value = null;

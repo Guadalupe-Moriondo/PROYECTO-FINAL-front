@@ -11,6 +11,7 @@ const errorMessage = ref('');
 let errorTimeout = null;
 
 async function loadMovements() {
+
   loadingMovements.value = true;
   errorMessage.value = '';
 
@@ -31,7 +32,6 @@ async function loadMovements() {
         1;
   } catch (error) {
     console.error(error);
-
     errorMessage.value = 'No se pudo cargar el historial';
 
     clearTimeout(errorTimeout);

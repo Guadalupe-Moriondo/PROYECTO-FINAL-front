@@ -5,17 +5,22 @@ import { RouterLink } from 'vue-router';
 <template>
   <div class="container not-found-view">
     <p class="not-found-tag">404</p>
-    <h1>Repuesto no encontrado</h1>
-    <p>La página que buscás no existe o fue movida.</p>
-    <RouterLink to="/" class="button button-primary">Volver al catálogo</RouterLink>
+    <h1>Página no encontrada</h1>
+    <p>La página que buscás no existe.</p>
+    <RouterLink to="/" class="button button-primary">Volver al inicio</RouterLink>
   </div>
 </template>
 
 <style scoped>
 .not-found-view {
-  padding: var(--space-6) var(--space-4);
+  min-height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
+
 .not-found-tag {
   font-family: var(--font-mono);
   font-size: 3rem;

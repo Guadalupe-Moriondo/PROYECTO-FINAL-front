@@ -79,9 +79,7 @@ const showCountryResults = ref(false);
 
 async function load() {
   try {
-    
     const response = await businessService.get();
-
     console.log('Datos negocio:', response.data);
 
     form.value = {
@@ -154,7 +152,9 @@ async function save() {
     };
 
     console.log('Enviando:', dto);
+
     await businessService.update(dto);
+
     showMessage('Datos actualizados correctamente');
     setTimeout(() => {
       router.push({ name: 'admin-home' });

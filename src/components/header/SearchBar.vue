@@ -7,8 +7,6 @@ const router = useRouter();
 
 const query = ref(route.name === 'catalog' ? route.query.search || '' : '');
 
-// Si el usuario navega directo a /catalogo?search=... desde otro lado
-// (ej. un link compartido), mantenemos el input sincronizado.
 watch(
   () => route.query.search,
   (newSearch) => {

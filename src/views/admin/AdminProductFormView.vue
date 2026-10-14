@@ -128,7 +128,6 @@ function onImageSelected(event) {
   if (!file) return;
 
   selectedImage.value = file;
-
   imagePreview.value = URL.createObjectURL(file);
 }
 

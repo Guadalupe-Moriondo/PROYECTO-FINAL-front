@@ -6,6 +6,7 @@ import ProductCard from '../components/ProductCard.vue';
 import Hero1 from '../assets/Hero 1.jpg';
 import Hero2 from '../assets/Hero 2.jpg';
 import Hero3 from '../assets/Hero 3.jpg';
+
 import ApacheLogo from '../assets/Brands/Apache.png';
 import BucoLogo from '../assets/Brands/Buco.png';
 import OmbuLogo from '../assets/Brands/Ombu.png';
@@ -36,16 +37,15 @@ const heroImages = [
  Hero3
 ];
 
-const products = ref([]);
-const currentHeroImage = ref(0);
 const heroImageFailed = ref(false);
-const productsLoading = ref(true);
+const currentHeroImage = ref(0);
 let heroInterval = null;
+const products = ref([]);
+const productsLoading = ref(true);
 
 
 async function loadProducts() {
   try {
-
     const response = await productsService.list(1, 10);
 
     products.value =
@@ -63,9 +63,7 @@ async function loadProducts() {
 }
 
 onMounted(() => {
-
   loadProducts();
-
   heroInterval = setInterval(() => {
     currentHeroImage.value =
       (currentHeroImage.value + 1) % heroImages.length;

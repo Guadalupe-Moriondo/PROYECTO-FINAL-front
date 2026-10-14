@@ -44,7 +44,7 @@ function logout() {
 }
 
 onMounted(loadCategories);
-// Mientras el panel está abierto, evitamos que el fondo scrollee.
+
 watch(
   () => props.open,
   (isOpen) => {
@@ -131,7 +131,7 @@ watch(
 
         <nav class="sidebar-nav">
         <template v-if="authStore.isLoggedIn">
-             <!-- CLIENTE -->
+          
             <template v-if="!authStore.isAdmin">
               <RouterLink
                 :to="{ name: 'my-orders' }"
@@ -142,7 +142,6 @@ watch(
               </RouterLink>
 
             </template>
-          <!-- ADMIN -->
 
           <template v-else>
             <RouterLink

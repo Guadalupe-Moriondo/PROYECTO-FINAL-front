@@ -22,12 +22,10 @@ const { business } = useBusiness();
 
 </script>
 
-
 <template>
   <footer class="site-footer">
     <div class="container footer-grid">
 
-      <!-- Columna izquierda -->
       <div class="footer-col">
         <div class="footer-logo">
           <span class="logo-mark">DM</span>
@@ -43,7 +41,6 @@ const { business } = useBusiness();
         </div>
       </div>
 
-      <!-- Columna derecha -->
       <div class="footer-col footer-col-right">
 
         <p class="footer-col-title">SEGUINOS EN:</p>
@@ -88,9 +85,7 @@ const { business } = useBusiness();
            {{ business.email }}
           </a>
         </div>
-        
       </div>
-
     </div>
 
     <div class="container footer-bottom">
