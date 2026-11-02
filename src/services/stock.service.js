@@ -9,9 +9,9 @@ export default {
     return api.get(`/stock/movements/${productId}`);
   },
 
-  history(page, limit) {
+  history(page, limit, search = '') {
     return api.get('/stock/movements', {
-      params: { page, limit }
+      params: { page, limit, search: search || undefined }
     });
   },
   

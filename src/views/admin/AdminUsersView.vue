@@ -20,6 +20,7 @@ let errorTimeout = null;
 const authStore = useAuthStore();
 const search = ref('');
 const roleFilter = ref('all');
+const roleChange = ref(null);
 const page = ref(1);
 const limit = 10;
 const total = ref(0);
@@ -92,51 +93,38 @@ function changePage(newPage) {
   loadUsers();
 }
 
-async function changeRole(user, event) {
-
+function askRoleChange(user, event) {
   const newRole = event.target.value;
+  if (newRole === user.role) return;
+  event.target.value = user.role;
+  roleChange.value = { user, newRole };
+}
 
-  if (newRole === user.role) {
-    return;
-  }
+function dismissRoleChange() {
+  if (saving.value) return;
+  roleChange.value = null;
+}
 
-  const newRoleLabel =
-    newRole === 'admin'
-      ? 'Administrador'
-      : 'Cliente';
+async function confirmRoleChange() {
 
-  const previousRole = user.role;
+  if (!roleChange.value) return;
 
-  const confirmed = window.confirm(
-    `¿Querés cambiar el rol de ${user.name} a ${newRoleLabel}?`
-  );
+  const { user, newRole } = roleChange.value;
 
-  if (!confirmed) {
-    event.target.value = previousRole;
-    return;
-  }
-  
   saving.value = true;
- 
+
   try {
-    await usersService.updateRole(
-      user.id,
-      newRole
-    );
+    await usersService.updateRole(user.id, newRole);
 
     user.role = newRole;
+    roleChange.value = null;
 
-    showMessage(
-      'Se ha actualizado el rol correctamente.'
-    );
+    showMessage('Se ha actualizado el rol correctamente.');
 
   } catch (err) {
-    console.error(
-      'Error cambiando rol:',
-      err
-    );
+    console.error('Error cambiando rol:', err);
 
-    event.target.value = previousRole;
+    roleChange.value = null;
 
     showError(
       err.response?.data?.message ||
@@ -236,7 +224,7 @@ onMounted(() => {
         v-model="search"
         @keyup.enter="searchUsers"
         type="text"
-        placeholder="Buscar usuario..."
+        placeholder="Buscar..."
       >
 
       <button
@@ -359,7 +347,7 @@ onMounted(() => {
 
             <select v-else
               :value="user.role"
-              @change="changeRole(user,$event)"
+              @change="askRoleChange(user, $event)"
               :disabled="saving"
             >
               <option value="customer">Cliente</option>
@@ -385,6 +373,56 @@ onMounted(() => {
     >
       No se encontraron usuarios.
     </div>
+
+    <Transition name="modal">
+      <div
+        v-if="roleChange"
+        class="confirm-overlay"
+        @click.self="dismissRoleChange"
+      >
+        <div
+          class="confirm-card"
+          role="dialog"
+          aria-modal="true"
+        >
+          <h3>¿Cambiar el rol?</h3>
+
+          <p>
+            Vas a cambiar el rol de
+            <strong>{{ roleChange.user.name }}</strong>
+            a
+            <strong>{{ roleLabel(roleChange.newRole) }}</strong>.
+          </p>
+
+          <p
+            v-if="roleChange.newRole === 'admin'"
+            class="confirm-warning"
+          >
+            Va a tener acceso al panel de administración.
+          </p>
+
+          <div class="confirm-actions">
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="saving"
+              @click="dismissRoleChange"
+            >
+              Volver
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--primary"
+              :disabled="saving"
+              @click="confirmRoleChange"
+            >
+              {{ saving ? 'Guardando...' : 'Confirmar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <Transition name="success-toast">
       <div
@@ -540,8 +578,7 @@ onMounted(() => {
   padding:5px 12px;
   border-radius:999px;
   background: rgba(14, 116, 144, 0.12);
-  border:1px solid #acd1f5;
-  color: #3f7bb8;
+  color: #0e7490;
   font-size:.75rem;
   font-weight:700;
 }
@@ -549,7 +586,6 @@ onMounted(() => {
 .role-admin{
   background:rgba(183, 53, 45, 0.08);
   color: var(--color-rust);
-  border:1px solid #d4a0a0;
 }
 
 .user-data {
@@ -584,6 +620,134 @@ onMounted(() => {
   font-style: italic;
   line-height: 1.5;
   width: 100%;
+}
+
+/* ================= TARJETA DE CONFIRMACIÓN ================= */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .45);
+}
+
+.confirm-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 28px 24px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+}
+
+.confirm-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(183, 53, 45, 0.08);
+  color: var(--color-rust);
+}
+
+.confirm-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.confirm-card h3 {
+  margin: 0 0 10px;
+  color: var(--color-ink);
+  font-size: 1.2rem;
+}
+
+.confirm-card p {
+  margin: 0 0 8px;
+  color: var(--color-ink-soft);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.confirm-card p strong {
+  color: var(--color-ink);
+}
+
+.confirm-warning {
+  color: #a16207 !important;
+  font-weight: 600;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    color .2s ease;
+}
+
+.confirm-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.confirm-btn--cancel {
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.confirm-btn--cancel:hover:not(:disabled) {
+  background: #f6f6f3;
+}
+
+.confirm-btn--primary {
+  border: 1px solid var(--color-rust);
+  background: var(--color-rust);
+  color: #fff;
+}
+
+.confirm-btn--primary:hover:not(:disabled) {
+  background: var(--color-rust-dark);
+}
+
+/* Animación de entrada y salida */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity .2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .confirm-card,
+.modal-leave-active .confirm-card {
+  transition: transform .2s ease;
+}
+
+.modal-enter-from .confirm-card,
+.modal-leave-to .confirm-card {
+  transform: translateY(10px) scale(.97);
 }
 
 .success-toast {

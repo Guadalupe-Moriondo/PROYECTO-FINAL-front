@@ -16,9 +16,13 @@ const STATUS_LABELS = {
   cancelled: 'Cancelado'
 };
 
+const orderToCancel = ref(null);
+const cancelling = ref(false);
 const loading = ref(true);
 const message = ref('');
 let messageTimeout = null;
+const cancelMessage = ref('');
+let cancelTimeout = null;
 const error = ref('');
 let errorTimeout = null;
 
@@ -111,18 +115,35 @@ async function loadCancelled() {
   }
 }
 
-async function cancelOrder(order) {
-  const confirmed = window.confirm(
-    `¿Querés cancelar el pedido #${order.orderNumber}? Esta acción no se puede deshacer.`,
-  );
-  if (!confirmed) return;
+function askCancel(order) {
+  orderToCancel.value = order;
+}
+
+function dismissCancel() {
+  if (cancelling.value) return;
+  orderToCancel.value = null;
+}
+
+async function confirmCancel() {
+
+  const order = orderToCancel.value;
+  if (!order) return;
+
+  cancelling.value = true;
 
   try {
     await ordersService.cancel(order.id);
-    showMessage(`El pedido #${order.orderNumber} fue cancelado.`);
-    await Promise.all([loadPending(), loadCancelled(),]);
+
+    orderToCancel.value = null;
+
+    showCancelMessage(`Pedido #${order.orderNumber}`);
+
+    await Promise.all([loadPending(), loadCancelled()]);
   } catch (e) {
+    orderToCancel.value = null;
     showError(e.response?.data?.message || 'No se pudo cancelar el pedido');
+  } finally {
+    cancelling.value = false;
   }
 }
 
@@ -173,6 +194,19 @@ function showMessage(text) {
 
   messageTimeout = setTimeout(() => {
     message.value = '';
+  }, 5000);
+}
+
+function showCancelMessage(text) {
+
+  cancelMessage.value = text;
+
+  if (cancelTimeout) {
+    clearTimeout(cancelTimeout);
+  }
+
+  cancelTimeout = setTimeout(() => {
+    cancelMessage.value = '';
   }, 5000);
 }
 
@@ -390,30 +424,27 @@ onMounted(async () => {
               </div>
 
               <footer class="order-card-footer">
-
-                <div class="order-total-block">
-                  <span class="footer-label">Total del pedido</span>
-                  <strong class="order-total">
-                    $
-                    {{
-                      Number(order.total)
-                        .toLocaleString('es-AR')
-                    }}
-                  </strong>
-                </div>
+                <span v-if="order.status !== 'pending'" class="cancel-hint">
+                  Para cancelar este pedido, contactá al negocio.
+                </span>
 
                 <button
                   v-if="order.status === 'pending'"
                   type="button"
                   class="btn-cancel-order"
-                  @click="cancelOrder(order)"
+                  @click="askCancel(order)"
                 >
                   Cancelar pedido
                 </button>
-                <span v-else class="cancel-hint">
-                  Para cancelar este pedido, contactá al negocio.
-                </span>
+
+                <div class="order-total-block">
+                  <span class="footer-label">Total</span>
+                  <strong class="order-total">
+                    $ {{ Number(order.total).toLocaleString('es-AR') }}
+                  </strong>
+                </div>
               </footer>
+
             </article>
           </div>
 
@@ -546,7 +577,7 @@ onMounted(async () => {
 
                 <div class="order-total-block">
 
-                  <span class="footer-label">Total del pedido</span>
+                  <span class="footer-label">Total</span>
 
                   <strong class="order-total">
                     $
@@ -572,7 +603,9 @@ onMounted(async () => {
 
       <section v-if="activeTab === 'cancelled'" class="orders-group">
         <div class="group-header">
-          <div><h2>Pedidos cancelados</h2></div>
+          <div>
+            <h2>Pedidos cancelados</h2>
+          </div>
         </div>
 
         <template v-if="cancelledOrders.length > 0">
@@ -586,31 +619,84 @@ onMounted(async () => {
                 <div>
                   <span class="order-label">Pedido</span>
                   <span class="order-number">#{{ order.orderNumber }}</span>
+
                   <div class="order-dates">
-                    <span class="order-date">Pedido: {{ formatDate(order.createdAt) }}</span>
-                    <span class="order-date">Cancelado: {{ formatDate(order.cancelledAt) }}</span>
+                    <span class="order-date">
+                      Pedido: {{ formatDate(order.createdAt) }}
+                    </span>
+
+                    <span class="order-date">
+                      Cancelado: {{ formatDate(order.cancelledAt) }}
+                    </span>
                   </div>
                 </div>
+
                 <span class="order-status order-status-cancelled">
                   <span class="status-dot"></span>
                   Cancelado
                 </span>
               </header>
+              <!-- Productos que pertenecían al pedido cancelado -->
+              <div class="order-products">
+                <div
+                  v-for="detail in order.details"
+                  :key="detail.id"
+                  class="order-detail"
+                >
+                  <div
+                    class="detail-image-wrapper detail-image-wrapper--order"
+                  >
+                    <img
+                      v-if="imageUrl(detail.product)"
+                      :src="imageUrl(detail.product)"
+                      :alt="detail.product?.name || 'Producto'"
+                      class="detail-image detail-image--order"
+                    />
 
-              <p class="cancel-hint">
-                {{
-                  order.cancelledBy === 'admin'
-                    ? 'Cancelado por el administrador'
-                    : 'Cancelado por el cliente'
-                }}
-                <template v-if="order.cancelReason">
-                  · Motivo: {{ order.cancelReason }}
-                </template>
-              </p>
+                    <div
+                      v-else
+                      class="detail-image-placeholder detail-image-placeholder--order"
+                    >
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v14h14V5H5Zm2 2h10v2H7V7Zm0 4h10v2H7v-2Zm0 4h6v2H7v-2Z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="detail-info">
+                    <strong class="detail-name detail-name--order">
+                      {{
+                        detail.product?.name || 'Producto eliminado'
+                      }}
+                    </strong>
+
+                    <span class="detail-quantity">
+                      {{ detail.quantity }} unidad(es)
+                    </span>
+                  </div>
+
+                  <span class="detail-price detail-price--order">
+                    $ {{ Number(detail.unitPrice).toLocaleString('es-AR') }} c/u
+                  </span>
+                </div>
+              </div>
 
               <footer class="order-card-footer">
+                <p class="cancel-hint">
+                  {{
+                    order.cancelledBy === 'admin'
+                      ? 'Cancelado por el administrador'
+                      : 'Cancelado por el cliente'
+                  }}<template v-if="order.cancelReason">
+                    · Motivo: {{ order.cancelReason }}
+                  </template>
+                </p>
+
                 <div class="order-total-block">
-                  <span class="footer-label">Total del pedido</span>
+                  <span class="footer-label">Total</span>
+
                   <strong class="order-total">
                     $ {{ Number(order.total).toLocaleString('es-AR') }}
                   </strong>
@@ -627,6 +713,48 @@ onMounted(async () => {
         </div>
       </section>
     </div>
+
+    <Transition name="modal">
+      <div
+        v-if="orderToCancel"
+        class="confirm-overlay"
+        @click.self="dismissCancel"
+      >
+        <div
+          class="confirm-card"
+          role="dialog"
+          aria-modal="true"
+        >
+          <h3>¿Cancelar tu pedido?</h3>
+
+          <p>
+            Vas a cancelar el pedido
+            <strong>#{{ orderToCancel.orderNumber }}</strong>.
+            Esta acción no se puede deshacer.
+          </p>
+
+          <div class="confirm-actions">
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="cancelling"
+              @click="dismissCancel"
+            >
+              Volver
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--danger"
+              :disabled="cancelling"
+              @click="confirmCancel"
+            >
+              {{ cancelling ? 'Cancelando...' : 'Cancelar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <Transition name="success-toast">
       <div
@@ -651,6 +779,23 @@ onMounted(async () => {
         <div class="success-toast-content">
           <strong>¡Pedido confirmado!</strong>
           <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="cancelMessage"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          ✕
+        </div>
+
+        <div class="error-toast-content">
+          <strong>Pedido cancelado correctamente</strong>
+
+          <span>{{ cancelMessage }}</span>
         </div>
       </div>
     </Transition>
@@ -912,11 +1057,12 @@ onMounted(async () => {
 }
 
 .btn-cancel-order {
-  padding: 9px 16px;
+  padding: 8px 14px;
   border: 1px solid #c8102e;
   border-radius: 6px;
   background: transparent;
   color: #c8102e;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -969,10 +1115,22 @@ onMounted(async () => {
   justify-content: space-between;
   gap: 15px;
   padding: 17px 20px;
-  background:
-    rgba(0, 0, 0, 0.018);
-
+  background: rgba(0, 0, 0, 0.018);
   border-top: 1px solid var(--color-line);
+}
+
+.order-card-footer .cancel-hint {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.order-card-footer .order-total-block {
+  flex-shrink: 0;
+  margin-left: auto;
+  text-align: right;
 }
 
 .footer-label {
@@ -1033,6 +1191,128 @@ onMounted(async () => {
   color: var(--color-ink-soft);
   font-size: 0.9rem;
   line-height: 1.6;
+}
+
+/* ===== TARJETA DE CONFIRMACIÓN ===== */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .45);
+}
+
+.confirm-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 30px 28px 24px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+}
+
+.confirm-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #fdecec;
+  color: #b42318;
+}
+
+.confirm-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.confirm-card h3 {
+  margin: 0 0 10px;
+  color: var(--color-ink);
+  font-size: 1.2rem;
+}
+
+.confirm-card p {
+  margin: 0 0 8px;
+  color: var(--color-ink-soft);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.confirm-card p strong {
+  color: var(--color-ink);
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    color .2s ease;
+}
+
+.confirm-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.confirm-btn--cancel {
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.confirm-btn--cancel:hover:not(:disabled) {
+  background: #f6f6f3;
+}
+
+.confirm-btn--danger {
+  border: 1px solid #c8102e;
+  background: #c8102e;
+  color: #fff;
+}
+
+.confirm-btn--danger:hover:not(:disabled) {
+  background: #a50d26;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity .2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .confirm-card,
+.modal-leave-active .confirm-card {
+  transition: transform .2s ease;
+}
+
+.modal-enter-from .confirm-card,
+.modal-leave-to .confirm-card {
+  transform: translateY(10px) scale(.97);
 }
 
 .success-toast {
@@ -1208,14 +1488,14 @@ onMounted(async () => {
   }
 
   .order-card-footer {
-    align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .delivered-label {
     display: none;
   }
-
 }
 
 @media (max-width: 600px) {

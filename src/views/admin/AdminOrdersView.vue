@@ -31,13 +31,19 @@ const orders = ref([]);
 const loading = ref(true);
 const search = ref('');
 let searchTimeout = null;
+const orderToCancel = ref(null);
+const cancelReasonText = ref('');
+const cancelling = ref(false);
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
 let messageTimeout = null;
+const cancelMessage = ref('');
+let cancelTimeout = null;
 const error = ref('');
 let errorTimeout = null;
 const expandedOrderId = ref(null);
+const viewMode = ref('active');
 const { business, loadBusiness } = useBusiness();
 const orderNotificationsStore = useOrderNotificationsStore();
 
@@ -49,17 +55,23 @@ async function load() {
   try {
     let response;
 
-    if (search.value.trim()) {
+    if (viewMode.value === 'cancelled') {
+      response = search.value.trim()
+        ? await ordersService.search({
+            search: search.value.trim(),
+            status: 'cancelled',
+            page: page.value,
+            limit: 5,
+          })
+        : await ordersService.listCancelled(page.value, 5);
+    } else if (search.value.trim()) {
       response = await ordersService.search({
         search: search.value.trim(),
         page: page.value,
         limit: 5,
       });
     } else {
-      response = await ordersService.listAll(
-        page.value,
-        5
-      );
+      response = await ordersService.listAll(page.value, 5);
     }
 
     orders.value = response.data.data;
@@ -127,27 +139,49 @@ async function changeStatus(order, newStatus) {
   }
 }
 
-async function cancelOrder(order) {
-  const reason = window.prompt(
-    `Vas a cancelar el pedido #${order.orderNumber} y se va a devolver el stock.\n\nMotivo (opcional):`,
-  );
+function askCancel(order) {
+  orderToCancel.value = order;
+  cancelReasonText.value = '';
+}
 
-  // Si toca "Cancelar" en el cuadro, reason es null y no hacemos nada
-  if (reason === null) return;
+function closeCancelCard() {
+  orderToCancel.value = null;
+  cancelReasonText.value = '';
+}
+
+function dismissCancel() {
+  if (cancelling.value) return;
+  closeCancelCard();
+}
+
+async function confirmCancel() {
+
+  const order = orderToCancel.value;
+  if (!order) return;
+
+  cancelling.value = true;
 
   try {
-    await ordersService.cancel(order.id, reason.trim() || undefined);
+    await ordersService.cancel(
+      order.id,
+      cancelReasonText.value.trim() || undefined
+    );
 
-    showMessage(`Pedido #${order.orderNumber} cancelado. Stock restituido.`);
+    showCancelMessage(`Pedido #${order.orderNumber} · El stock se reincorporó.`);
 
     orders.value = orders.value.filter((o) => o.id !== order.id);
 
     if (expandedOrderId.value === order.id) {
       expandedOrderId.value = null;
     }
+
+    closeCancelCard();
   } catch (e) {
+    closeCancelCard();
     showError(e.response?.data?.message || 'No se pudo cancelar el pedido.');
     await load();
+  } finally {
+    cancelling.value = false;
   }
 }
 
@@ -241,6 +275,15 @@ function imageUrl(product) {
   return `${import.meta.env.VITE_API_URL}${product.imageUrl}`;
 }
 
+function selectView(mode) {
+  if (viewMode.value === mode) return;
+  viewMode.value = mode;
+  page.value = 1;
+  search.value = '';
+  expandedOrderId.value = null;
+  load();
+}
+
 function showMessage(text) {
 
   message.value = text;
@@ -251,6 +294,19 @@ function showMessage(text) {
 
   messageTimeout = setTimeout(() => {
     message.value = '';
+  }, 5000);
+}
+
+function showCancelMessage(text) {
+
+  cancelMessage.value = text;
+
+  if (cancelTimeout) {
+    clearTimeout(cancelTimeout);
+  }
+
+  cancelTimeout = setTimeout(() => {
+    cancelMessage.value = '';
   }, 5000);
 }
 
@@ -305,7 +361,7 @@ onMounted(async () => {
             <input
               v-model="search"
               type="text"
-              placeholder="Buscar por número de orden, cliente, fecha o estado..."
+              placeholder="Buscar..."
               @input="handleSearch"
             />
 
@@ -327,6 +383,25 @@ onMounted(async () => {
 
     </header>
 
+    <div class="view-tabs">
+      <button
+        type="button"
+        class="view-tab"
+        :class="{ 'view-tab--active': viewMode === 'active' }"
+        @click="selectView('active')"
+      >
+        Activos
+      </button>
+      <button
+        type="button"
+        class="view-tab"
+        :class="{ 'view-tab--active': viewMode === 'cancelled' }"
+        @click="selectView('cancelled')"
+      >
+        Cancelados
+      </button>
+    </div>
+
     <p
       v-if="loading"
       class="loading-state"
@@ -334,10 +409,7 @@ onMounted(async () => {
       Cargando pedidos...
     </p>
 
-    <div
-      v-else
-      class="orders-table-wrapper"
-    >
+    <div v-else-if="viewMode === 'active'" class="orders-table-wrapper">
       <table class="admin-table admin-table--detailed">
 
         <thead>
@@ -349,6 +421,7 @@ onMounted(async () => {
             <th>Pago</th>
             <th>Estado</th>
             <th class="detail-column">Detalle</th>
+            <th class="actions-column-header"></th>
           </tr>
         </thead>
 
@@ -472,39 +545,31 @@ onMounted(async () => {
               </td>
               
               <td class="detail-column">
-                <div class="actions-column">
-                  
-                  <button
-                    type="button"
-                    class="detail-toggle"
-                    @click="toggleDetail(order)"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
-                      />
-                    </svg>
+                <button
+                  type="button"
+                  class="detail-toggle"
+                  @click="toggleDetail(order)"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                    />
+                  </svg>
 
-                    <span>
-                      {{ expandedOrderId === order.id
-                        ? 'Ocultar'
-                        : 'Ver detalle'
-                      }}
-                    </span>
+                  <span>
+                    {{ expandedOrderId === order.id ? 'Ocultar' : 'Ver detalle' }}
+                  </span>
+                </button>
+              </td>
 
-                  </button>
-
-                  <button
-                    type="button"
-                    class="btn-cancel-order"
-                    @click="cancelOrder(order)"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+              <td class="actions-column-cell">
+                <button
+                  type="button"
+                  class="btn-cancel-order"
+                  @click="askCancel(order)"
+                >
+                  Cancelar
+                </button>
               </td>
             </tr>
             
@@ -512,7 +577,7 @@ onMounted(async () => {
               v-if="expandedOrderId === order.id"
               class="detail-row"
             >
-              <td colspan="7">
+              <td colspan="8">
                 <div class="detail-container">
   
                   <ul
@@ -601,6 +666,174 @@ onMounted(async () => {
       </table>
     </div>
 
+    <div v-else class="orders-table-wrapper">
+      <table class="admin-table admin-table--detailed cancelled-table">
+
+        <thead>
+          <tr>
+            <th>N° orden</th>
+            <th>Cliente</th>
+            <th>Fecha pedido</th>
+            <th>Fecha cancelación</th>
+            <th>Total</th>
+            <th>Cancelado por</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            v-for="order in orders"
+            :key="order.id"
+            class="order-row"
+          >
+            <td>
+              <span class="order-number">
+                #{{ order.orderNumber }}
+              </span>
+            </td>
+
+            <td>
+              <div class="customer-cell">
+                <div class="customer-avatar">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path d="M20 21a8 8 0 0 0-16 0"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+
+                <div>
+                  <strong class="customer-name">
+                    {{ order.user?.name || 'Cliente' }}
+                  </strong>
+
+                  <span class="table-subtext">
+                    {{ order.user?.email }}
+                  </span>
+
+                  <span class="table-subtext">
+                    {{ order.user?.phone }}
+                  </span>
+                </div>
+              </div>
+            </td>
+
+            <td class="date-cell">
+              <div class="date-content">
+                <span class="date">{{ formatDate(order.createdAt) }}</span>
+                <span class="time">{{ formatTime(order.createdAt) }}</span>
+              </div>
+            </td>
+
+            <td class="date-cell">
+              <div v-if="order.cancelledAt" class="date-content">
+                <span class="date">{{ formatDate(order.cancelledAt) }}</span>
+                <span class="time">{{ formatTime(order.cancelledAt) }}</span>
+              </div>
+              <span v-else>—</span>
+            </td>
+
+            <td>
+              <span class="order-total">
+                $ {{ Number(order.total).toLocaleString('es-AR') }}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="cancelled-by"
+                :class="`cancelled-by--${order.cancelledBy}`"
+              >
+                {{
+                  order.cancelledBy === 'admin'
+                    ? 'Administrador'
+                    : order.cancelledBy === 'customer'
+                      ? 'Cliente'
+                      : '—'
+                }}
+              </span>
+
+              <span
+                v-if="order.cancelledBy === 'admin' && order.cancelledByUser?.name"
+                class="table-subtext"
+              >
+                {{ order.cancelledByUser.name }}
+              </span>
+            </td>
+
+            <td class="reason-cell">
+              {{ order.cancelReason || '—' }}
+            </td>
+          </tr>
+
+          <tr v-if="!orders.length">
+            <td colspan="7" class="empty-detail">
+              No hay pedidos cancelados.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <Transition name="modal">
+      <div
+        v-if="orderToCancel"
+        class="confirm-overlay"
+        @click.self="dismissCancel"
+      >
+        <div
+          class="confirm-card"
+          role="dialog"
+          aria-modal="true"
+        >
+          <h3>¿Cancelar el pedido?</h3>
+
+          <p>
+            Vas a cancelar el pedido
+            <strong>#{{ orderToCancel.orderNumber }}</strong>
+            de
+            <strong>{{ orderToCancel.user?.name || 'el cliente' }}</strong>.
+            El stock se va a reincorporar automáticamente.
+          </p>
+
+          <div class="confirm-field">
+            <label for="cancel-reason">Motivo (opcional)</label>
+
+            <textarea
+              id="cancel-reason"
+              v-model="cancelReasonText"
+              rows="3"
+              maxlength="255"
+            ></textarea>
+          </div>
+
+          <div class="confirm-actions">
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="cancelling"
+              @click="dismissCancel"
+            >
+              Volver
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--danger"
+              :disabled="cancelling"
+              @click="confirmCancel"
+            >
+              {{ cancelling ? 'Cancelando...' : 'Cancelar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <Transition name="success-toast">
       <div
         v-if="message"
@@ -624,6 +857,23 @@ onMounted(async () => {
         <div class="success-toast-content">
           <strong>¡Entregado correctamente!</strong>
           <span>{{ message }}</span>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="error-toast">
+      <div
+        v-if="cancelMessage"
+        class="error-toast"
+      >
+        <div class="error-toast-icon">
+          ✕
+        </div>
+
+        <div class="error-toast-content">
+          <strong>Pedido cancelado correctamente</strong>
+
+          <span>{{ cancelMessage }}</span>
         </div>
       </div>
     </Transition>
@@ -664,8 +914,7 @@ onMounted(async () => {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: 20px;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 .order-row {
@@ -680,18 +929,29 @@ onMounted(async () => {
 }
 
 .order-number {
-  display: inline-flex;
-  padding: 6px 9px;
+  display: inline-block;
+  padding: 6px 4px;
   border-radius: 8px;
   color: black;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
 }
 
 .customer-cell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  text-align: left;
+}
+
+.customer-cell > div:last-child {
+  min-width: 0;
+}
+
+.customer-name,
+.table-subtext {
+  overflow-wrap: anywhere;
 }
 
 .customer-avatar {
@@ -755,30 +1015,31 @@ onMounted(async () => {
   min-width: 75px;
   padding: 5px 9px;
   border-radius: 999px;
-  font-size: .90rem;
+  font-size: 0.90rem;
   font-weight: 700;
   background: #e8f7ec;
   color: #207a3c;
-
+  white-space: nowrap;
 }
 
 .payment-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 6px 10px;
   border-radius: 999px;
-  background:
-    rgba(0, 0, 0, 0.04);
-
+  background: rgba(0, 0, 0, 0.04);
   color: var(--color-ink-soft);
   font-size: 0.75rem;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .status-control {
   position: relative;
   display: flex;
-  width: 130px;
+  width: 100%;
+  max-width: 130px;
+  margin: 0 auto;
   border-radius: 999px;
   padding: 2px;
   background: rgba(0, 0, 0, 0.05);
@@ -786,6 +1047,7 @@ onMounted(async () => {
 }
 
 .status-control select {
+  width: 100%;
   appearance: none;
   border: none;
   outline: none;
@@ -893,8 +1155,6 @@ onMounted(async () => {
   min-width: 0;
 }
 
-
-
 .detail-code {
   display: block;
   margin-top: 3px;
@@ -902,6 +1162,11 @@ onMounted(async () => {
   font-size: 0.75rem;
   font-family: var(--font-mono);
   text-align: left;
+}
+
+.detail-price,
+.detail-price--admin {
+  white-space: nowrap;
 }
 
 .empty-detail {
@@ -933,18 +1198,68 @@ onMounted(async () => {
   color: #fff;
 }
 
-.admin-table--detailed th:nth-child(1),
-.admin-table--detailed td:nth-child(1),
-.admin-table--detailed th:nth-child(3),
-.admin-table--detailed td:nth-child(3),
-.admin-table--detailed th:nth-child(4),
-.admin-table--detailed td:nth-child(4),
-.admin-table--detailed th:nth-child(5),
-.admin-table--detailed td:nth-child(5),
-.admin-table--detailed th:nth-child(6),
-.admin-table--detailed td:nth-child(6),
-.admin-table--detailed th:nth-child(7),
-.admin-table--detailed td:nth-child(7) {
+/* Tabla de activos: 8 columnas */
+.admin-table--detailed th:nth-child(1) { width: 11%; }
+.admin-table--detailed th:nth-child(2) { width: 21%; }
+.admin-table--detailed th:nth-child(3) { width: 10%; }
+.admin-table--detailed th:nth-child(4) { width: 12%; }
+.admin-table--detailed th:nth-child(5) { width: 10%; }
+.admin-table--detailed th:nth-child(6) { width: 13%; }
+.admin-table--detailed th:nth-child(7) { width: 12%; }
+.admin-table--detailed th:nth-child(8) { width: 11%; }
+
+/* Tabla de cancelados: 7 columnas */
+/* Tabla de cancelados: 7 columnas (pisa los anchos de la de activos) */
+.admin-table--detailed.cancelled-table th:nth-child(1) { width: 12%; }
+.admin-table--detailed.cancelled-table th:nth-child(2) { width: 24%; }
+.admin-table--detailed.cancelled-table th:nth-child(3) { width: 11%; }
+.admin-table--detailed.cancelled-table th:nth-child(4) { width: 12%; }
+.admin-table--detailed.cancelled-table th:nth-child(5) { width: 12%; }
+.admin-table--detailed.cancelled-table th:nth-child(6) { width: 13%; }
+.admin-table--detailed.cancelled-table th:nth-child(7) { width: 16%; }
+
+/* Reglas comunes a las dos tablas */
+.admin-table--detailed,
+.cancelled-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.admin-table--detailed th,
+.admin-table--detailed td,
+.cancelled-table th,
+.cancelled-table td {
+  padding: 14px 10px;
+}
+
+.admin-table--detailed th,
+.cancelled-table th {
+  text-align: center;
+}
+
+.admin-table--detailed td:not(:nth-child(2)),
+.cancelled-table td:not(:nth-child(2)) {
+  text-align: center;
+}
+
+.admin-table--detailed td:nth-child(2),
+.cancelled-table td:nth-child(2) {
+  text-align: left;
+}
+
+.reason-cell {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.actions-column-cell {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.detail-column,
+.actions-column-cell {
   text-align: center;
 }
 
@@ -963,7 +1278,8 @@ onMounted(async () => {
 
 .notify-buttons {
   display: flex;
-  width: 130px;
+  width: 100%;
+  max-width: 130px;
   margin: 0;
 }
 
@@ -977,7 +1293,7 @@ onMounted(async () => {
   
 }
 .notify-icon {
-  width: 120px;
+  width: 100%;
   height: 30px;
   border: none;
   border-radius: 8px;
@@ -1015,8 +1331,9 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 130px;
-  margin:0;
+  width: 100%;
+  max-width: 130px;
+  margin: 0;
   padding: 6px;
   border-radius: 8px;
   background: #e8f7ec;
@@ -1073,7 +1390,7 @@ onMounted(async () => {
 
 .search-input-wrapper input {
   width: 100%;
-  height: 50px;
+  height: 40px;
   padding: 0 45px;
   border: 1px solid var(--color-line);
   border-radius: 50px;
@@ -1122,7 +1439,167 @@ onMounted(async () => {
   font-size: 0.8rem;
 }
 
+/* ===== TARJETA DE CONFIRMACIÓN ===== */
 
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .45);
+}
+
+.confirm-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 30px 28px 24px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+}
+
+.confirm-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #fdecec;
+  color: #b42318;
+}
+
+.confirm-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.confirm-card h3 {
+  margin: 0 0 10px;
+  color: var(--color-ink);
+  font-size: 1.2rem;
+}
+
+.confirm-card p {
+  margin: 0 0 8px;
+  color: var(--color-ink-soft);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.confirm-card p strong {
+  color: var(--color-ink);
+}
+
+.confirm-field {
+  margin-top: 16px;
+  text-align: left;
+}
+
+.confirm-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--color-ink);
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.confirm-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: .88rem;
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.confirm-field textarea::placeholder {
+  color: var(--color-ink-soft);
+}
+
+.confirm-field textarea:focus {
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 3px rgba(183, 53, 45, 0.08);
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    color .2s ease;
+}
+
+.confirm-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.confirm-btn--cancel {
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.confirm-btn--cancel:hover:not(:disabled) {
+  background: #f6f6f3;
+}
+
+.confirm-btn--danger {
+  border: 1px solid #c8102e;
+  background: #c8102e;
+  color: #fff;
+}
+
+.confirm-btn--danger:hover:not(:disabled) {
+  background: #a50d26;
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity .2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .confirm-card,
+.modal-leave-active .confirm-card {
+  transition: transform .2s ease;
+}
+
+.modal-enter-from .confirm-card,
+.modal-leave-to .confirm-card {
+  transform: translateY(10px) scale(.97);
+}
 
 .success-toast {
   position: fixed;
@@ -1258,6 +1735,54 @@ onMounted(async () => {
 .error-toast-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.view-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.view-tab {
+  padding: 9px 20px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.view-tab--active {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: #fff;
+}
+
+.cancelled-by {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.cancelled-by--admin {
+  background:rgba(183, 53, 45, 0.08);
+  color: var(--color-rust);
+}
+
+.cancelled-by--customer {
+  background: rgba(14, 116, 144, 0.12);
+  color: #0e7490;
+}
+
+@media (max-width: 1100px) {
+  .admin-table--detailed,
+  .cancelled-table {
+    min-width: 1000px;
+  }
 }
 
 @media (max-width:900px){

@@ -10,6 +10,8 @@ const router = useRouter();
 
 const products = ref([]);
 const loading = ref(true);
+const productToDelete = ref(null);
+const deleting = ref(false);
 const page = ref(1);
 const totalPages = ref(1);
 const message = ref('');
@@ -71,19 +73,35 @@ function clearSearch() {
   load();
 }
 
-async function remove(product) {
+function askRemove(product) {
+  productToDelete.value = product;
+}
 
-  if (!confirm(`¿Dar de baja "${product.name}"?`)) return;
+function cancelRemove() {
+  if (deleting.value) return;
+  productToDelete.value = null;
+}
+
+async function confirmRemove() {
+
+  const product = productToDelete.value;
+  if (!product) return;
+
+  deleting.value = true;
 
   try {
     await productsService.remove(product.id);
+    productToDelete.value = null;
     await load();
     showMessage('Producto dado de baja correctamente');
   } catch (e) {
+    productToDelete.value = null;
     showError(
       e.response?.data?.message ||
       'No se pudo dar de baja el producto'
     );
+  } finally {
+    deleting.value = false;
   }
 }
 
@@ -178,7 +196,7 @@ onMounted(async () => {
             <input
               v-model="search"
               type="text"
-              placeholder="Buscar por nombre, código, descripción o marca..."
+              placeholder="Buscar..."
               @input="handleSearch"
             />
 
@@ -324,7 +342,7 @@ onMounted(async () => {
                 <button
                   type="button"
                   class="icon-button delete-button"
-                  @click="remove(product)"
+                  @click="askRemove(product)"
                   title="Dar de baja"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" >
@@ -342,6 +360,49 @@ onMounted(async () => {
         </tbody>
       </table>
     </div>
+
+    <Transition name="modal">
+      <div
+        v-if="productToDelete"
+        class="confirm-overlay"
+        @click.self="cancelRemove"
+      >
+        <div
+          class="confirm-card"
+          role="dialog"
+          aria-modal="true"
+        >
+          <h3>¿Dar de baja el producto?</h3>
+
+          <p>
+            El producto 
+            <strong>"{{ productToDelete.name }}"</strong> dejará de estar disponible en el catálogo.
+          </p>
+
+    
+
+          <div class="confirm-actions">
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="deleting"
+              @click="cancelRemove"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--danger"
+              :disabled="deleting"
+              @click="confirmRemove"
+            >
+              {{ deleting ? 'Dando de baja...' : 'Dar de baja' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <Transition name="success-toast">
       <div
@@ -444,7 +505,7 @@ onMounted(async () => {
 
 .search-input-wrapper input {
   width: 100%;
-  height: 50px;
+  height: 40px;
   padding: 0 45px;
   border: 1px solid var(--color-line);
   border-radius: 50px;
@@ -524,6 +585,129 @@ onMounted(async () => {
   transform: translateY(-1px);
   box-shadow:
     0 8px 20px rgba(183, 53, 45, 0.20);
+}
+
+/* ================= TARJETA DE CONFIRMACIÓN ================= */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .45);
+}
+
+.confirm-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 28px 24px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+}
+
+.confirm-icon {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #fdecec;
+  color: #b42318;
+}
+
+.confirm-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.confirm-card h3 {
+  margin: 0 0 10px;
+  color: var(--color-ink);
+  font-size: 1.2rem;
+}
+
+.confirm-card p {
+  margin: 0 0 8px;
+  color: var(--color-ink-soft);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.confirm-card p strong {
+  color: var(--color-ink);
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    color .2s ease;
+}
+
+.confirm-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.confirm-btn--cancel {
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.confirm-btn--cancel:hover:not(:disabled) {
+  background: #f6f6f3;
+}
+
+.confirm-btn--danger {
+  border: 1px solid #c8102e;
+  background: #c8102e;
+  color: #fff;
+}
+
+.confirm-btn--danger:hover:not(:disabled) {
+  background: #a50d26;
+}
+
+/* Animación de entrada y salida */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity .2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .confirm-card,
+.modal-leave-active .confirm-card {
+  transition: transform .2s ease;
+}
+
+.modal-enter-from .confirm-card,
+.modal-leave-to .confirm-card {
+  transform: translateY(10px) scale(.97);
 }
 
 .success-toast {

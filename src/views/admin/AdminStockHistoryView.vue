@@ -9,6 +9,8 @@ const movementPage = ref(1);
 const movementTotalPages = ref(1);
 const errorMessage = ref('');
 let errorTimeout = null;
+const search = ref('');
+let searchTimeout = null;
 
 async function loadMovements() {
 
@@ -17,8 +19,9 @@ async function loadMovements() {
 
   try {
     const res = await stockService.history(
-        movementPage.value,
-        10
+      movementPage.value,
+      10,
+      search.value.trim()
     );
 
     movements.value =
@@ -46,6 +49,21 @@ async function loadMovements() {
 
 function changeMovementPage(newPage) {
   movementPage.value = newPage;
+  loadMovements();
+}
+
+function handleSearch() {
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    movementPage.value = 1;
+    loadMovements();
+  }, 400);
+}
+
+function clearSearch() {
+  search.value = '';
+  movementPage.value = 1;
   loadMovements();
 }
 
@@ -89,6 +107,36 @@ onMounted(() => {
       </div>
     </div>
 
+    <div class="movements-search">
+      <svg
+        class="movements-search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-4-4"></path>
+      </svg>
+
+      <input
+        v-model="search"
+        type="text"
+        placeholder="Buscar..."
+        @input="handleSearch"
+      />
+
+      <button
+        v-if="search"
+        type="button"
+        class="movements-search-clear"
+        title="Limpiar búsqueda"
+        @click="clearSearch"
+      >
+        ✕
+      </button>
+    </div>
+
     <div class="stock-history-card">
       <div class="card-header">
         <div>
@@ -119,7 +167,11 @@ onMounted(() => {
         v-else-if="!movements.length"
         class="empty-state"
       >
-        No hay movimientos de stock registrados.
+        {{
+          search.trim()
+            ? 'No se encontraron movimientos para la búsqueda.'
+            : 'No hay movimientos de stock registrados.'
+        }}
       </div>
 
       <div
@@ -437,6 +489,92 @@ onMounted(() => {
 .error-toast p {
   margin: 3px 0 0;
   color: var(--color-ink-soft);
+  font-size: 0.8rem;
+}
+
+/* BUSCADOR */
+
+.movements-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 24px;
+}
+
+.movements-search input {
+  width: 100%;
+  height: 40px;
+  padding: 0 45px;
+  border: 1px solid var(--color-line);
+  border-radius: 50px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.movements-search-icon {
+  position: absolute;
+  left: 16px;
+  width: 19px;
+  height: 19px;
+  color: var(--color-ink-soft);
+  pointer-events: none;
+}
+
+.movements-search-clear {
+  position: absolute;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.movements-search input::placeholder {
+  color: var(--color-ink-soft);
+}
+
+.movements-search input:focus {
+  border-color: var(--color-rust);
+  box-shadow: 0 0 0 3px rgba(183, 53, 45, 0.08);
+}
+
+.movements-search-icon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-ink-soft);
+  pointer-events: none;
+}
+
+.movements-search-clear {
+  position: absolute;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
   font-size: 0.8rem;
 }
 

@@ -15,6 +15,10 @@ export default {
     return api.get('/orders', { params: { page, limit } });
   },
 
+  listCancelled(page = 1, limit = 10) {
+    return api.get('/orders/cancelled', { params: { page, limit } });
+  },
+
   search(filters) {
     return api.get('/orders/search', {
       params: filters

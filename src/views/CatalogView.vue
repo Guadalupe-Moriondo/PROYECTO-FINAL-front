@@ -55,15 +55,26 @@ async function loadCategories() {
   categories.value = response.data.data;
 }
 
+function buildQuery() {
+  const query = {};
+
+  if (filters.value.name?.trim()) query.search = filters.value.name.trim();
+  if (filters.value.categoryId) query.categoryId = filters.value.categoryId;
+  if (filters.value.available) query.available = 'true';
+  if (page.value > 1) query.page = page.value;
+
+  return query;
+}
+
 function applyFilters() {
   page.value = 1;
-  router.replace({ query: { ...route.query, page: 1 } });
+  router.replace({ query: buildQuery() });
   loadProducts();
 }
 
 function changePage(newPage) {
   page.value = newPage;
-  router.replace({ query: { ...route.query, page: newPage } });
+  router.replace({ query: buildQuery() });
   loadProducts();
 }
 
@@ -85,12 +96,10 @@ onMounted(() => {
   loadProducts();
 });
 
-// Si el usuario elige otra categoría desde el menú hamburguesa mientras
-// ya está en el catálogo, Vue reutiliza el componente y "onMounted" no
-// se vuelve a disparar, así que escuchamos el cambio de query acá.
 watch(
   () => route.query.categoryId,
   (newCategoryId) => {
+    if ((newCategoryId || '') === String(filters.value.categoryId)) return;
     filters.value.categoryId = newCategoryId || '';
     applyFilters();
   },
@@ -99,6 +108,7 @@ watch(
 watch(
   () => route.query.search,
   (newSearch) => {
+    if ((newSearch || '') === filters.value.name.trim()) return;
     filters.value.name = newSearch || '';
     applyFilters();
   },
@@ -107,6 +117,7 @@ watch(
 watch(
   () => route.query.available,
   (newAvailable) => {
+    if ((newAvailable === 'true') === filters.value.available) return;
     filters.value.available = newAvailable === 'true';
     applyFilters();
   },
