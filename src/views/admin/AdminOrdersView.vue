@@ -45,6 +45,7 @@ const error = ref('');
 let errorTimeout = null;
 const expandedOrderId = ref(null);
 const viewMode = ref('active');
+const historyOrder = ref(null);
 const { business, loadBusiness } = useBusiness();
 const orderNotificationsStore = useOrderNotificationsStore();
 
@@ -1215,6 +1216,24 @@ onMounted(async () => {
   background: #c8102e;
   color: #fff;
 }
+
+.btn-history {
+  padding: 8px 14px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background: transparent;
+  color: #333;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-history:hover {
+  background: #333;
+  color: #fff;
+}
+
+.history-overlay { z-index: 9999; }
 
 /* Tabla de activos: 8 columnas */
 .admin-table--detailed th:nth-child(1) { width: 11%; }
