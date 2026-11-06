@@ -26,6 +26,10 @@ const cancelMessage = ref('');
 let cancelTimeout = null;
 const error = ref('');
 let errorTimeout = null;
+const expandedHistoryOrderId = ref(null);
+const statusHistories = ref({});
+const historyLoading = ref(false);
+const historyError = ref('');
 
 const activeTab = ref('pending'); 
 const pendingOrders = ref([]);
@@ -178,6 +182,78 @@ function formatDate(date) {
     month: '2-digit',
     year: 'numeric',
   });
+}
+
+async function toggleStatusHistory(order) {
+  // Si se vuelve a presionar el estado, se cierra la ventana.
+  if (expandedHistoryOrderId.value === order.id) {
+    closeStatusHistory();
+    return;
+  }
+
+  expandedHistoryOrderId.value = order.id;
+  historyError.value = '';
+
+  // Si ya se consultó anteriormente, no hace falta volver a llamar a la API.
+  if (statusHistories.value[order.id]) return;
+
+  historyLoading.value = true;
+
+  try {
+    const response = await ordersService.getStatusHistory(order.id);
+
+    statusHistories.value = {
+      ...statusHistories.value,
+      [order.id]: response.data,
+    };
+  } catch (e) {
+    historyError.value =
+      'No se pudo cargar el historial de estados.';
+  } finally {
+    historyLoading.value = false;
+  }
+}
+
+function closeStatusHistory() {
+  expandedHistoryOrderId.value = null;
+  historyError.value = '';
+}
+
+const selectedHistoryOrder = computed(() => {
+  const allOrders = [
+    ...pendingOrders.value,
+    ...deliveredOrders.value,
+    ...cancelledOrders.value,
+  ];
+
+  return allOrders.find(
+    order => order.id === expandedHistoryOrderId.value
+  ) || null;
+});
+
+function formatDateTime(date) {
+  if (!date) return '—';
+
+  return new Date(date).toLocaleString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function statusDescription(status) {
+  const descriptions = {
+    pending: 'Tu pedido fue registrado correctamente.',
+    confirmed: 'El negocio confirmó tu pedido.',
+    in_preparation: 'El negocio está preparando tu pedido.',
+    withdraw: 'Tu pedido está listo para retirar.',
+    delivered: 'El pedido fue entregado.',
+    cancelled: 'El pedido fue cancelado.',
+  };
+
+  return descriptions[status] || 'El estado del pedido fue actualizado.';
 }
 
 function imageUrl(product) {
@@ -353,15 +429,19 @@ onMounted(async () => {
 
                 </div>
 
-                <span
-                  class="order-status"
+                <button
+                  type="button"
+                  class="order-status order-status-toggle"
                   :class="`order-status-${order.status}`"
+                  @click="toggleStatusHistory(order)"
+                  title="Consultar recorrido de estados"
                 >
                   <span class="status-dot"></span>
-
                   {{ STATUS_LABELS[order.status] || order.status }}
-
-                </span>
+                  <span class="history-chevron">
+                    {{ expandedHistoryOrderId === order.id ? '▲' : '▼' }}
+                  </span>
+                </button>
 
               </header>
 
@@ -500,18 +580,23 @@ onMounted(async () => {
                       v-if="order.deliveredAt"
                       class="order-date"
                     >
-                      Entrega: {{ formatDate(order.deliveredAt) }}
+                      Entregado: {{ formatDate(order.deliveredAt) }}
                     </span>
                   </div>
                 </div>
 
-                <span class="order-status order-status-delivered">
-
+                <button
+                  type="button"
+                  class="order-status order-status-delivered order-status-toggle"
+                  @click="toggleStatusHistory(order)"
+                  title="Consultar recorrido de estados"
+                >
                   <span class="status-dot"></span>
-
                   Entregado
-
-                </span>
+                  <span class="history-chevron">
+                    {{ expandedHistoryOrderId === order.id ? '▲' : '▼' }}
+                  </span>
+                </button>
 
               </header>
 
@@ -633,10 +718,18 @@ onMounted(async () => {
                   </div>
                 </div>
 
-                <span class="order-status order-status-cancelled">
+                <button
+                  type="button"
+                  class="order-status order-status-cancelled order-status-toggle"
+                  @click="toggleStatusHistory(order)"
+                  title="Consultar recorrido de estados"
+                >
                   <span class="status-dot"></span>
                   Cancelado
-                </span>
+                  <span class="history-chevron">
+                    {{ expandedHistoryOrderId === order.id ? '▲' : '▼' }}
+                  </span>
+                </button>
               </header>
               <!-- Productos que pertenecían al pedido cancelado -->
               <div class="order-products">
@@ -716,6 +809,114 @@ onMounted(async () => {
         </div>
       </section>
     </div>
+
+    <Transition name="history-modal">
+      <div
+        v-if="expandedHistoryOrderId !== null"
+        class="history-overlay"
+        @click.self="closeStatusHistory"
+      >
+        <div
+          class="history-card"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="history-title"
+        >
+          <!-- Encabezado -->
+          <header class="history-header">
+            <div>
+              <span class="history-eyebrow">
+                SEGUIMIENTO
+              </span>
+
+              <h2 id="history-title">
+                Recorrido del pedido
+              </h2>
+
+              <p v-if="selectedHistoryOrder">
+                Pedido #{{ selectedHistoryOrder.orderNumber }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="history-close"
+              @click="closeStatusHistory"
+              aria-label="Cerrar historial"
+            >
+              &times;
+            </button>
+          </header>
+
+          <!-- Contenido -->
+          <div class="history-body">
+
+            <p v-if="historyLoading" class="history-message">
+              Cargando historial...
+            </p>
+
+            <p
+              v-else-if="historyError"
+              class="history-message history-error"
+            >
+              {{ historyError }}
+            </p>
+
+            <div
+              v-else-if="statusHistories[expandedHistoryOrderId]?.length"
+              class="history-timeline"
+            >
+              <div
+                v-for="(item, index) in statusHistories[expandedHistoryOrderId]"
+                :key="item.id"
+                class="history-item"
+                :class="{
+                  'history-item-current':
+                    index === statusHistories[expandedHistoryOrderId].length - 1
+                }"
+              >
+                <div class="history-marker">
+                  <span></span>
+                </div>
+
+                <div class="history-content">
+                  <strong>
+                    {{ STATUS_LABELS[item.status] || item.status }}
+                  </strong>
+
+                  <p>
+                    {{ statusDescription(item.status) }}
+                  </p>
+
+                  <span class="history-date">
+                    {{ formatDateTime(item.createdAt) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <p
+              v-else-if="!historyLoading"
+              class="history-message"
+            >
+              No hay movimientos registrados para este pedido.
+            </p>
+
+          </div>
+
+          <!-- Pie -->
+          <footer class="history-footer">
+            <button
+              type="button"
+              class="history-close-btn"
+              @click="closeStatusHistory"
+            >
+              Cerrar
+            </button>
+          </footer>
+        </div>
+      </div>
+    </Transition>
 
     <Transition name="modal">
       <div
@@ -1461,6 +1662,225 @@ onMounted(async () => {
   font-weight: 500;
 }
 
+/* ===== MODAL DE HISTORIAL DE ESTADOS ===== */
+
+.order-status-toggle {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter .2s ease;
+}
+
+.order-status-toggle:hover {
+  filter: brightness(.93);
+}
+
+.order-status-toggle:focus-visible {
+  outline: 2px solid var(--color-rust);
+  outline-offset: 3px;
+}
+
+/* FONDO */
+.history-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.30);
+  backdrop-filter: blur(2px);
+}
+
+/* TARJETA BLANCA */
+.history-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* ENCABEZADO */
+.history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 25px 26px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.history-eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--color-rust);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.history-header h2 {
+  margin: 0 0 8px;
+  color: var(--color-ink);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.history-header p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.88rem;
+}
+
+/* BOTÓN X */
+.history-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: #f2f2f2;
+  color: #555;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.history-close:hover {
+  background: #e5e5e5;
+}
+
+/* CUERPO */
+.history-body {
+  padding: 25px 28px 10px;
+  background: #ffffff;
+}
+
+.history-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-item {
+  position: relative;
+  display: flex;
+  gap: 15px;
+  min-height: 85px;
+}
+
+/* LÍNEA DE TIEMPO */
+.history-marker {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.history-marker::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  bottom: -1px;
+  width: 2px;
+  background: #dedede;
+}
+
+.history-item:last-child .history-marker::after {
+  display: none;
+}
+
+.history-marker span {
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  margin-top: 3px;
+  border: 2px solid #aeb4b8;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.history-item-current .history-marker span {
+  border-color: var(--color-rust);
+  background: var(--color-rust);
+}
+
+/* INFORMACIÓN DE LOS ESTADOS */
+.history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 22px;
+}
+
+.history-content strong {
+  color: var(--color-ink);
+  font-size: 0.92rem;
+}
+
+.history-content p {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.history-date {
+  margin-top: 2px;
+  color: var(--color-ink-soft);
+  font-size: 0.73rem;
+}
+
+/* MENSAJES */
+.history-message {
+  margin: 0;
+  padding: 15px 0;
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+}
+
+.history-error {
+  color: #a33a32;
+}
+
+/* PIE DE LA TARJETA */
+.history-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 26px 22px;
+  border-top: 1px solid #eeeeee;
+  background: #ffffff;
+}
+
+.history-close-btn {
+  min-width: 100px;
+  padding: 10px 20px;
+  border: 1px solid var(--color-line);
+  border-radius: 9px;
+  background: #ffffff;
+  color: var(--color-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.history-close-btn:hover {
+  background: #f5f5f5;
+}
+
+
+
+
 @media (max-width: 900px) {
 
   .orders-view {
@@ -1533,6 +1953,22 @@ onMounted(async () => {
 
     min-width: auto;
     max-width: none;
+  }
+
+  .history-overlay {
+    padding: 14px;
+  }
+
+  .history-modal-header {
+    padding: 20px;
+  }
+
+  .history-modal-body {
+    padding: 22px 20px 8px;
+  }
+
+  .history-modal-footer {
+    padding: 14px 20px 18px;
   }
 
 }

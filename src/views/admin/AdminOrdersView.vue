@@ -4,7 +4,6 @@ import ordersService from '../../services/orders.service';
 import { useBusiness } from '../../composables/useBusiness';
 import Pagination from '../../components/Pagination.vue';
 import { useOrderNotificationsStore } from '../../stores/orderNotifications';
-import OrderStatusHistory from '../../components/OrderStatusHistory.vue';
 
 const STATUSES = [
   'pending', 
@@ -45,7 +44,6 @@ const error = ref('');
 let errorTimeout = null;
 const expandedOrderId = ref(null);
 const viewMode = ref('active');
-const historyOrder = ref(null);
 const { business, loadBusiness } = useBusiness();
 const orderNotificationsStore = useOrderNotificationsStore();
 
@@ -562,14 +560,6 @@ onMounted(async () => {
                     {{ expandedOrderId === order.id ? 'Ocultar' : 'Ver detalle' }}
                   </span>
                 </button>
-
-                <button
-                  type="button"
-                  class="detail-toggle"
-                  @click="historyOrder = order"
-                >
-                  <span>Historial</span>
-                </button>
               </td>
 
               <td class="actions-column-cell">
@@ -788,15 +778,6 @@ onMounted(async () => {
         </tbody>
       </table>
     </div>
-
-    <OrderStatusHistory
-      v-if="historyOrder"
-      :key="historyOrder.id"
-      :order-id="historyOrder.id"
-      :order-number="historyOrder.orderNumber"
-      :show-user="true"
-      @close="historyOrder = null"
-    />
 
     <Transition name="modal">
       <div
@@ -1216,24 +1197,6 @@ onMounted(async () => {
   background: #c8102e;
   color: #fff;
 }
-
-.btn-history {
-  padding: 8px 14px;
-  border: 1px solid #555;
-  border-radius: 6px;
-  background: transparent;
-  color: #333;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn-history:hover {
-  background: #333;
-  color: #fff;
-}
-
-.history-overlay { z-index: 9999; }
 
 /* Tabla de activos: 8 columnas */
 .admin-table--detailed th:nth-child(1) { width: 11%; }

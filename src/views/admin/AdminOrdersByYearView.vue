@@ -11,6 +11,10 @@ const page = ref(1);
 const totalPages = ref(1);
 const yearStats = ref({ orders: 0, total: 0 });
 const expandedOrderId = ref(null);
+const expandedStatusHistoryOrderId = ref(null);
+const statusHistories = ref({});
+const historyLoadingOrderId = ref(null);
+const historyError = ref('');
 
 
 async function load() {
@@ -37,11 +41,14 @@ async function load() {
 function search() {
   page.value = 1;
   expandedOrderId.value = null;
+  expandedStatusHistoryOrderId.value = null;
   load();
 }
 
 function changePage(newPage) {
   page.value = newPage;
+  expandedOrderId.value = null;
+  expandedStatusHistoryOrderId.value = null;
   load();
 }
 
@@ -57,6 +64,71 @@ function lineSubtotal(detail) {
 
 function toggleDetail(order) {
   expandedOrderId.value = expandedOrderId.value === order.id ? null : order.id;
+}
+
+async function toggleStatusHistory(order) {
+  if (expandedStatusHistoryOrderId.value === order.id) {
+    expandedStatusHistoryOrderId.value = null;
+    return;
+  }
+
+  expandedStatusHistoryOrderId.value = order.id;
+  historyError.value = '';
+
+  // Si ya se consultó, reutilizar los datos cargados.
+  if (Object.prototype.hasOwnProperty.call(statusHistories.value, order.id)) {
+    return;
+  }
+
+  historyLoadingOrderId.value = order.id;
+
+  try {
+    const response = await ordersService.getStatusHistory(order.id);
+
+    statusHistories.value = {
+      ...statusHistories.value,
+      [order.id]: response.data,
+    };
+  } catch (error) {
+    historyError.value = 'No se pudo cargar el historial de estados.';
+  } finally {
+    historyLoadingOrderId.value = null;
+  }
+}
+
+function statusLabel(status) {
+  const labels = {
+    pending: 'Pendiente',
+    confirmed: 'Confirmado',
+    in_preparation: 'En preparación',
+    withdraw: 'Retirar',
+    delivered: 'Entregado',
+    cancelled: 'Cancelado',
+  };
+
+  return labels[status] || status;
+}
+
+function formatDateTime(date) {
+  return new Date(date).toLocaleString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function changedByLabel(entry) {
+  const user = entry.changedBy;
+
+  if (!user) return 'Usuario no disponible';
+
+  if (user.role === 'admin') {
+    return `Administrador: ${user.name}`;
+  }
+
+  return `Cliente: ${user.name}`;
 }
 
 function imageUrl(product) {
@@ -113,6 +185,7 @@ onMounted(load);
               <th>Fecha entrega</th>
               <th>Total</th>
               <th>Detalle</th>
+              <th>Historial de estados</th>
             </tr>
           </thead>
           <tbody>
@@ -149,10 +222,31 @@ onMounted(load);
                   </span>
 
                 </button>
-                </td>
+              </td>
+              <td class="detail-column">
+                <button
+                  type="button"
+                  class="detail-toggle"
+                  @click="toggleStatusHistory(order)"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 5v5.4l3.5 2.1-1 1.6-4.5-2.7V7Z"
+                    />
+                  </svg>
+
+                  <span>
+                    {{ expandedStatusHistoryOrderId === order.id
+                      ? 'Ocultar'
+                      : 'Ver historial'
+                    }}
+                  </span>
+                </button>
+              </td>
+
               </tr>
               <tr v-if="expandedOrderId === order.id" class="detail-row">
-                <td colspan="6">
+                <td colspan="7">
                   <ul v-if="order.details?.length" class="detail-list detail-list--period">
                     <li v-for="detail in order.details" :key="detail.id">
                       <div class="detail-image-wrapper detail-image-wrapper--admin">
@@ -174,6 +268,68 @@ onMounted(load);
                     </li>
                   </ul>
                   <p v-else class="table-subtext table-subtext--period">Este pedido no tiene productos cargados.</p>
+                </td>
+              </tr>
+
+              <tr
+                v-if="expandedStatusHistoryOrderId === order.id"
+                class="detail-row status-history-row"
+              >
+                <td colspan="7">
+
+                  <div class="status-history-content">
+
+                    <h3>Historial de estados del pedido</h3>
+
+                    <p
+                      v-if="historyLoadingOrderId === order.id"
+                      class="table-subtext"
+                    >
+                      Cargando historial...
+                    </p>
+
+                    <p
+                      v-else-if="historyError"
+                      class="table-subtext"
+                    >
+                      {{ historyError }}
+                    </p>
+
+                    <template v-else>
+
+                      <div
+                        v-if="statusHistories[order.id]?.length"
+                        class="status-history-list"
+                      >
+                        <div
+                          v-for="entry in statusHistories[order.id]"
+                          :key="entry.id"
+                          class="status-history-item"
+                        >
+                          <div class="status-history-marker"></div>
+
+                          <div class="status-history-info">
+                            <strong>{{ statusLabel(entry.status) }}</strong>
+
+                            <span>
+                              {{ formatDateTime(entry.createdAt) }}
+                            </span>
+
+                            <small>
+                              {{ changedByLabel(entry) }}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+
+                      <p v-else class="table-subtext">
+                        Este pedido no tiene registros de cambios de estado.
+                      </p>
+
+                    </template>
+
+                  </div>
+
                 </td>
               </tr>
             </template>
@@ -296,6 +452,78 @@ onMounted(load);
   color: var(--color-ink-soft);
   font-size: 0.75rem;
   font-family: var(--font-mono);
+}
+
+.status-history-content {
+  padding: 1rem 1.5rem;
+}
+
+.status-history-content h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+
+.status-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: .4rem;
+}
+
+.status-history-item {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.status-history-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 13px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-line);
+}
+
+.status-history-marker {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  border-radius: 50%;
+  background: var(--color-rust);
+  border: 2px solid var(--color-surface);
+  outline: 1px solid var(--color-rust);
+  position: relative;
+  z-index: 1;
+  margin-top: 3px;
+}
+
+.status-history-info {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+
+.status-history-info strong {
+  font-size: .9rem;
+  color: var(--color-ink);
+}
+
+.status-history-info span {
+  font-size: .8rem;
+  color: var(--color-ink-soft);
+}
+
+.status-history-info small {
+  font-size: .8rem;
+  color: var(--color-ink-soft);
+}
+
+.status-history-row:hover {
+  background: transparent !important;
 }
 
 @media(max-width:900px){

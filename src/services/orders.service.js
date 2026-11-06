@@ -29,6 +29,10 @@ export default {
     return api.get(`/orders/${id}`);
   },
 
+  getStatusHistory(id) {
+    return api.get(`/orders/${id}/history`);
+  },
+
   updateStatus(id, status) {
     return api.put(`/orders/${id}/status`, { status });
   },
