@@ -4,6 +4,7 @@ import ordersService from '../../services/orders.service';
 import { useBusiness } from '../../composables/useBusiness';
 import Pagination from '../../components/Pagination.vue';
 import { useOrderNotificationsStore } from '../../stores/orderNotifications';
+import OrderStatusHistory from '../../components/OrderStatusHistory.vue';
 
 const STATUSES = [
   'pending', 
@@ -560,6 +561,14 @@ onMounted(async () => {
                     {{ expandedOrderId === order.id ? 'Ocultar' : 'Ver detalle' }}
                   </span>
                 </button>
+
+                <button
+                  type="button"
+                  class="detail-toggle"
+                  @click="historyOrder = order"
+                >
+                  <span>Historial</span>
+                </button>
               </td>
 
               <td class="actions-column-cell">
@@ -778,6 +787,15 @@ onMounted(async () => {
         </tbody>
       </table>
     </div>
+
+    <OrderStatusHistory
+      v-if="historyOrder"
+      :key="historyOrder.id"
+      :order-id="historyOrder.id"
+      :order-number="historyOrder.orderNumber"
+      :show-user="true"
+      @close="historyOrder = null"
+    />
 
     <Transition name="modal">
       <div

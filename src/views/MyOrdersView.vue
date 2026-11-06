@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import ordersService from '../services/orders.service';
 import Pagination from '../components/Pagination.vue';
 
+
 const route = useRoute();
 const router = useRouter();
 
@@ -424,6 +425,7 @@ onMounted(async () => {
               </div>
 
               <footer class="order-card-footer">
+
                 <span v-if="order.status !== 'pending'" class="cancel-hint">
                   Para cancelar este pedido, contactá al negocio.
                 </span>
@@ -684,6 +686,7 @@ onMounted(async () => {
               </div>
 
               <footer class="order-card-footer">
+
                 <p class="cancel-hint">
                   {{
                     order.cancelledBy === 'admin'
