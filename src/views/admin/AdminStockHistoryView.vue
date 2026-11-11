@@ -185,6 +185,8 @@ onMounted(() => {
               <th>Tipo</th>
               <th>Cantidad</th>
               <th>Motivo</th>
+              <th>Usuario</th>
+              <th>Pedido</th>
               <th>Fecha</th>
             </tr>
           </thead>
@@ -227,6 +229,14 @@ onMounted(() => {
 
               <td>
                 {{ movement.reason || '-' }}
+              </td>
+
+              <td>
+                {{ movement.user?.name || '-' }}
+              </td>
+
+              <td>
+                {{ movement.order?.orderNumber || '-' }}
               </td>
 
               <td>
