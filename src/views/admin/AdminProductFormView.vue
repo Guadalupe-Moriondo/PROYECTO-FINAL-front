@@ -80,7 +80,14 @@ async function save() {
     let successMessage = '';
 
     if (isEditing.value) {
-      await productsService.update(route.params.id, form.value);
+      const data = { ...form.value };
+      delete data.stock;
+
+      await productsService.update(route.params.id, data);
+
+      if (selectedImage.value) {
+        await productsService.uploadImage(route.params.id, selectedImage.value);
+      }
 
       successMessage = 'updated';
     } else {

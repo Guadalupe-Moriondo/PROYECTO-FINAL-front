@@ -186,44 +186,45 @@ async function confirmCancel() {
 }
 
 async function sendWhatsapp(order) {
- 
-  const phone = order.user.phone.replace(/\D/g, '');
+  const phone = (order.user?.phone || '').replace(/\D/g, '');
+  if (!phone) {
+    showError('El cliente no tiene un teléfono válido cargado.');
+    return;
+  }
 
-  const hours = `Lunes a viernes: ${business.value.morningOpen || 'Consultar horario'} a ${business.value.morningClose || 'Consultar horario'}
-                                  ${business.value.afternoonOpen || 'Consultar horario'} a ${business.value.afternoonClose || 'Consultar horario'}
-  Sábados: ${business.value.saturdayOpen || 'Consultar horario'} a ${business.value.saturdayClose || 'Consultar horario'}`;
+  const b = business.value;
+  const c = 'Consultar horario';
+  const hours = [
+    `Lunes a viernes: ${b.morningOpen || c} a ${b.morningClose || c} y ${b.afternoonOpen || c} a ${b.afternoonClose || c}`,
+    `Sábados: ${b.saturdayOpen || c} a ${b.saturdayClose || c}`,
+  ].join('\n');
 
   const text = encodeURIComponent(
-    `¡Hola ${order.user.name}!
-
-    Te avisamos que tu pedido 
-    #${order.orderNumber} 
-    ya está preparado y listo para retirar.
-
-    Dirección: ${business.value.address || 'Consultar ubicación.'}
-
-    Horarios:
-    ${hours}
-
-    Muchas gracias por confiar en 
-    DM Repuestos Agrícolas.
-
-    ¡Te esperamos!`
+    [
+      `¡Hola ${order.user.name}!`,
+      '',
+      `Te avisamos que tu pedido #${order.orderNumber} ya está preparado y listo para retirar.`,
+      '',
+      `Dirección: ${b.address || 'Consultar ubicación.'}`,
+      '',
+      'Horarios:',
+      hours,
+      '',
+      'Muchas gracias por confiar en DM Repuestos Agrícolas.',
+      '¡Te esperamos!',
+    ].join('\n'),
   );
 
-  window.open(
-    `https://wa.me/${phone}?text=${text}`,
-    '_blank'
-  );
+  window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
 
-  await ordersService.notifyCustomer(
-    order.id,
-    'whatsapp'
-  );
-
-  order.customerNotified = true;
-  order.notificationMethod = 'whatsapp';
-  order.customerNotifiedAt = new Date();
+  try {
+    await ordersService.notifyCustomer(order.id, 'whatsapp');
+    order.customerNotified = true;
+    order.notificationMethod = 'whatsapp';
+    order.customerNotifiedAt = new Date();
+  } catch (e) {
+    showError(e.response?.data?.message || 'No se pudo registrar la notificación.');
+  }
 }
 
 function canNotify(order) {

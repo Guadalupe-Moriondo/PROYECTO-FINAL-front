@@ -1959,15 +1959,15 @@ onMounted(async () => {
     padding: 14px;
   }
 
-  .history-modal-header {
+  .history-header {
     padding: 20px;
   }
 
-  .history-modal-body {
+  .history-body {
     padding: 22px 20px 8px;
   }
 
-  .history-modal-footer {
+  .history-footer {
     padding: 14px 20px 18px;
   }
 

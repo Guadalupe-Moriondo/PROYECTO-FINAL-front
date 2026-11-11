@@ -189,7 +189,7 @@ onMounted(load);
               <th>Fecha entrega</th>
               <th>Total</th>
               <th>Detalle</th>
-              <th>Historial de estados</th>
+              <th>Estados del pedido</th>
             </tr>
           </thead>
           <tbody>
@@ -234,15 +234,14 @@ onMounted(load);
                     @click="toggleStatusHistory(order)"
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 5v5.4l3.5 2.1-1 1.6-4.5-2.7V7Z"
-                      />
+                       <path d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0Zm8-4.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Zm-1 4h2v5h-2v-5Z"
+                    />
                     </svg>
 
                     <span>
                       {{ expandedStatusHistoryOrderId === order.id
                         ? 'Ocultar'
-                        : 'Ver historial'
+                        : 'Ver estados'
                       }}
                     </span>
                   </button>

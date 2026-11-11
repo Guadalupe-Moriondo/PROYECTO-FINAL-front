@@ -60,13 +60,6 @@ export const useOrderNotificationsStore = defineStore(
 
         newOrders.value = newOnes;
 
-        if (newOnes.length > 0) {
-          console.log(
-            'NUEVOS PEDIDOS:',
-            newOnes.length
-          );
-        }
-
       } catch (error) {
         console.error(
           'Error verificando nuevos pedidos:',
@@ -96,14 +89,12 @@ export const useOrderNotificationsStore = defineStore(
       if (interval) {
         return;
       }
-
-      console.log('Polling de pedidos iniciado');
-
+      
       checkNewOrders();
 
       interval = setInterval(() => {
         checkNewOrders();
-      }, 3000);
+      }, 30000);
     }
 
     function stopPolling() {
