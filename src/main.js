@@ -14,7 +14,7 @@ app.use(router);
 const authStore = useAuthStore();
 authStore.restoreSession();
 
-if (authStore.isLoggedIn) {
+if (authStore.isLoggedIn && !authStore.isAdmin) {
   const cartStore = useCartStore();
   cartStore.loadCart();
 }

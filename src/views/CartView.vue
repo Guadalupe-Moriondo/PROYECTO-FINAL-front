@@ -11,15 +11,13 @@ const cartStore = useCartStore();
 const authStore = useAuthStore();
 
 async function changeQuantity(item, newQuantity) {
-  cartError.value = '';
   try {
     if (newQuantity < 1) {
       await cartStore.removeItem(item.id);
       return;
     }
     await cartStore.updateQuantity(item.id, newQuantity);
-  } catch (e) {
-    cartError.value = e.response?.data?.message || 'No se pudo actualizar la cantidad.';
+  } catch {
   }
 }
 

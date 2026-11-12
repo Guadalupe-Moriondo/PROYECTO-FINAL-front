@@ -24,7 +24,10 @@ async function submit() {
 
   try {
     await authStore.login(email.value, password.value);
-    await cartStore.loadCart();
+
+    if (!authStore.isAdmin) {
+      await cartStore.loadCart();
+    }
 
     if (authStore.isAdmin) {
       router.push({ name: 'admin-home' });
