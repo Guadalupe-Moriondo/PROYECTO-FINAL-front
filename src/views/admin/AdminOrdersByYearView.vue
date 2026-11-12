@@ -346,9 +346,8 @@ onMounted(load);
 </template>
 
 
-
 <style scoped>
-.admin-month-view {
+.admin-year-view {
   padding: var(--space-5) var(--space-4);
 }
 
@@ -358,7 +357,7 @@ onMounted(load);
   margin:0 0 .5rem;
 }
 
-.month-search {
+.year-search {
   display:flex;
   align-items:center;
   gap:1rem;
@@ -370,7 +369,7 @@ onMounted(load);
   box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
-.month-search label {
+.year-search label {
   font-family:var(--font-display);
   text-transform:uppercase;
   font-size:.75rem;
@@ -378,7 +377,8 @@ onMounted(load);
   color:var(--color-ink-soft);
 }
 
-.month-search input[type="month"] {
+.year-search input[type="number"] {
+  width:120px;
   padding:.6rem 1rem;
   border-radius:10px;
   border:1px solid var(--color-line);
@@ -429,6 +429,10 @@ onMounted(load);
 
 .history-table tbody tr:hover {
   background:rgba(0,0,0,.025);
+}
+
+.detail-list--period li {
+  font-size: .9rem;
 }
 
 .button-primary {

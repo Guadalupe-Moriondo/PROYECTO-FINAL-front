@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useCartStore } from '../stores/cart';
 import { useAuthStore } from '../stores/auth';
@@ -9,7 +9,6 @@ const router = useRouter();
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
-const cartError = ref('');
 
 async function changeQuantity(item, newQuantity) {
   cartError.value = '';
