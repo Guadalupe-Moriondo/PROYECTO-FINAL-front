@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useCartStore } from '../stores/cart';
 import { useAuthStore } from '../stores/auth';
@@ -9,14 +9,19 @@ const router = useRouter();
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const cartError = ref('');
 
-
-function changeQuantity(item, newQuantity) {
-  if (newQuantity < 1) {
-    cartStore.removeItem(item.id);
-    return;
+async function changeQuantity(item, newQuantity) {
+  cartError.value = '';
+  try {
+    if (newQuantity < 1) {
+      await cartStore.removeItem(item.id);
+      return;
+    }
+    await cartStore.updateQuantity(item.id, newQuantity);
+  } catch (e) {
+    cartError.value = e.response?.data?.message || 'No se pudo actualizar la cantidad.';
   }
-  cartStore.updateQuantity(item.id, newQuantity);
 }
 
 function goToCheckout() {
@@ -121,6 +126,11 @@ onMounted(() => {
                     :stock="item.product.stock"
                   />
 
+                  <p v-if="item.unavailable" class="unavailable-msg">
+                    {{ item.product.active
+                      ? 'No hay stock suficiente para la cantidad elegida. Modificala o quitá el producto.'
+                      : 'Este producto ya no está disponible. Quitalo del carrito.' }}
+                  </p>
                 </div>
 
                 <button
@@ -199,6 +209,7 @@ onMounted(() => {
           <button
             class="button button-primary button-full"
             @click="goToCheckout"
+            :disabled="cartStore.items.some(i => i.unavailable)"
           >
             Continuar compra
           </button>
@@ -256,6 +267,12 @@ onMounted(() => {
   border: 1px solid var(--color-line);
   border-radius: 24px;
   
+}
+
+.unavailable-msg {
+  color: #b3261e;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .cart-image {

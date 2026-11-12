@@ -185,7 +185,7 @@ onMounted(load);
               <th>Fecha entrega</th>
               <th>Total</th>
               <th>Detalle</th>
-              <th>Historial de estados</th>
+              <th>Seguimiento del pedido</th>
             </tr>
           </thead>
           <tbody>
@@ -238,7 +238,7 @@ onMounted(load);
                   <span>
                     {{ expandedStatusHistoryOrderId === order.id
                       ? 'Ocultar'
-                      : 'Ver historial'
+                      : 'Ver detalle'
                     }}
                   </span>
                 </button>
@@ -346,8 +346,9 @@ onMounted(load);
 </template>
 
 
+
 <style scoped>
-.admin-year-view {
+.admin-month-view {
   padding: var(--space-5) var(--space-4);
 }
 
@@ -357,7 +358,7 @@ onMounted(load);
   margin:0 0 .5rem;
 }
 
-.year-search {
+.month-search {
   display:flex;
   align-items:center;
   gap:1rem;
@@ -369,7 +370,7 @@ onMounted(load);
   box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
-.year-search label {
+.month-search label {
   font-family:var(--font-display);
   text-transform:uppercase;
   font-size:.75rem;
@@ -377,8 +378,7 @@ onMounted(load);
   color:var(--color-ink-soft);
 }
 
-.year-search input[type="number"] {
-  width:120px;
+.month-search input[type="month"] {
   padding:.6rem 1rem;
   border-radius:10px;
   border:1px solid var(--color-line);
@@ -408,7 +408,9 @@ onMounted(load);
 .history-table th:nth-child(5),
 .history-table td:nth-child(5),
 .history-table th:nth-child(6),
-.history-table td:nth-child(6) {
+.history-table td:nth-child(6),
+.history-table th:nth-child(7),
+.history-table td:nth-child(7) {
   text-align: center;
 }
 
@@ -427,10 +429,6 @@ onMounted(load);
 
 .history-table tbody tr:hover {
   background:rgba(0,0,0,.025);
-}
-
-.detail-list--period li {
-  font-size: .9rem;
 }
 
 .button-primary {

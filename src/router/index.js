@@ -66,12 +66,12 @@ const router = createRouter({
     { path: '/cart',
       name: 'cart',
       component: CartView,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresCustomer: true  },
     },
     { path: '/checkout',
       name: 'checkout',
       component: CheckoutView,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresCustomer: true },
     },
     { path: '/my-orders',
       name: 'my-orders',
@@ -167,6 +167,11 @@ router.beforeEach((to) => {
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
     return { name: 'catalog' };
   }
+
+  if (to.meta.requiresCustomer && authStore.isAdmin) {
+    return { name: 'admin-home' };
+  }
+  
   return true;
 });
 

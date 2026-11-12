@@ -189,7 +189,7 @@ onMounted(load);
               <th>Fecha entrega</th>
               <th>Total</th>
               <th>Detalle</th>
-              <th>Estados del pedido</th>
+              <th>Seguimiento del pedido</th>
             </tr>
           </thead>
           <tbody>
@@ -241,7 +241,7 @@ onMounted(load);
                     <span>
                       {{ expandedStatusHistoryOrderId === order.id
                         ? 'Ocultar'
-                        : 'Ver estados'
+                        : 'Ver detalle'
                       }}
                     </span>
                   </button>

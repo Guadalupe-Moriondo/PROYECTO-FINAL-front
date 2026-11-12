@@ -44,7 +44,7 @@ async function loadUsers() {
       roleFilter.value
     );
 
-    users.value = response.data.items;
+    users.value = response.data.data;
     total.value = response.data.total;
 
     statistics.value = {

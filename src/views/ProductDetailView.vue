@@ -161,7 +161,7 @@ onMounted(() => {
 
           </div>
 
-          <div class="purchase-box">
+          <div v-if="!authStore.isAdmin" class="purchase-box">
 
             <div class="quantity-control">
 
