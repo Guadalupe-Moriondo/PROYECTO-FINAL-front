@@ -382,6 +382,16 @@ onMounted(async () => {
     
 
           <div class="confirm-actions">
+           
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--danger"
+              :disabled="deleting"
+              @click="confirmRemove"
+            >
+              {{ deleting ? 'Dando de baja...' : 'Aceptar' }}
+            </button>
+
             <button
               type="button"
               class="confirm-btn confirm-btn--cancel"
@@ -389,15 +399,6 @@ onMounted(async () => {
               @click="cancelRemove"
             >
               Cancelar
-            </button>
-
-            <button
-              type="button"
-              class="confirm-btn confirm-btn--danger"
-              :disabled="deleting"
-              @click="confirmRemove"
-            >
-              {{ deleting ? 'Dando de baja...' : 'Dar de baja' }}
             </button>
           </div>
         </div>

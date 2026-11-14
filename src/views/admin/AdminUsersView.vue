@@ -402,22 +402,23 @@ onMounted(() => {
           </p>
 
           <div class="confirm-actions">
-            <button
-              type="button"
-              class="confirm-btn confirm-btn--cancel"
-              :disabled="saving"
-              @click="dismissRoleChange"
-            >
-              Volver
-            </button>
-
+           
             <button
               type="button"
               class="confirm-btn confirm-btn--primary"
               :disabled="saving"
               @click="confirmRoleChange"
             >
-              {{ saving ? 'Guardando...' : 'Confirmar' }}
+              {{ saving ? 'Guardando...' : 'Aceptar' }}
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="saving"
+              @click="dismissRoleChange"
+            >
+              Cancelar
             </button>
           </div>
         </div>

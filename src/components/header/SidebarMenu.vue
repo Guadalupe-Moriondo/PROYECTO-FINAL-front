@@ -18,6 +18,7 @@ const authStore = useAuthStore();
 const cartStore = useCartStore();
 const categories = ref([]);
 const categoriesExpanded = ref(false);
+const confirmingLogout = ref(false);
 const orderNotificationsStore = useOrderNotificationsStore();
 
 
@@ -36,8 +37,13 @@ function goToCategory(categoryId) {
   router.push({ name: 'catalog', query: { categoryId } });
 }
 
-function logout() {
+function askLogout() {
   emit('close');
+  confirmingLogout.value = true;
+}
+
+function logout() {
+  confirmingLogout.value = false;
   authStore.logout();
   cartStore.clearLocal();
   router.push({ name: 'home' });
@@ -169,16 +175,49 @@ watch(
             </RouterLink>
 
           </template>
-          <button
-            type="button"
-            class="sidebar-link sidebar-logout"
-            @click="logout"
-          >
-            Salir
+          <button type="button" class="sidebar-link sidebar-logout" @click="askLogout"
+            > Salir
           </button>
         </template>
         </nav>
       </aside>
+    </Transition>
+
+    <Transition name="modal">
+      <div
+        v-if="confirmingLogout"
+        class="confirm-overlay"
+        @click.self="confirmingLogout = false"
+      >
+        <div
+          class="confirm-card"
+          role="dialog"
+          aria-modal="true"
+        >
+          <h3>¿Cerrar sesión?</h3>
+
+          <p>Vas a salir de tu cuenta.</p>
+
+          <div class="confirm-actions">
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--primary"
+              @click="logout"
+            >
+              Aceptar
+            </button>
+            
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              @click="confirmingLogout = false"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
     </Transition>
   </Teleport>
 </template>
@@ -428,6 +467,100 @@ watch(
   font-weight: 700;
 
   animation: notification-pulse 1.5s infinite;
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .45);
+}
+
+.confirm-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 30px 28px 24px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
+}
+
+.confirm-card h3 {
+  margin: 0 0 10px;
+  color: var(--color-ink);
+  font-size: 1.2rem;
+}
+
+.confirm-card p {
+  margin: 0 0 8px;
+  color: var(--color-ink-soft);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    color .2s ease;
+}
+
+.confirm-btn--cancel {
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.confirm-btn--cancel:hover {
+  background: #f6f6f3;
+}
+
+.confirm-btn--primary {
+  border: 1px solid var(--color-rust);
+  background: var(--color-rust);
+  color: #fff;
+}
+
+.confirm-btn--primary:hover {
+  background: var(--color-rust-dark);
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity .2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active .confirm-card,
+.modal-leave-active .confirm-card {
+  transition: transform .2s ease;
+}
+
+.modal-enter-from .confirm-card,
+.modal-leave-to .confirm-card {
+  transform: translateY(10px) scale(.97);
 }
 
 @keyframes notification-pulse {

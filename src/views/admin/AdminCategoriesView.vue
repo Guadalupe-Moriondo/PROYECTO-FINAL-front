@@ -386,6 +386,16 @@ onMounted(load);
           </p>
 
           <div class="confirm-actions">
+            
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--danger"
+              :disabled="deleting || categoryToDelete.productCount > 0"
+              @click="confirmRemove"
+            >
+              {{ deleting ? 'Dando de baja...' : 'Aceptar' }}
+            </button>
+
             <button
               type="button"
               class="confirm-btn confirm-btn--cancel"
@@ -393,15 +403,6 @@ onMounted(load);
               @click="cancelRemove"
             >
               Cancelar
-            </button>
-
-            <button
-              type="button"
-              class="confirm-btn confirm-btn--danger"
-              :disabled="deleting || categoryToDelete.productCount > 0"
-              @click="confirmRemove"
-            >
-              {{ deleting ? 'Dando de baja...' : 'Dar de baja' }}
             </button>
           </div>
         </div>

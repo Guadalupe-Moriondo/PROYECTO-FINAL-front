@@ -929,7 +929,7 @@ onMounted(async () => {
           role="dialog"
           aria-modal="true"
         >
-          <h3>¿Cancelar tu pedido?</h3>
+          <h3>¿Cancelar el pedido?</h3>
 
           <p>
             Vas a cancelar el pedido
@@ -938,22 +938,23 @@ onMounted(async () => {
           </p>
 
           <div class="confirm-actions">
-            <button
-              type="button"
-              class="confirm-btn confirm-btn--cancel"
-              :disabled="cancelling"
-              @click="dismissCancel"
-            >
-              Volver
-            </button>
-
+           
             <button
               type="button"
               class="confirm-btn confirm-btn--danger"
               :disabled="cancelling"
               @click="confirmCancel"
             >
-              {{ cancelling ? 'Cancelando...' : 'Cancelar' }}
+              {{ cancelling ? 'Cancelando...' : 'Aceptar' }}
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="cancelling"
+              @click="dismissCancel"
+            >
+              Cancelar
             </button>
           </div>
         </div>

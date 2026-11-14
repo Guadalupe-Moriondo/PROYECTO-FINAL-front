@@ -813,22 +813,23 @@ onMounted(async () => {
           </div>
 
           <div class="confirm-actions">
-            <button
-              type="button"
-              class="confirm-btn confirm-btn--cancel"
-              :disabled="cancelling"
-              @click="dismissCancel"
-            >
-              Volver
-            </button>
-
+            
             <button
               type="button"
               class="confirm-btn confirm-btn--danger"
               :disabled="cancelling"
               @click="confirmCancel"
             >
-              {{ cancelling ? 'Cancelando...' : 'Cancelar' }}
+              {{ cancelling ? 'Cancelando...' : 'Aceptar' }}
+            </button>
+
+            <button
+              type="button"
+              class="confirm-btn confirm-btn--cancel"
+              :disabled="cancelling"
+              @click="dismissCancel"
+            >
+              Cancelar
             </button>
           </div>
         </div>
